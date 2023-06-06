@@ -8,9 +8,15 @@ clear; close all; clc;
 % |[B]=gcombvec(varargin);|
 
 %% Description 
-% UNDOCUMENTED 
+% Returns the combinations of the entries in a with the entries in b
+
 %% Examples 
 % 
+
+a = [1 2 3 4]
+b = [7 8 9]
+c = gcombvec(a,b)
+
 %%
 % 
 % <<gibbVerySmall.gif>>

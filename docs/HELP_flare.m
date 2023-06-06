@@ -20,7 +20,7 @@ fontSize=15;
 
 %% Example 1: Accessing the colormap
 
-cMap=flare(25) %Get 25 color levels from the colormap
+cMap=flare(250); %Get 25 color levels from the colormap
 
 %% Example 2: Applying/using the colormap
 
@@ -37,7 +37,7 @@ colorLim=[-1 1];
 cFigure; hold on;
 title('Flare colormap','FontSize',fontSize);
 imagesc(Z);
-colormap(flare(250)); colorbar;
+colormap(cMap); colorbar;
 axis tight; axis equal; axis xy; box on;
 axis off;
 set(gca,'FontSize',fontSize);

@@ -8,9 +8,22 @@ clear; close all; clc;
 % |[testFileList]=getTestFiles(testSet);|
 
 %% Description 
-% UNDOCUMENTED 
+% This function returns the GIBBON files that can be run to test/publish
+% GIBBON. If the testSet input is set to 'HELP' then all files named
+% HELP_... are returned. Similarly using testSet='DEMO' returns all demo
+% files. This allows one to loop over all systematically. 
+
 %% Examples 
 % 
+
+%%
+% Get a list of all HELP files
+[testFileList]=getTestFiles('HELP')
+
+%%
+% Get a list of all DEMO files
+[testFileList]=getTestFiles('DEMO')
+
 %%
 % 
 % <<gibbVerySmall.gif>>

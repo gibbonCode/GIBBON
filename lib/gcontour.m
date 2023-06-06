@@ -3,13 +3,17 @@ function [varargout]=gcontour(varargin)
 % function [C,cSiz,cLevel]=gcontour(X,Y,Z,k,pointSpacing,resampleMethod)
 % ------------------------------------------------------------------------
 %
-% This function computes contour data for the data Z
-%
+% Computes contours for the image with pixel centre coordinates X and Y and
+% intensity Z, at the intensity level k. Contours are resampled using a
+% point spacing equal to pointSpacing using resampleMethod as the
+% interpolation method. 
 %
 % Kevin Mattheus Moerman
 % gibbon.toolbox@gmail.com
 %
 % 2016/10/18
+% 2023/06/06 KMM: Added more documentation. Fixed bug in resampling of
+% contours (resampling as skipped)
 %
 %------------------------------------------------------------------------
 
@@ -22,6 +26,7 @@ switch nargin
         Z=varargin{3};
         k=varargin{4};
         pointSpacing=[];
+        resampleMethod='pchip';
     case 5
         X=varargin{1};
         Y=varargin{2};
@@ -97,16 +102,16 @@ if ~isempty(Q)
             
             %Check if contour is closed loop or not
             d=sqrt(sum((Vg(1,:)-Vg(end,:)).^2)); %Distance between first and last point
-            if d<(min(v)/10) %Smaller than 1/10th of a pixel dimension
+            if d<(min(v)/100) %Smaller than 1/100th of a pixel dimension
                 Vg=Vg(1:end-1,:);
                 closeLoopOpt=1;
             else
                 closeLoopOpt=0;
             end
             
-            %Upsample if desired
+            %Resample if desired
             if ~isempty(pointSpacing)                
-                [Vg] = evenlySampleCurve(Vg,n,resampleMethod,closeLoopOpt);
+                [Vg] = evenlySpaceCurve(Vg,pointSpacing,resampleMethod,closeLoopOpt);
             end
         end
         

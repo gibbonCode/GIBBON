@@ -1,6 +1,14 @@
 function [CM]=fourthOrderCell(C)
 
-CM=cell(3,3);
+% function [CM]=fourthOrderCell(C)
+% ------------------------------------------------------------------------
+% Converts a 3x3x3x3 4th order tensor into a cell 3x3 cell array featuring
+% 3x3 matrix entries.
+% ------------------------------------------------------------------------
+
+%%
+
+CM=repmat({zeros(3,3)},3,3);
 
 for i=1:1:3
     for j=1:1:3

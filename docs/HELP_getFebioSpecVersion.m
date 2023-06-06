@@ -6,11 +6,34 @@ clear; close all; clc;
 
 %% Syntax
 % |[febio_spec]=getFebioSpecVersion(febXML);|
+% |[febio_spec]=getFebioSpecVersion(febFileName);|
 
 %% Description 
-% UNDOCUMENTED 
+% Returns the febio_spec version used in a particular FEB file specified by
+% the input variable febXML. febXML may be of the XML class or specify a
+% file name for a feb file. 
+
 %% Examples 
 % 
+
+%%
+% set up path and file names
+defaultFolder = fileparts(fileparts(mfilename('fullpath'))); 
+loadPath=fullfile(defaultFolder,'data','FEB');
+febioFebFileNamePart='tempModel';
+
+%%
+% Get the febio spec from a FEB file
+
+febioFebFileName=fullfile(loadPath,[febioFebFileNamePart,'_4p0.feb']); %FEB file name
+getFebioSpecVersion(febioFebFileName)
+
+febioFebFileName=fullfile(loadPath,[febioFebFileNamePart,'_3p0.feb']); %FEB file name
+getFebioSpecVersion(febioFebFileName)
+
+febioFebFileName=fullfile(loadPath,[febioFebFileNamePart,'_2p0.feb']); %FEB file name
+getFebioSpecVersion(febioFebFileName)
+
 %%
 % 
 % <<gibbVerySmall.gif>>

@@ -8,9 +8,33 @@ clear; close all; clc;
 % |[indInternal]=getInnerVoxel(L,searchRadius,plotOn);|
 
 %% Description 
-% UNDOCUMENTED 
+% Obtains a voxel index for a voxel that is part of the interior of the
+% labelled image L. searchRadius defines the approximate distance to the
+% boundary. plotOn visualizes the label image and interior point.
+
 %% Examples 
 % 
+%%
+% Plot settings
+fontSize=10;
+faceAlpha1=1;
+faceAlpha2=0.3;
+cMap=[0.5 0.5 0.5; gjet(4)];
+
+%%
+% 
+% Create example image
+[F,V]=graphicsModels(8);
+
+[M,G,~]=patch2Im(F,V,[],0.05);
+L=~isnan(M);
+
+%%
+% Get index for an interior voxel
+searchRadius=3;
+plotOn=1;
+[indInternal]=getInnerVoxel(L,searchRadius,plotOn)
+
 %%
 % 
 % <<gibbVerySmall.gif>>

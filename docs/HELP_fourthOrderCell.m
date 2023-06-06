@@ -8,9 +8,31 @@ clear; close all; clc;
 % |[CM]=fourthOrderCell(C);|
 
 %% Description 
-% UNDOCUMENTED 
+% Converts a 3x3x3x3 4th order tensor into a cell 3x3 cell array featuring
+% 3x3 matrix entries. 
+
 %% Examples 
 % 
+
+%%
+% Creating the stiffness tensor for Hooke's law of linear elasticity
+
+%Constructing 4th order base tensor set
+I=eye(3,3); %The 2nd order identity tensor
+II1=dyadicProduct(I,I,1); %4th order base tensor 1                                                                
+II3=dyadicProduct(I,I,3); %4th order base tensor 3
+
+%Parameters for Hooke's law
+mu=1; %The shear modulus
+lambda=5; %The lambda lame parameter
+C=lambda.*II1+2.*mu.*II3; %Construct 4th order stiffness tensor
+
+%%
+
+[CM]=fourthOrderCell(C)
+
+CM{1,1}
+
 %%
 % 
 % <<gibbVerySmall.gif>>

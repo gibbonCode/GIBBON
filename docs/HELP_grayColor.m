@@ -8,9 +8,21 @@ clear; close all; clc;
 % |[C]=grayColor(varargin);|
 
 %% Description 
-% UNDOCUMENTED 
+% Outputs the RGB values for a grey color at the intensity level
+% colorLevels. 
+
 %% Examples 
 % 
+
+%%
+% A single gray color at the level 0.5
+c=grayColor(0.5)
+
+%%
+% A set of gray colors
+
+C=grayColor([0.25; 0.5; 0.7])
+
 %%
 % 
 % <<gibbVerySmall.gif>>

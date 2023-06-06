@@ -39,6 +39,8 @@ function [F,V,C]=ind2patch(IND,M,ptype)
 
 %%
 
+% warning('ind2patch is depricated. Use im2patch instead to avoid future errors');
+
 switch ptype
     case 'hu'
         ptype2='h';

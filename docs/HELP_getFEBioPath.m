@@ -8,9 +8,12 @@ clear; close all; clc;
 % |FEBioPath=getFEBioPath;|
 
 %% Description 
-% UNDOCUMENTED 
+% Returns the currently set febio patch 
 %% Examples 
 % 
+
+FEBioPath=getFEBioPath
+
 %%
 % 
 % <<gibbVerySmall.gif>>

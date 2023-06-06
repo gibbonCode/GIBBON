@@ -5,12 +5,18 @@
 clear; close all; clc;
 
 %% Syntax
-% |[varargout]=febioDoc(varargin);|
+% |[hFig]=febioDoc(docType);|
 
 %% Description 
-% UNDOCUMENTED 
+% View febio documentation PDF files using a MATLAB browser. Use docType
+% 1,'UM','um' for the user manual, or use 2,'TM','tm' for the theory
+% manual.
+
 %% Examples 
 % 
+
+febioDoc('UM')
+
 %%
 % 
 % <<gibbVerySmall.gif>>

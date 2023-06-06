@@ -2,36 +2,21 @@ function [surfaceVolume]=triSurfVolume(F,V)
 
 % function [surfaceVolume]=triSurfVolume(F,V)
 % ------------------------------------------------------------------------
-%Volume derivation based on Gauss divergence theorem
-%
-%%% EXAMPLE
-%
-% r=3; %sphere radius
-% n=2; %Refinements   
-% [F,V,~]=geoSphere(4,r);
-% 
-% VVt=(4/3)*pi*r.^3; %Theoretical volume of the sphere
-% [VV]=triSurfVolume(F,V); %estimate based on triangulated surface
-%
+% Volume derivation based on Gauss divergence theorem
 %
 % Kevin Mattheus Moerman
 % gibbon.toolbox@gmail.com
 % 
 % Change log:
-% 26/11/2013
-% 2018/08/24 Fixed bug in relation to surface not centred on centroid and
-% surfaces with inhomogeneous node distributions
+% 2013/11/26 KMM: Created
+% 2018/08/24 KMM: Fixed bug in relation to surface not centred on centroid
+% and surfaces with inhomogeneous node distributions
+% 2023/06/06 KMM: Made to use patchVolume instead
 %------------------------------------------------------------------------
 %%
 
-N=patchNormal(F,V);%Face normals
-surfaceAreas=tri_area(F,V); %Face areas
-Z=V(:,3); %Z-coordinates 
-Zm=mean(Z(F),2); %Mean Z-coordinates for faces
-Nz = N(:,3); %Z component of normal
-surfaceVolumeContributions = surfaceAreas.*Zm.*Nz; %Contributions
-surfaceVolume = sum(surfaceVolumeContributions(~isnan(surfaceVolumeContributions))); %Total volume. Ignore NaNs, which may result from normal computation on zero-area faces
- 
+[surfaceVolume]=patchVolume(F,V);
+
 %% 
 % _*GIBBON footer text*_ 
 % 

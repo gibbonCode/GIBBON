@@ -5,10 +5,65 @@
 clear; close all; clc;
 
 %% Syntax
-% |[varargout]=gcontour(varargin);|
+% |[C,cSiz,cLevel]=gcontour(X,Y,Z,k,pointSpacing,resampleMethod);|
 
 %% Description 
-% UNDOCUMENTED 
+% Computes contours for the image with pixel centre coordinates X and Y and
+% intensity Z, at the intensity level k. Contours are resampled using a
+% point spacing equal to pointSpacing using resampleMethod as the
+% interpolation method. 
+
+%% Examples
+
+%%
+% Plot settings
+
+lineWidth=2; 
+markerSize=25;
+fontSize=15;
+
+%% Example 1: Obtainin a single contour
+
+
+S=4;
+
+v=[1 1 1];
+siz=[25 65];
+[J,I]=meshgrid(1:1:siz(2),1:1:siz(1));
+K=zeros(size(I));
+[X,Y,Z]=im2cart(I,J,K);
+
+xc=15;
+yc=15;
+M=exp(-((X-xc).^2 + (Y-yc).^2)./(2*S^2)) + ...
+  exp(-((X-2.5*xc).^2 + (Y-yc).^2)./(2*S^2)) + ...
+  exp(-((X-3.5*xc).^2 + (Y-0.75*yc).^2)./(2*S^2)) + ...
+  exp(-((X).^2 + (Y).^2)./(2*S^2));
+
+
+contourLevel=0.25; 
+pointSpacing=0.5;
+resampleMethod='pchip'; 
+
+%Compute contour
+VC=gcontour(X,Y,M,contourLevel,pointSpacing,resampleMethod);
+
+[Fm,Vm,Cm]=im2patch(M,true(size(M)),'sk',v);
+Vm(:,3)=0;
+
+%%
+% Visualization
+
+cFigure; hold on; 
+gpatch(Fm,Vm,Cm);
+for q=1:1:numel(VC)
+    plotV(VC{q},'k.-','LineWidth',lineWidth,'MarkerSize',markerSize)
+end
+colormap spectral; colorbar; 
+axis tight; axis equal; box on; 
+set(gca,'FontSize',fontSize)
+drawnow; 
+
 %% Examples 
 % 
 %%

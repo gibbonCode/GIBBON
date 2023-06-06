@@ -1,48 +1,72 @@
 %% tri2quad
 % Below is a demonstration of the features of the |tri2quad| function
 
+%%
+clear; close all; clc;
+
 %% Syntax
 % |[Fq,Vq]=tri2quad(Ft,Vt);|
 
 %% Description 
-% 
+% Tris func
 %% Examples 
 % 
+
 %%
-clear; close all; clc;
-
 % Plot settings
-fig_color='w'; fig_colordef='white';
 fontSize=15;
-faceColor='b';
-faceAlpha=1;
-edgeColor='k';
-edgeWidth=1;
-
-%% Example: Converting a triangulated surface to a quandrangulated surface
 
 %%
 % Example triangulated surface
 [F,V]=stanford_bunny;
 
+%% Example 1: Converting a triangulated surface to a quandrangulated surface
+
 %%
 % Convert triangular faces to quadrilateral faces
-[Fq,Vq]=tri2quad(F,V,1);
+[Fq,Vq]=tri2quad(F,V);
 
 %%
 % Visualisation
 
-hf=cFigure; 
+cFigure; 
 subplot(1,2,1);
 title('Triangulation','FontSize',fontSize);
-gpatch(F,V,'rw','r');
+gpatch(F,V,'rw','k');
 set(gca,'FontSize',fontSize);
 axisGeom;
 camlight('headlight'); 
 
 subplot(1,2,2);
 title('Quadrangulation','FontSize',fontSize);
-gpatch(Fq,Vq,'gw','g');
+gpatch(Fq,Vq,'gw','k');
+set(gca,'FontSize',fontSize);
+axisGeom;
+camlight('headlight'); 
+
+drawnow; 
+
+%% Example 2: Using incentres rather than triangle centres
+
+%%
+% Convert triangular faces to quadrilateral faces
+centerType=2;
+[Fq,Vq]=tri2quad(F,V,centerType);
+
+%%
+% Visualisation
+
+cFigure; 
+subplot(1,2,1);
+title('Triangulation','FontSize',fontSize);
+gpatch(F,V,'rw','k');
+set(gca,'FontSize',fontSize);
+axisGeom;
+camlight('headlight'); 
+
+subplot(1,2,2);
+title('Quadrangulation','FontSize',fontSize);
+gpatch(Fq,Vq,'gw','k');
 set(gca,'FontSize',fontSize);
 axisGeom;
 camlight('headlight'); 

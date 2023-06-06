@@ -8,7 +8,8 @@ clear; close all; clc;
 % |[F_fixed,L_fixed]=fixNormalsOutward(F,V,fixOpt);|
 
 %% Description 
-% UNDOCUMENTED 
+% DEPRICATED
+
 %% Examples 
 % 
 %%

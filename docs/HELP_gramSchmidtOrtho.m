@@ -5,12 +5,53 @@
 clear; close all; clc;
 
 %% Syntax
-% |[E]=gramSchmidtOrtho(E);|
+% |[E]=gramSchmidtOrtho(Q);|
 
 %% Description 
-% UNDOCUMENTED 
+% This function uses the Gram-Schmidt method to convert the input basis Q
+% to an orthonormal basis E. 
+
 %% Examples 
 % 
+
+%%
+% Create example non-orthonormal base vector set
+
+rz=euler2DCM([0 0 0.25*pi]); %Rotation around z
+rx=euler2DCM([-0.25*pi 0 0]); %Rotation around x
+Q=eye(3,3); %Identify matrix (orthonormal)
+Q(:,1)=rz*Q(:,1); % Rotate the 1st axis towards 2nd
+Q(:,3)=rx*Q(:,3); % Rotate the 3rd towards 1-2-plane
+
+%Rotate all
+R=euler2DCM([0.25*pi 0.25*pi 0.25*pi]); 
+Q=R*Q;
+
+%Scale all (so not normal)
+Q=Q*2;
+
+%%
+% Use Gram-Schmidt method to obtain an orthonormal basis
+
+[E]=gramSchmidtOrtho(Q)
+
+%%
+% Visualization
+
+cFigure; 
+
+subplot(1,2,1); hold on; 
+title('A non-orthonormal set');
+hp1=quiverTriad(zeros(1,3),Q,2);
+axisGeom; camlight headlight; 
+
+subplot(1,2,2); hold on; 
+title('An orthonormal set');
+hp2=quiverTriad(zeros(1,3),E,1);
+axisGeom; camlight headlight; 
+
+gdrawnow;
+
 %%
 % 
 % <<gibbVerySmall.gif>>

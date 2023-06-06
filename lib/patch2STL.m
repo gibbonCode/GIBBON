@@ -1,14 +1,13 @@
 function patch2STL(varargin)
 
-% ------------------------------------------------------------------------
 % function patch2STL(fileName,V,F,N,solidName)
+% ------------------------------------------------------------------------
 % 
 % This function generates an STL file using the vertices (V) and triangular
 % faces (F) provided
 % 
 % 
 % Kevin Mattheus Moerman
-% kevinmoerman@hotmail.com
 % 2014/04/08 
 %
 % CHANGE LOG: 

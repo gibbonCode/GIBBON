@@ -40,7 +40,7 @@ dirInfo = dir(htmlPath);
 fileNames={dirInfo(1:end).name};
 
 %Find files relating to the current file to publish
-logicRemove=contains(fileNames,docName); %Logic for relevant files
+logicRemove=contains(fileNames,[docName,'.']) | cellfun(@(x) ~isempty(x),regexp(fileNames,[docName,'_[0-9]'])); %Logic for relevant files
 fileNamesRemove=fileNames(logicRemove);
 
 %Cleanup/remove files

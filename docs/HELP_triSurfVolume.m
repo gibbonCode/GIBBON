@@ -8,7 +8,8 @@ clear; close all; clc;
 % |[surfaceVolume]=triSurfVolume(F,V);|
 
 %% Description 
-% UNDOCUMENTED 
+% DEPRICATED in favour of patchVolume
+
 %% Examples 
 
 %% Example 1: Volume of a sphere

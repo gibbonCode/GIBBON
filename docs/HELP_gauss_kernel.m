@@ -8,9 +8,85 @@ clear; close all; clc;
 % |hg=gauss_kernel(k,nd,f,m);|
 
 %% Description 
-% UNDOCUMENTED 
+% This function creates a Gaussian filtering kernel. The inputs are: 
+% k  = the kernel size
+% nd = the number of dimensions e.g. 1 for 1D, 2 for 2D, 3 for 3D etc. 
+% f  = the Gaussian bell curve width measure, either the sigma (standard
+% deviation) or the width
+% methodOption = 'sigma' or 'width. If 'sigma' is choosen then f is
+% interpretet as a Gaussian sigma. If 'width is used instead then f is
+% interpretet as the point "where the bell curve is" at the edges of the
+% kernel e.g. f=2 results in twice the standard deviation.
+
 %% Examples 
 % 
+
+%%
+% Plot settings
+lineWidth=3;
+
+%% Example 1: 1D 'sigma' method
+
+k=25;
+nd=1;
+f=2;
+methodOption='sigma';
+hg=gauss_kernel(k,nd,f,methodOption);
+
+%%
+%
+
+cFigure; 
+plot(hg,'r-','LineWidth',lineWidth); 
+axis tight; box on; grid on;
+drawnow;
+
+%% Example 2: 1D 'width' method
+
+k=25;
+nd=1;
+f=2;
+methodOption='width';
+hg=gauss_kernel(k,nd,f,methodOption);
+
+%%
+%
+
+cFigure; 
+plot(hg,'r-','LineWidth',lineWidth); 
+axis tight; box on; grid on;
+drawnow;
+
+%% Example 3: 2D 'width' method
+
+k=11;
+nd=2;
+f=2;
+methodOption='width';
+hg=gauss_kernel(k,nd,f,methodOption);
+
+%%
+%
+
+cFigure; 
+imagesc(hg);
+axis tight; axis equal; box on; 
+colormap spectral; colorbar; 
+drawnow;
+
+%% Example 4: 3D 'width' method
+
+k=11;
+nd=3;
+f=2;
+methodOption='width';
+hg=gauss_kernel(k,nd,f,methodOption);
+
+%%
+%
+optionStruct.colormap=spectral(250);
+sv3(hg,ones(1,3),optionStruct); 
+
 %%
 % 
 % <<gibbVerySmall.gif>>

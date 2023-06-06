@@ -1,16 +1,24 @@
-function hg=gauss_kernel(k,nd,f,m)
+function hg=gauss_kernel(k,nd,f,methodOption)
 
 % function hg=gauss_kernel(k,nd,f,m)
 % ------------------------------------------------------------------------
+% This function creates a Gaussian filtering kernel. The inputs are: 
+% k  = the kernel size
+% nd = the number of dimensions e.g. 1 for 1D, 2 for 2D, 3 for 3D etc. 
+% f  = the Gaussian bell curve width measure, either the sigma (standard
+% deviation) or the width
+% methodOption = 'sigma' or 'width. If 'sigma' is choosen then f is
+% interpretet as a Gaussian sigma. If 'width is used instead then f is
+% interpretet as the point "where the bell curve is" at the edges of the
+% kernel e.g. f=2 results in twice the standard deviation.
 % 
-%
 % ------------------------------------------------------------------------
 
 %%
-switch m
+switch methodOption
     case {'sigma',1}
         %NOTE: This method is equivalent to using hg = fspecial('gaussian',[k k], S)
-        S=f3;
+        S=f;
         switch nd
             case 1
                 x = linspace(-((k-1)/2),((k-1)/2),k);

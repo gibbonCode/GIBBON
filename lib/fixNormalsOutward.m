@@ -1,13 +1,20 @@
 function [F_fixed,L_fixed]=fixNormalsOutward(F,V,fixOpt)
 
-%Assumes F and V describe a shape that can be appropirately defined using a
-%spherical or polar coordinate system, as indicated by the choice fixOpt.
-%For instance a closed spherical shape for open cylindrical shape. 
-%
+% function [F_fixed,L_fixed]=fixNormalsOutward(F,V,fixOpt)
+% ------------------------------------------------------------------------
+% Assumes F and V describe a shape that can be appropirately defined using
+% a spherical or polar coordinate system, as indicated by the choice
+% fixOpt. For instance fixOpt='s' a closed spherical shape, and fixOpt='p'
+% for open cylindrical shape.
+% 
 % The function uses the fact that the radius of the normal vector origin
 % should be smaller than the radius of the normal vector tip to determine
 % whether or not a normal vector needs to be flipped. 
+% -----------------------------------------------------------------------
 
+%warning('This function is depricated in favour of patchNormalFix');
+
+%%
 %Derive current face normals
 [N,V_starts]=patchNormal(F,V);
 

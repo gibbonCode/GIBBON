@@ -1,0 +1,876 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>getTestFiles</title><meta name="generator" content="MATLAB 9.14"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2023-06-06"><meta name="DC.source" content="HELP_getTestFiles.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; }
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+span.typesection { color:#A0522D }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h1>getTestFiles</h1><!--introduction--><p>Below is a demonstration of the features of the <tt>getTestFiles</tt> function</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#2">Syntax</a></li><li><a href="#3">Description</a></li><li><a href="#4">Examples</a></li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
+</pre><h2 id="2">Syntax</h2><p><tt>[testFileList]=getTestFiles(testSet);</tt></p><h2 id="3">Description</h2><p>This function returns the GIBBON files that can be run to test/publish GIBBON. If the testSet input is set to 'HELP' then all files named HELP_... are returned. Similarly using testSet='DEMO' returns all demo files. This allows one to loop over all systematically.</p><h2 id="4">Examples</h2><p>Get a list of all HELP files</p><pre class="codeinput">[testFileList]=getTestFiles(<span class="string">'HELP'</span>)
+</pre><pre class="codeoutput">
+testFileList =
+
+  623&times;1 cell array
+
+    {'HELP_DCM2euler.m'                       }
+    {'HELP_FFT_derivative.m'                  }
+    {'HELP_MRcart2im.m'                       }
+    {'HELP_MRcart2imNeg.m'                    }
+    {'HELP_MRimageUnitScale.m'                }
+    {'HELP_R_squared.m'                       }
+    {'HELP_SVD_filter.m'                      }
+    {'HELP_TriScatteredInterp_ND.m'           }
+    {'HELP_TriScatteredInterp_nat_near.m'     }
+    {'HELP_abaqusStruct2inp.m'                }
+    {'HELP_addAttributeSetXML.m'              }
+    {'HELP_addAttributeXML.m'                 }
+    {'HELP_addElementSetXML.m'                }
+    {'HELP_addElementValueXML.m'              }
+    {'HELP_addElementXML.m'                   }
+    {'HELP_addHelpSearch.m'                   }
+    {'HELP_adjacentdircount.m'                }
+    {'HELP_affineTransformationMatrixDirect.m'}
+    {'HELP_agd.m'                             }
+    {'HELP_amfStruct2xml.m'                   }
+    {'HELP_anim8.m'                           }
+    {'HELP_axisGeom.m'                        }
+    {'HELP_axisLim.m'                         }
+    {'HELP_axis_inc.m'                        }
+    {'HELP_batman.m'                          }
+    {'HELP_bezierCurve.m'                     }
+    {'HELP_bias_nodes1d.m'                    }
+    {'HELP_biharmonicSplineInterpolation.m'   }
+    {'HELP_blood.m'                           }
+    {'HELP_bloodbone.m'                       }
+    {'HELP_box_indices.m'                     }
+    {'HELP_boxconstrain.m'                    }
+    {'HELP_cFigure.m'                         }
+    {'HELP_cap_patchcylinder.m'               }
+    {'HELP_cart2im.m'                         }
+    {'HELP_cell2txtfile.m'                    }
+    {'HELP_cellEig.m'                         }
+    {'HELP_cellPair2struct.m'                 }
+    {'HELP_cellTrace.m'                       }
+    {'HELP_changeFileExtensions.m'            }
+    {'HELP_che.m'                             }
+    {'HELP_checkerBoard3D.m'                  }
+    {'HELP_circlefit.m'                       }
+    {'HELP_cividis.m'                         }
+    {'HELP_ckmkdir.m'                         }
+    {'HELP_cleanDir.m'                        }
+    {'HELP_cleanUpTetGen.m'                   }
+    {'HELP_cmaperise.m'                       }
+    {'HELP_coarsepatch.m'                     }
+    {'HELP_constrainedDelaunayTetGen.m'       }
+    {'HELP_contour2levelset.m'                }
+    {'HELP_contour2logic.m'                   }
+    {'HELP_contourRegularise.m'               }
+    {'HELP_cow.m'                             }
+    {'HELP_createHelpDemoDocumentation.m'     }
+    {'HELP_crossProdMat.m'                    }
+    {'HELP_cs3dPath.m'                        }
+    {'HELP_csapsPar.m'                        }
+    {'HELP_cunique.m'                         }
+    {'HELP_curvePathOrderFix.m'               }
+    {'HELP_curveToEdgeList.m'                 }
+    {'HELP_dcmFolder2MATobject.m'             }
+    {'HELP_dcmFolderAnon.m'                   }
+    {'HELP_defMetrics.m'                      }
+    {'HELP_delaunayZip.m'                     }
+    {'HELP_dev.m'                             }
+    {'HELP_diamondLattice.m'                  }
+    {'HELP_dicom3Dpar.m'                      }
+    {'HELP_dihedralAngles.m'                  }
+    {'HELP_discQuadMesh.m'                    }
+    {'HELP_disp2strain.m'                     }
+    {'HELP_dispDoneGibbonCode.m'              }
+    {'HELP_dispStartTitleGibbonCode.m'        }
+    {'HELP_distND.m'                          }
+    {'HELP_doubleContraction.m'               }
+    {'HELP_dualClad.m'                        }
+    {'HELP_dualLattice.m'                     }
+    {'HELP_dyadicProduct.m'                   }
+    {'HELP_edgeLengths.m'                     }
+    {'HELP_edgeListToCurve.m'                 }
+    {'HELP_edgeNormal.m'                      }
+    {'HELP_edgeVec.m'                         }
+    {'HELP_efw.m'                             }
+    {'HELP_element2HexLattice.m'              }
+    {'HELP_element2faces.m'                   }
+    {'HELP_element2lattice.m'                 }
+    {'HELP_element2patch.m'                   }
+    {'HELP_elephant.m'                        }
+    {'HELP_ellipseCoord.m'                    }
+    {'HELP_ellipseCoord3.m'                   }
+    {'HELP_ellipseFit.m'                      }
+    {'HELP_ellipseFit3.m'                     }
+    {'HELP_ellipsoidFit_centered.m'           }
+    {'HELP_errorbarC_XY.m'                    }
+    {'HELP_euler2DCM.m'                       }
+    {'HELP_eulerChar.m'                       }
+    {'HELP_evenlySampleCurve.m'               }
+    {'HELP_evenlySpaceCurve.m'                }
+    {'HELP_exportGif.m'                       }
+    {'HELP_exportGifAnim8.m'                  }
+    {'HELP_export_INP.m'                      }
+    {'HELP_export_STL_txt.m'                  }
+    {'HELP_export_mesh.m'                     }
+    {'HELP_export_off.m'                      }
+    {'HELP_faceToVertexMeasure.m'             }
+    {'HELP_faces2elementSideSets.m'           }
+    {'HELP_febView.m'                         }
+    {'HELP_febio.m'                           }
+    {'HELP_febioDoc.m'                        }
+    {'HELP_febioOutputView.m'                 }
+    {'HELP_febioStruct2xml.m'                 }
+    {'HELP_febioStructTemplate.m'             }
+    {'HELP_femur.m'                           }
+    {'HELP_fftnconv.m'                        }
+    {'HELP_filletCurve.m'                     }
+    {'HELP_fire.m'                            }
+    {'HELP_fireice.m'                         }
+    {'HELP_fixNormalsOutward.m'               }
+    {'HELP_flare.m'                           }
+    {'HELP_fmin_fvalfind_ppform.m'            }
+    {'HELP_fmin_symbolic_form.m'              }
+    {'HELP_foamWrap.m'                        }
+    {'HELP_fourthOrderCell.m'                 }
+    {'HELP_fourthOrderMat.m'                  }
+    {'HELP_freeBoundaryPatch.m'               }
+    {'HELP_freeMemory.m'                      }
+    {'HELP_gaborCoil.m'                       }
+    {'HELP_gaborFilter.m'                     }
+    {'HELP_gabor_kernel.m'                    }
+    {'HELP_gauss_kernel.m'                    }
+    {'HELP_gaussianpdf.m'                     }
+    {'HELP_gcombvec.m'                        }
+    {'HELP_gcontains.m'                       }
+    {'HELP_gcontour.m'                        }
+    {'HELP_gd.m'                              }
+    {'HELP_gdoc.m'                            }
+    {'HELP_gdrawnow.m'                        }
+    {'HELP_gedge.m'                           }
+    {'HELP_geoSphere.m'                       }
+    {'HELP_getColumns.m'                      }
+    {'HELP_getFEBioPath.m'                    }
+    {'HELP_getFebioSpecVersion.m'             }
+    {'HELP_getInnerPoint.m'                   }
+    {'HELP_getInnerVoxel.m'                   }
+    {'HELP_getSubPaths.m'                     }
+    {'HELP_getTestFiles.m'                    }
+    {'HELP_getViewProfile.m'                  }
+    {'HELP_getVoronoiStats.m'                 }
+    {'HELP_getimdat.m'                        }
+    {'HELP_ggremesh.m'                        }
+    {'HELP_gjet.m'                            }
+    {'HELP_gnanmax.m'                         }
+    {'HELP_gnanmean.m'                        }
+    {'HELP_gnanmin.m'                         }
+    {'HELP_gnansum.m'                         }
+    {'HELP_gpatch.m'                          }
+    {'HELP_gpublish.m'                        }
+    {'HELP_gramSchmidtOrtho.m'                }
+    {'HELP_graphicsModels.m'                  }
+    {'HELP_gray2RGBColorMap.m'                }
+    {'HELP_grayColor.m'                       }
+    {'HELP_grayJetc.m'                        }
+    {'HELP_graygjet.m'                        }
+    {'HELP_grayjet.m'                         }
+    {'HELP_grid2patch.m'                      }
+    {'HELP_griddata_delaunay.m'               }
+    {'HELP_groupVertices.m'                   }
+    {'HELP_gtitle.m'                          }
+    {'HELP_gviridis.m'                        }
+    {'HELP_gwaitbar.m'                        }
+    {'HELP_gxmlwrite.m'                       }
+    {'HELP_hemiSphereCylMesh.m'               }
+    {'HELP_hemiSphereMesh.m'                  }
+    {'HELP_hemiSphereMeshHalf.m'              }
+    {'HELP_hemiSphereRegionMesh.m'            }
+    {'HELP_hessianScalar.m'                   }
+    {'HELP_hex2patch.m'                       }
+    {'HELP_hex2rdl.m'                         }
+    {'HELP_hex2tet.m'                         }
+    {'HELP_hex8_hex20.m'                      }
+    {'HELP_hexMeshBox.m'                      }
+    {'HELP_hexMeshCubeSphere.m'               }
+    {'HELP_hexMeshCylinder.m'                 }
+    {'HELP_hexMeshHemiSphere.m'               }
+    {'HELP_hexMeshSphere.m'                   }
+    {'HELP_hexVol.m'                          }
+    {'HELP_hexahedral_hexagon_beam.m'         }
+    {'HELP_hip_implant.m'                     }
+    {'HELP_honeyCombMesh.m'                   }
+    {'HELP_ice.m'                             }
+    {'HELP_icolorbar.m'                       }
+    {'HELP_igviridis.m'                       }
+    {'HELP_im2MRcart.m'                       }
+    {'HELP_im2MRcartNeg.m'                    }
+    {'HELP_im2cart.m'                         }
+    {'HELP_im2patch.m'                        }
+    {'HELP_imageResample.m'                   }
+    {'HELP_image_numeric.m'                   }
+    {'HELP_imlabelMean.m'                     }
+    {'HELP_immesh.m'                          }
+    {'HELP_imobjects.m'                       }
+    {'HELP_importAbaqusDat.m'                 }
+    {'HELP_importAnyBodyOutput.m'             }
+    {'HELP_importEleFile_tetGen.m'            }
+    {'HELP_importFEBio_logfile.m'             }
+    {'HELP_importFaceFile_tetGen.m'           }
+    {'HELP_importNodeFile_tetGen.m'           }
+    {'HELP_importTETGEN.m'                    }
+    {'HELP_import_FBG.m'                      }
+    {'HELP_import_FEB.m'                      }
+    {'HELP_import_FEB2.m'                     }
+    {'HELP_import_INP.m'                      }
+    {'HELP_import_STL.m'                      }
+    {'HELP_import_STL_bin.m'                  }
+    {'HELP_import_STL_txt.m'                  }
+    {'HELP_import_ctgr.m'                     }
+    {'HELP_import_obj.m'                      }
+    {'HELP_import_obj_geom.m'                 }
+    {'HELP_import_off.m'                      }
+    {'HELP_imrician.m'                        }
+    {'HELP_imsphere_IND_INT.m'                }
+    {'HELP_imx.m'                             }
+    {'HELP_inc2cumDisp.m'                     }
+    {'HELP_ind2logic.m'                       }
+    {'HELP_ind2patch.m'                       }
+    {'HELP_ind2subn.m'                        }
+    {'HELP_inddiag.m'                         }
+    {'HELP_inddisp2cumdisp.m'                 }
+    {'HELP_inferno.m'                         }
+    {'HELP_inputdlgStruct.m'                  }
+    {'HELP_insphere.m'                        }
+    {'HELP_interp1_ND.m'                      }
+    {'HELP_interpDirVec.m'                    }
+    {'HELP_interp_polar.m'                    }
+    {'HELP_interp_spherical.m'                }
+    {'HELP_intesselation.m'                   }
+    {'HELP_intriangle.m'                      }
+    {'HELP_inv_parbound.m'                    }
+    {'HELP_isConvexPolyhedron.m'              }
+    {'HELP_isGlobalSurfDirOutward.m'          }
+    {'HELP_isInsideTR.m'                      }
+    {'HELP_isPolyClockwise.m'                 }
+    {'HELP_isapprox.m'                        }
+    {'HELP_isclose.m'                         }
+    {'HELP_iseven.m'                          }
+    {'HELP_ishappy.m'                         }
+    {'HELP_isrounded.m'                       }
+    {'HELP_isrowmember.m'                     }
+    {'HELP_ivoigtMap.m'                       }
+    {'HELP_iwarmcold.m'                       }
+    {'HELP_joinElementSets.m'                 }
+    {'HELP_kabschRotationMatrix.m'            }
+    {'HELP_kelvinMap.m'                       }
+    {'HELP_kelvinUnMap.m'                     }
+    {'HELP_kronDelta.m'                       }
+    {'HELP_kvw.m'                             }
+    {'HELP_kwJet.m'                           }
+    {'HELP_lameInvertHookeOrthotropic.m'      }
+    {'HELP_laplacian_smoothing.m'             }
+    {'HELP_levelset2isosurface.m'             }
+    {'HELP_lineVec.m'                         }
+    {'HELP_linspacen.m'                       }
+    {'HELP_localRefineMap.m'                  }
+    {'HELP_loftLinQuad2hex.m'                 }
+    {'HELP_logic2isosurface.m'                }
+    {'HELP_logic2levelset.m'                  }
+    {'HELP_logic2subind.m'                    }
+    {'HELP_logicErodeDilate.m'                }
+    {'HELP_logicRemoveInterior.m'             }
+    {'HELP_logit.m'                           }
+    {'HELP_loremIpsum.m'                      }
+    {'HELP_mJet.m'                            }
+    {'HELP_magma.m'                           }
+    {'HELP_makeSymbolicStiffnessTensor.m'     }
+    {'HELP_mask_design.m'                     }
+    {'HELP_maskfind.m'                        }
+    {'HELP_maskimage.m'                       }
+    {'HELP_mat2strIntDouble.m'                }
+    {'HELP_matplotlibColormap.m'              }
+    {'HELP_maxDist.m'                         }
+    {'HELP_maxFig.m'                          }
+    {'HELP_maxnumel.m'                        }
+    {'HELP_mcol.m'                            }
+    {'HELP_meanValueCoordinates.m'            }
+    {'HELP_meanfilt3.m'                       }
+    {'HELP_medfilt3.m'                        }
+    {'HELP_mergeImageData.m'                  }
+    {'HELP_mergeImageSet.m'                   }
+    {'HELP_mergeVertices.m'                   }
+    {'HELP_mesh2tri.m'                        }
+    {'HELP_meshBoundary.m'                    }
+    {'HELP_meshCleave.m'                      }
+    {'HELP_meshDistMarch.m'                   }
+    {'HELP_meshView.m'                        }
+    {'HELP_mfv.m'                             }
+    {'HELP_minDist.m'                         }
+    {'HELP_minFig.m'                          }
+    {'HELP_minPolyTwist.m'                    }
+    {'HELP_mrow.m'                            }
+    {'HELP_multiRegionTriMesh2D.m'            }
+    {'HELP_multiRegionTriMeshUneven2D.m'      }
+    {'HELP_ndet.m'                            }
+    {'HELP_nonlinspace.m'                     }
+    {'HELP_nowStr.m'                          }
+    {'HELP_numConnect.m'                      }
+    {'HELP_numOrder.m'                        }
+    {'HELP_numReplace.m'                      }
+    {'HELP_oblique_mask.m'                    }
+    {'HELP_octa2tet.m'                        }
+    {'HELP_ongrid.m'                          }
+    {'HELP_orange.m'                          }
+    {'HELP_overobj2.m'                        }
+    {'HELP_padLinDim.m'                       }
+    {'HELP_padeven.m'                         }
+    {'HELP_padrep.m'                          }
+    {'HELP_parHipImplant.m'                   }
+    {'HELP_parLimNat.m'                       }
+    {'HELP_parasaurolophus.m'                 }
+    {'HELP_parbound.m'                        }
+    {'HELP_patch2EdgeIm.m'                    }
+    {'HELP_patch2Im.m'                        }
+    {'HELP_patch2STL.m'                       }
+    {'HELP_patch2edgeIND.m'                   }
+    {'HELP_patch2lattice.m'                   }
+    {'HELP_patch2obj.m'                       }
+    {'HELP_patch2tri.m'                       }
+    {'HELP_patchAnnotate.m'                   }
+    {'HELP_patchArea.m'                       }
+    {'HELP_patchBoundary.m'                   }
+    {'HELP_patchBoundaryLabelEdges.m'         }
+    {'HELP_patchCentre.m'                     }
+    {'HELP_patchCleanUnused.m'                }
+    {'HELP_patchClosedCylinder.m'             }
+    {'HELP_patchConnectivity.m'               }
+    {'HELP_patchCount.m'                      }
+    {'HELP_patchCurvature.m'                  }
+    {'HELP_patchCylSurfClose.m'               }
+    {'HELP_patchDetach.m'                     }
+    {'HELP_patchEdge2Im.m'                    }
+    {'HELP_patchEdgeAngles.m'                 }
+    {'HELP_patchEdgeCollapse.m'               }
+    {'HELP_patchEdgeCrossProduct.m'           }
+    {'HELP_patchEdgeLengths.m'                }
+    {'HELP_patchEdges.m'                      }
+    {'HELP_patchExtend.m'                     }
+    {'HELP_patchExtrude.m'                    }
+    {'HELP_patchFaceAngles.m'                 }
+    {'HELP_patchFeatureDetect.m'              }
+    {'HELP_patchIND.m'                        }
+    {'HELP_patchMarchDistMapIterative.m'      }
+    {'HELP_patchNanFix.m'                     }
+    {'HELP_patchNormPlot.m'                   }
+    {'HELP_patchNormal.m'                     }
+    {'HELP_patchNormalFix.m'                  }
+    {'HELP_patchPathAngles.m'                 }
+    {'HELP_patchPointDist.m'                  }
+    {'HELP_patchRemoveCollapsed.m'            }
+    {'HELP_patchSmooth.m'                     }
+    {'HELP_patchSmoothFaceMeasure.m'          }
+    {'HELP_patchThick.m'                      }
+    {'HELP_patchTorus.m'                      }
+    {'HELP_patchVectorTangent.m'              }
+    {'HELP_patchVolume.m'                     }
+    {'HELP_patch_area.m'                      }
+    {'HELP_patch_dual.m'                      }
+    {'HELP_patchcylinder.m'                   }
+    {'HELP_pathLength.m'                      }
+    {'HELP_pathSepFix.m'                      }
+    {'HELP_pdfView.m'                         }
+    {'HELP_pentaVol.m'                        }
+    {'HELP_pillowHex.m'                       }
+    {'HELP_plane_fit.m'                       }
+    {'HELP_plane_intersect.m'                 }
+    {'HELP_plasma.m'                          }
+    {'HELP_platonic_solid.m'                  }
+    {'HELP_plotContours.m'                    }
+    {'HELP_plotV.m'                           }
+    {'HELP_point2TriSurfDist.m'               }
+    {'HELP_pointAnnotate.m'                   }
+    {'HELP_pointCloudPrinDir.m'               }
+    {'HELP_pointLocationTR.m'                 }
+    {'HELP_pointLocationTR_parfor.m'          }
+    {'HELP_pointSetDistMap.m'                 }
+    {'HELP_pointSetPrincipalDir.m'            }
+    {'HELP_polar_loop_space.m'                }
+    {'HELP_polyCircularity.m'                 }
+    {'HELP_polyContourThick.m'                }
+    {'HELP_polyCurveLength.m'                 }
+    {'HELP_polyExtrude.m'                     }
+    {'HELP_polyLineIntersect.m'               }
+    {'HELP_polyLoftLinear.m'                  }
+    {'HELP_polyNormal.m'                      }
+    {'HELP_polyOrderDelaunay.m'               }
+    {'HELP_polyResample.m'                    }
+    {'HELP_polyRevolve.m'                     }
+    {'HELP_polySet2Im.m'                      }
+    {'HELP_polyTube.m'                        }
+    {'HELP_polyarea_signed.m'                 }
+    {'HELP_polycentroid.m'                    }
+    {'HELP_polythick.m'                       }
+    {'HELP_ppInv.m'                           }
+    {'HELP_pp_x_at_y.m'                       }
+    {'HELP_ppval_extrapVal.m'                 }
+    {'HELP_prin2effective.m'                  }
+    {'HELP_pround.m'                          }
+    {'HELP_publishHelpDocAll.m'               }
+    {'HELP_qginput.m'                         }
+    {'HELP_quad2tri.m'                        }
+    {'HELP_quad4_quad8.m'                     }
+    {'HELP_quadBox.m'                         }
+    {'HELP_quadPlate.m'                       }
+    {'HELP_quadSphere.m'                      }
+    {'HELP_quadSurfRemoveTwoConnect.m'        }
+    {'HELP_quadThick.m'                       }
+    {'HELP_quad_smooth.m'                     }
+    {'HELP_quadrep.m'                         }
+    {'HELP_quiver3Dpatch.m'                   }
+    {'HELP_quiverCurve.m'                     }
+    {'HELP_quiverTriad.m'                     }
+    {'HELP_quiverVec.m'                       }
+    {'HELP_randInCircle.m'                    }
+    {'HELP_randUnitVec.m'                     }
+    {'HELP_rand_angle.m'                      }
+    {'HELP_rayleighpdf.m'                     }
+    {'HELP_reactionDiffusionMesh.m'           }
+    {'HELP_read_gmsh.m'                       }
+    {'HELP_regionTriMesh2D.m'                 }
+    {'HELP_regionTriMesh3D.m'                 }
+    {'HELP_regionTriMeshRand2D.m'             }
+    {'HELP_remeshTriSurfDistMap.m'            }
+    {'HELP_removeNotIndexed.m'                }
+    {'HELP_resampleColormap.m'                }
+    {'HELP_rgbImage2ColorMap.m'               }
+    {'HELP_rhombicDodecahedron.m'             }
+    {'HELP_rhombicDodecahedronHex.m'          }
+    {'HELP_rhombicDodecahedronMesh.m'         }
+    {'HELP_rician_LMMSE_filter.m'             }
+    {'HELP_ricianpdf.m'                       }
+    {'HELP_rigidTransformVertices.m'          }
+    {'HELP_rigidTransformationMatrixDirect.m' }
+    {'HELP_rigidbody_transform.m'             }
+    {'HELP_rms.m'                             }
+    {'HELP_rot2VecAngle.m'                    }
+    {'HELP_rotate_vertices.m'                 }
+    {'HELP_rozenbrock.m'                      }
+    {'HELP_runGmsh.m'                         }
+    {'HELP_runMonitorFEBio.m'                 }
+    {'HELP_runTetGen.m'                       }
+    {'HELP_sampleCurveEvenly.m'               }
+    {'HELP_sawtoothWave.m'                    }
+    {'HELP_scalePatch.m'                      }
+    {'HELP_scancell.m'                        }
+    {'HELP_scatterV.m'                        }
+    {'HELP_scatter_stats.m'                   }
+    {'HELP_scf.m'                             }
+    {'HELP_scramble.m'                        }
+    {'HELP_seedIndex2triangulation.m'         }
+    {'HELP_selectBox.m'                       }
+    {'HELP_setFEBioPath.m'                    }
+    {'HELP_setViewProfile.m'                  }
+    {'HELP_set_output_request_FEBIO.m'        }
+    {'HELP_shear_bulk2poisson.m'              }
+    {'HELP_shear_poisson2bulk.m'              }
+    {'HELP_shiftV.m'                          }
+    {'HELP_sigmoid_pchip.m'                   }
+    {'HELP_simplexImIntersect.m'              }
+    {'HELP_sliceIntersectPatch.m'             }
+    {'HELP_smoothHeaviside.m'                 }
+    {'HELP_smoothSquareWave.m'                }
+    {'HELP_smoothTaubin.m'                    }
+    {'HELP_snap2grid.m'                       }
+    {'HELP_snapSubInd.m'                      }
+    {'HELP_spacing2numVertices.m'             }
+    {'HELP_sparseMin.m'                       }
+    {'HELP_sparseSphericalMask.m'             }
+    {'HELP_specialPointerShape.m'             }
+    {'HELP_spectral.m'                        }
+    {'HELP_sph.m'                             }
+    {'HELP_sphereIm.m'                        }
+    {'HELP_sphere_index.m'                    }
+    {'HELP_spheregrid.m'                      }
+    {'HELP_spinodoid.m'                       }
+    {'HELP_splitCurveSetMesh.m'               }
+    {'HELP_splitVertices.m'                   }
+    {'HELP_spmax.m'                           }
+    {'HELP_spmin.m'                           }
+    {'HELP_squircle.m'                        }
+    {'HELP_sround.m'                          }
+    {'HELP_stanford_bunny.m'                  }
+    {'HELP_stochasticMicrostructure.m'        }
+    {'HELP_struct2txt.m'                      }
+    {'HELP_structComplete.m'                  }
+    {'HELP_strwrap.m'                         }
+    {'HELP_sub2indn.m'                        }
+    {'HELP_subCurve.m'                        }
+    {'HELP_subEdge.m'                         }
+    {'HELP_subHex.m'                          }
+    {'HELP_subImage.m'                        }
+    {'HELP_subPenta.m'                        }
+    {'HELP_subQuad.m'                         }
+    {'HELP_subQuadCatmullClark.m'             }
+    {'HELP_subTet.m'                          }
+    {'HELP_subTriCentre.m'                    }
+    {'HELP_subTriDual.m'                      }
+    {'HELP_subTriLocal.m'                     }
+    {'HELP_subTriLoop.m'                      }
+    {'HELP_subtri.m'                          }
+    {'HELP_surf_slice.m'                      }
+    {'HELP_surfacePairIntersect.m'            }
+    {'HELP_surface_intersect.m'               }
+    {'HELP_sv2.m'                             }
+    {'HELP_sv3.m'                             }
+    {'HELP_sweepCurveBezier.m'                }
+    {'HELP_sweepCurveSmooth.m'                }
+    {'HELP_sweepLoft.m'                       }
+    {'HELP_tensor2voigtMap.m'                 }
+    {'HELP_tensorArray2tensorCell.m'          }
+    {'HELP_tesBoundary.m'                     }
+    {'HELP_tesIND.m'                          }
+    {'HELP_tesSmooth.m'                       }
+    {'HELP_tesSmoothPosNeg.m'                 }
+    {'HELP_tesSmooth_HC.m'                    }
+    {'HELP_tesSmooth_LAP.m'                   }
+    {'HELP_tesgrid.m'                         }
+    {'HELP_tesgroup.m'                        }
+    {'HELP_testGibbon.m'                      }
+    {'HELP_tet2hex.m'                         }
+    {'HELP_tet4_tet10.m'                      }
+    {'HELP_tetMeshBox.m'                      }
+    {'HELP_tetVol.m'                          }
+    {'HELP_tetVolMeanEst.m'                   }
+    {'HELP_textImage.m'                       }
+    {'HELP_textView.m'                        }
+    {'HELP_tform.m'                           }
+    {'HELP_thetaphi2DCM.m'                    }
+    {'HELP_thetaphi2vec.m'                    }
+    {'HELP_tri2quad.m'                        }
+    {'HELP_tri2quadGroupSplit.m'              }
+    {'HELP_tri2rhombi.m'                      }
+    {'HELP_tri3_tri6.m'                       }
+    {'HELP_tri6_subtri3.m'                    }
+    {'HELP_triBox.m'                          }
+    {'HELP_triEdgeSplit.m'                    }
+    {'HELP_triIncenter.m'                     }
+    {'HELP_triLinearTet_F.m'                  }
+    {'HELP_triLinearTri_F.m'                  }
+    {'HELP_triLinearTri_F2D.m'                }
+    {'HELP_triMeshEquilateral.m'              }
+    {'HELP_triPatchSmoothRayTraced.m'         }
+    {'HELP_triPolyDualRefine.m'               }
+    {'HELP_triRemeshLabel.m'                  }
+    {'HELP_triSurf2Im.m'                      }
+    {'HELP_triSurf2ImSpec.m'                  }
+    {'HELP_triSurfCentroid.m'                 }
+    {'HELP_triSurfCloseHoles.m'               }
+    {'HELP_triSurfLogicSharpFix.m'            }
+    {'HELP_triSurfPermuteColor.m'             }
+    {'HELP_triSurfRayTrace.m'                 }
+    {'HELP_triSurfRemoveThreeConnect.m'       }
+    {'HELP_triSurfSelfTriangulateBoundary.m'  }
+    {'HELP_triSurfSetDist.m'                  }
+    {'HELP_triSurfSlice.m'                    }
+    {'HELP_triSurfSmoothFourier.m'            }
+    {'HELP_triSurfSplitBoundary.m'            }
+    {'HELP_triSurfVolume.m'                   }
+    {'HELP_triThick.m'                        }
+    {'HELP_tri_area.m'                        }
+    {'HELP_triangleRayIntersection.m'         }
+    {'HELP_triangleWave.m'                    }
+    {'HELP_triangle_wave.m'                   }
+    {'HELP_trigradient.m'                     }
+    {'HELP_trinorm.m'                         }
+    {'HELP_triplet_find.m'                    }
+    {'HELP_triplyPeriodicMinimal.m'           }
+    {'HELP_triplyPeriodicMinimalSurface.m'    }
+    {'HELP_trisurf_intersect.m'               }
+    {'HELP_trisurfsmooth.m'                   }
+    {'HELP_trisurfsmoothHC.m'                 }
+    {'HELP_truncatePolyhedra.m'               }
+    {'HELP_truncatedOctahedron.m'             }
+    {'HELP_truncatedOctahedronMesh.m'         }
+    {'HELP_turbo.m'                           }
+    {'HELP_txt2struct.m'                      }
+    {'HELP_txtfile2cell.m'                    }
+    {'HELP_uiThreshErode.m'                   }
+    {'HELP_ukr.m'                             }
+    {'HELP_uniqueIntegerRow.m'                }
+    {'HELP_unique_map.m'                      }
+    {'HELP_unique_patch.m'                    }
+    {'HELP_unpadeven.m'                       }
+    {'HELP_unsharp.m'                         }
+    {'HELP_unzipAll.m'                        }
+    {'HELP_utah_teapot.m'                     }
+    {'HELP_var2cellstr.m'                     }
+    {'HELP_vcw.m'                             }
+    {'HELP_vec2strIntDouble.m'                }
+    {'HELP_vecAngle2Rot.m'                    }
+    {'HELP_vecPair2Rot.m'                     }
+    {'HELP_vecPairClosestPoint.m'             }
+    {'HELP_vec_normalize.m'                   }
+    {'HELP_vecnormalize.m'                    }
+    {'HELP_vectorOrthogonalPair.m'            }
+    {'HELP_vectorTensorProductArray.m'        }
+    {'HELP_vertexToFaceMeasure.m'             }
+    {'HELP_viewFourthOrderTensor.m'           }
+    {'HELP_viridis.m'                         }
+    {'HELP_voigtMap.m'                        }
+    {'HELP_voigtUnMap.m'                      }
+    {'HELP_vonMisesStat.m'                    }
+    {'HELP_vorMap2triSurf.m'                  }
+    {'HELP_voxelDistMarch.m'                  }
+    {'HELP_voxelate.m'                        }
+    {'HELP_waitForValidButtonPress.m'         }
+    {'HELP_warmcold.m'                        }
+    {'HELP_wcbp.m'                            }
+    {'HELP_wjet.m'                            }
+    {'HELP_wmean.m'                           }
+    {'HELP_writeBasicSmesh.m'                 }
+    {'HELP_writeMtrFile_tetGen.m'             }
+    {'HELP_writeNodeFile_tetGen.m'            }
+    {'HELP_write_FEB_input.m'                 }
+    {'HELP_write_XML_no_extra_lines.m'        }
+    {'HELP_xmlView.m'                         }
+
+</pre><p>Get a list of all DEMO files</p><pre class="codeinput">[testFileList]=getTestFiles(<span class="string">'DEMO'</span>)
+</pre><pre class="codeoutput">
+testFileList =
+
+  107&times;1 cell array
+
+    {'DEMO_JOSS_logo.m'                                            }
+    {'DEMO_Jansen_linkage_animation_01.m'                          }
+    {'DEMO_MixedTetHexMeshing.m'                                   }
+    {'DEMO_MixedTetHexMeshing_torus.m'                             }
+    {'DEMO_abaqus_0001_cube_uniaxial.m'                            }
+    {'DEMO_abaqus_0002_blob_shear_contact.m'                       }
+    {'DEMO_abaqus_0003_cylinder_inflate.m'                         }
+    {'DEMO_additional_colormaps.m'                                 }
+    {'DEMO_aorta_build_passive_01.m'                               }
+    {'DEMO_febio_0001_cube_uniaxial.m'                             }
+    {'DEMO_febio_0002_beam_force.m'                                }
+    {'DEMO_febio_0003_beam_bending.m'                              }
+    {'DEMO_febio_0004_beam_twist.m'                                }
+    {'DEMO_febio_0005_cube_tension_compression_shear.m'            }
+    {'DEMO_febio_0006_sphere_indentation.m'                        }
+    {'DEMO_febio_0007_sphere_sliding.m'                            }
+    {'DEMO_febio_0008_cube_body_load.m'                            }
+    {'DEMO_febio_0009_cube_discrete_springs.m'                     }
+    {'DEMO_febio_0010_trabeculae_compression.m'                    }
+    {'DEMO_febio_0011_cube_multi_generation.m'                     }
+    {'DEMO_febio_0012_disc_pressure.m'                             }
+    {'DEMO_febio_0013_disc_pressure_varying.m'                     }
+    {'DEMO_febio_0014_cube_varying_material.m'                     }
+    {'DEMO_febio_0015_cube_fibers_transiso.m'                      }
+    {'DEMO_febio_0016_cube_viscoelastic_ramp_hold.m'               }
+    {'DEMO_febio_0017_cube_viscoelastic_load_unload.m'             }
+    {'DEMO_febio_0018_cube_poroelastic_ramp_hold.m'                }
+    {'DEMO_febio_0019_vessel_pressure_inflate.m'                   }
+    {'DEMO_febio_0020_vessel_balloon_inflate.m'                    }
+    {'DEMO_febio_0021_bone_three_point_bending.m'                  }
+    {'DEMO_febio_0022_multigen_interface_band.m'                   }
+    {'DEMO_febio_0023_beam_gravity_body_load.m'                    }
+    {'DEMO_febio_0024_active_contraction_tongue.m'                 }
+    {'DEMO_febio_0025_cube_uniaxial_stiffness_analysis.m'          }
+    {'DEMO_febio_0026_hexlattice_compression.m'                    }
+    {'DEMO_febio_0027_layer_spatially_varying_material.m'          }
+    {'DEMO_febio_0028_sphere_indentation_friction_twist.m'         }
+    {'DEMO_febio_0029_contact_friction_benchmark_boxes.m'          }
+    {'DEMO_febio_0030_block_varying_nodal_forces.m'                }
+    {'DEMO_febio_0031_blob_shear_contact.m'                        }
+    {'DEMO_febio_0032_sphere_tube_slide.m'                         }
+    {'DEMO_febio_0033_sphere_tube_slide_body_force.m'              }
+    {'DEMO_febio_0034_sphere_cone_slide_body_force.m'              }
+    {'DEMO_febio_0035_blob_shear_contact_hex8.m'                   }
+    {'DEMO_febio_0036_sphere_branches_slide_body_force.m'          }
+    {'DEMO_febio_0037_lattice_test_octet_truss_01.m'               }
+    {'DEMO_febio_0038_cube_uniaxial_HGO.m'                         }
+    {'DEMO_febio_0039_nut_bolt_ring.m'                             }
+    {'DEMO_febio_0040_propeller_contact.m'                         }
+    {'DEMO_febio_0041_beam_L_force.m'                              }
+    {'DEMO_febio_0042_inverse_FEA_cube_uniaxial.m'                 }
+    {'DEMO_febio_0043_pyra5_element.m'                             }
+    {'DEMO_febio_0044_mammography_01.m'                            }
+    {'DEMO_febio_0045_tentacle_active_contraction_01.m'            }
+    {'DEMO_febio_0047_cylinder_embedded_probe_01.m'                }
+    {'DEMO_febio_0049_gap_close_01.m'                              }
+    {'DEMO_febio_0050_foot_insole_01.m'                            }
+    {'DEMO_febio_0051_hip_implant_01.m'                            }
+    {'DEMO_febio_0052_breast_gap_close_01.m'                       }
+    {'DEMO_febio_0054_lattice_hydrostatic_01.m'                    }
+    {'DEMO_febio_0056_cylinder_embedded_probe_02.m'                }
+    {'DEMO_febio_0057_diamond_lattice_compression_01.m'            }
+    {'DEMO_febio_0058_face_tube_loading.m'                         }
+    {'DEMO_febio_0059_face_mask_loading.m'                         }
+    {'DEMO_febio_0060_vertebrae_disc_01.m'                         }
+    {'DEMO_febio_0061_breast_gravity_01.m'                         }
+    {'DEMO_febio_0062_femur_load_01.m'                             }
+    {'DEMO_febio_0063_custom_hip_implant_01.m'                     }
+    {'DEMO_febio_0065_clamp_tension_test.m'                        }
+    {'DEMO_febio_0066_clamp_tension_test_friction.m'               }
+    {'DEMO_febio_0067_hip_implant_regional_stiffness_optimize_01.m'}
+    {'DEMO_febio_0068_roll_self_contact_01.m'                      }
+    {'DEMO_febio_0069_must_points_export.m'                        }
+    {'DEMO_febio_0070_pneunet_actuator_simple_01.m'                }
+    {'DEMO_febio_0071_pneunet_actuator_set_01.m'                   }
+    {'DEMO_febio_0072_pneunet_actuator_set_disp_01.m'              }
+    {'DEMO_febio_0073_deformable_cylinders_contact_01.m'           }
+    {'DEMO_febio_0074_vertebrae_compression_01.m'                  }
+    {'DEMO_febio_0075_cube_donnan_equilibrium_swelling_01.m'       }
+    {'DEMO_febio_0076_actuator_donnan_equilibrium_swelling_01.m'   }
+    {'DEMO_febio_0077_cube_perfect_osmometer_01.m'                 }
+    {'DEMO_febio_0078_actuator_perfect_osmometer_01.m'             }
+    {'DEMO_febio_0079_tire_load_01.m'                              }
+    {'DEMO_febio_0080_kirigami_gripper_01.m'                       }
+    {'DEMO_febio_0081_interface_tear_sticky_01.m'                  }
+    {'DEMO_febio_0081_kresling_unit_01.m'                          }
+    {'DEMO_febio_0082_kresling_unit_subtri_01.m'                   }
+    {'DEMO_febio_0083_kresling_unit_regiontrimesh_02.m'            }
+    {'DEMO_febio_0084_kresling_unit_shell_03.m'                    }
+    {'DEMO_febio_0085_soft_robotic_star_01.m'                      }
+    {'DEMO_febio_0086_earbud_insert_01.m'                          }
+    {'DEMO_geodesic_remeshing.m'                                   }
+    {'DEMO_heart_contours_hex_mesh_warping_01.m'                   }
+    {'DEMO_imx_levelset_surface_compare.m'                         }
+    {'DEMO_mesh_bifurcation_angle_control.m'                       }
+    {'DEMO_mesh_bifurcation_cut_loft_branch.m'                     }
+    {'DEMO_obj_resample_texture.m'                                 }
+    {'DEMO_stent_design_sigmoid_01.m'                              }
+    {'DEMO_stent_hexahedral_sweeping.m'                            }
+    {'DEMO_stent_hexahedral_sweeping_02.m'                         }
+    {'DEMO_surface_smooth_methods.m'                               }
+    {'DEMO_visualization_von_mises_plasticity_01.m'                }
+    {'DEMO_volumetric_SED_eval.m'                                  }
+    {'WIP_DEMO_febio_00XX_fsi_bifurcation.m'                       }
+    {'WIP_DEMO_febio_00XX_fsi_straight_tube.m'                     }
+    {'WIP_DEMO_gmsh_febio.m'                                       }
+    {'WIP_DEMO_gmsh_meshing.m'                                     }
+
+</pre><p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2006-2023 Kevin Mattheus Moerman and the GIBBON contributors</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2023a</a><br></p></div><!--
+##### SOURCE BEGIN #####
+%% getTestFiles
+% Below is a demonstration of the features of the |getTestFiles| function
+
+%%
+clear; close all; clc;
+
+%% Syntax
+% |[testFileList]=getTestFiles(testSet);|
+
+%% Description 
+% This function returns the GIBBON files that can be run to test/publish
+% GIBBON. If the testSet input is set to 'HELP' then all files named
+% HELP_... are returned. Similarly using testSet='DEMO' returns all demo
+% files. This allows one to loop over all systematically. 
+
+%% Examples 
+% 
+
+%%
+% Get a list of all HELP files
+[testFileList]=getTestFiles('HELP')
+
+%%
+% Get a list of all DEMO files
+[testFileList]=getTestFiles('DEMO')
+
+%%
+% 
+% <<gibbVerySmall.gif>>
+% 
+% _*GIBBON*_ 
+% <www.gibboncode.org>
+% 
+% _Kevin Mattheus Moerman_, <gibbon.toolbox@gmail.com>
+%% 
+% _*GIBBON footer text*_ 
+% 
+% License: <https://github.com/gibbonCode/GIBBON/blob/master/LICENSE>
+% 
+% GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for
+% image segmentation, image-based modeling, meshing, and finite element
+% analysis.
+% 
+% Copyright (C) 2006-2023 Kevin Mattheus Moerman and the GIBBON contributors
+% 
+% This program is free software: you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation, either version 3 of the License, or
+% (at your option) any later version.
+% 
+% This program is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+% 
+% You should have received a copy of the GNU General Public License
+% along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+##### SOURCE END #####
+--></body></html>

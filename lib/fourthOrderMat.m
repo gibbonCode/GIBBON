@@ -1,5 +1,10 @@
 function [CM]=fourthOrderMat(C)
 
+% function [CM]=fourthOrderMat(C)
+% ------------------------------------------------------------------------
+% Converts a 3x3x3x3 4th order tensor to a 9x9 matrix
+% ------------------------------------------------------------------------
+
 ind_C_all=1:numel(C);
 [I,J,K,L]=ind2sub(size(C),ind_C_all);
 

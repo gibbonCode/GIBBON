@@ -1,5 +1,13 @@
 function cMap=gjet(varargin)
+% function cMap=gjet(varargin)
+% ------------------------------------------------------------------------
+% Outputs the RGB colors for the gjet colormap. 
+%
+% ------------------------------------------------------------------------
 
+%% 
+
+%Parse input
 switch nargin
     case 0
         n=250;
@@ -7,13 +15,17 @@ switch nargin
         n=varargin{1};
 end
 
+%Define colormap
 cMap=[51  105 232;... %Blue
       0   153 37;... %Green
       238 178 17;... %Yelow
       213 15  37;... %red
     ];
-cMap=cMap./255;
 
+%Scale RGB values to range [0 1]
+cMap=cMap./255; 
+
+%Resample if needed
 [cMap]=resampleColormap(cMap,n);
  
 %% 

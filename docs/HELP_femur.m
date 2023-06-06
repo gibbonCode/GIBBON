@@ -8,9 +8,25 @@ clear; close all; clc;
 % |[F,V]=femur;|
 
 %% Description 
-% UNDOCUMENTED 
+% This function creates the patch data (the faces F and the vertices V) for
+% a femur model. 
+%
+% See also |graphicsModels|
+
 %% Examples 
 % 
+
+% Get patch data for femur
+[F,V]=femur; 
+
+%%
+% Visualization
+
+cFigure; 
+gpatch(F,V);
+axisGeom; camlight headlight;
+gdrawnow; 
+
 %%
 % 
 % <<gibbVerySmall.gif>>

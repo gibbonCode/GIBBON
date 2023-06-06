@@ -78,7 +78,7 @@ clear; close all; clc;
 % structure see the various FEBio demos provided. 
 
 %% Set febio_spec version
-febio_spec.ATTR.version='3.0';
+febio_spec.ATTR.version='4.0';
 
 %% Module section
 % XML syntax example:

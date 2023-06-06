@@ -18,8 +18,8 @@ hf=cFigure; %Open figure
 
 %%
 
-V=febio_spec.Geometry.Nodes{1}.node.VAL;
-E_cell=febio_spec.Geometry.Elements;
+V=febio_spec.Mesh.Nodes{1}.node.VAL;
+E_cell=febio_spec.Mesh.Elements;
 
 %%
 
@@ -29,14 +29,9 @@ nodalDisplacementAll=zeros(size(V));
 for q=1:1:numel(nodeDataCellAll)
     dataTypeString=nodeDataCellAll{q}.ATTR.data;
     if strcmp(dataTypeString,'ux;uy;uz')
-        [~,nodalDisplacementAll,~]=importFEBio_logfile(fullfile(pathName,nodeDataCellAll{q}.ATTR.file)); %Import data
+        dataStruct=importFEBio_logfile(fullfile(pathName,nodeDataCellAll{q}.ATTR.file),0,1); %Import data
         
-        nodalDisplacementAll=nodalDisplacementAll(:,2:end,:);
-        sizImport=size(nodalDisplacementAll);
-        sizImport(3)=sizImport(3)+1;
-        dataArray_n=zeros(sizImport);
-        dataArray_n(:,:,2:end)=nodalDisplacementAll;
-        nodalDisplacementAll=dataArray_n;
+        nodalDisplacementAll=dataStruct.data;
         U_end=nodalDisplacementAll(:,:,end);
         U_mag=sqrt(sum(U_end(:,3).^2,2));
         V_def=V+U_end;       
@@ -56,8 +51,8 @@ hf.UserData.febioOutputView.ht=gtitle(' - '); %Figure axis title
 handleSet=gobjects(1,numel(E_cell));
 for q=1:1:numel(E_cell)
     
-    elementsNow=febio_spec.Geometry.Elements{q}.elem.VAL;
-    elementTypeNow=febio_spec.Geometry.Elements{1}.ATTR.type;
+    elementsNow=febio_spec.Mesh.Elements{q}.elem.VAL;
+    elementTypeNow=febio_spec.Mesh.Elements{1}.ATTR.type;
     
     if any(strcmp(elementTypeNow,{'tri3','tri6','tri7','quad4','quad8'})) %Surface elements
         facesNow=elementsNow;
@@ -77,7 +72,7 @@ if abs(cLim(2)-cLim(1))<eps(1)
     cLim(2)=cLim(2)+1;
 end
 hf.UserData.febioOutputView.cLim=cLim;
-caxis(cLim);
+clim(cLim);
 VV=[V;V_def];
 axis([min(VV(:,1)) max(VV(:,1)) min(VV(:,2)) max(VV(:,2)) min(VV(:,3)) max(VV(:,3))]); %Set axis limits statically
 camlight headlight;
@@ -86,45 +81,42 @@ hf.UserData.febioOutputView.handleSet=handleSet;
 
 
 %%
-        
-outputDataCellAll=febio_spec.Output.logfile.node_data;
-if isfield(febio_spec.Output.logfile,'element_data')
-    outputDataCellAll=[outputDataCellAll febio_spec.Output.logfile.element_data];
-end
-
 
 popUpString=cell(1,1);
 %Initialize with displacement magnitude
 popUpString{1}='um';
 hf.UserData.febioOutputView.data.um=nodalDisplacementMagnitudeAll;
 
-for q=1:1:numel(outputDataCellAll)
-    
-    dataTypeString=outputDataCellAll{q}.ATTR.data;
-    dataTypeSet=strsplit(dataTypeString,';');
-    
-    [timeVec,dataArray,~]=importFEBio_logfile(fullfile(pathName,outputDataCellAll{q}.ATTR.file)); %Import data
-    dataArray=dataArray(:,2:end,:);
-    sizImport=size(dataArray);
-    sizImport(3)=sizImport(3)+1;
-    dataArray_n=zeros(sizImport);
-    dataArray_n(:,:,2:end)=dataArray;
-    dataArray=dataArray_n;
-    
-    for qSet=1:1:numel(dataTypeSet)
-        dataTypeStringNow=dataTypeSet{qSet};
-        popUpString{end+1}=dataTypeStringNow;
-        dataNow=dataArray(:,qSet,:);
-        switch dataTypeStringNow
-            case 'J' %Volume ratio
-                dataNow(:,:,1)=1; %set initial to ones
+outputTypeSet={'node_data','element_data'};
+for qType=1:1:numel(outputTypeSet)
+    if isfield(febio_spec.Output.logfile,outputTypeSet{qType})
+
+        dataFileSetStruct=febio_spec.Output.logfile.(outputTypeSet{qType});
+
+        for q=1:1:numel(dataFileSetStruct)
+            dataTypeString=dataFileSetStruct{q}.ATTR.data;
+            dataTypeSet=strsplit(dataTypeString,';');
+
+            dataStruct=importFEBio_logfile(fullfile(pathName,dataFileSetStruct{q}.ATTR.file),0,1); %Import data
+            timeVec=dataStruct.time;
+            dataArray=dataStruct.data;
+
+            for qSet=1:1:numel(dataTypeSet)
+                dataTypeStringNow=dataTypeSet{qSet};
+                popUpString{end+1}=dataTypeStringNow;
+                dataNow=dataArray(:,qSet,:);
+                switch outputTypeSet
+                    case 'node_data'
+                        hf.UserData.febioOutputView.data.(dataTypeStringNow)=dataNow;
+                    case 'element_data'
+                        hf.UserData.febioOutputView.data.(dataTypeStringNow)=dataNow;
+                end
+            end
+
         end
-        hf.UserData.febioOutputView.data.(dataTypeStringNow)=dataNow;
-    end    
 
+    end
 end
-
-timeVec=[0; timeVec(:)]; %Time
 
 %%
 
@@ -244,7 +236,7 @@ hf.UserData.febioOutputView.colorData=hf.UserData.febioOutputView.data.(dataType
 
 updateFaceColor(hf);
 
-caxis(hf.UserData.febioOutputView.cLim);
+clim(hf.UserData.febioOutputView.cLim);
 drawnow;
 
 end

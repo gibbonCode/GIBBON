@@ -1,6 +1,10 @@
 function [C]=grayColor(varargin)
 
 % function [C]=grayColor(colorLevels)
+% ------------------------------------------------------------------------
+% Outputs the RGB values for a grey color at the intensity level
+% colorLevels. 
+% ------------------------------------------------------------------------
 
 %%
 switch nargin
@@ -11,8 +15,9 @@ switch nargin
 end
 
 %%
-colorLevels=colorLevels(:); %Force as column
+colorLevels=mcol(colorLevels); %Force as column
 C=colorLevels(:,ones(1,3));
+
 %% 
 % _*GIBBON footer text*_ 
 % 

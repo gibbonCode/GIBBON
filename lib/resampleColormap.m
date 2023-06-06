@@ -1,6 +1,6 @@
-function [cmap_i]=resampleColormap(cmap,n)
+function [cMap_i]=resampleColormap(cMap,n)
 
-% function [cmap_i]=resampleColormap(cmap,n)
+% function [cMap_i]=resampleColormap(cMap,n)
 % ------------------------------------------------------------------------
 %
 % This function resamples the input colormap cmap using n steps. Resampling
@@ -11,26 +11,51 @@ function [cmap_i]=resampleColormap(cmap,n)
 %
 % Change log:
 % 2014/09/25
-% 2018/06/13 Added handling of single color colormap
+% 2018/06/13 KMM: Added handling of single color colormap
+% 2023/906/06 KMM: Added L,a,b colorspace based interpolation 
 %------------------------------------------------------------------------
 
 %%
 
-if n~=size(cmap,1) %If resampling is required
-    if size(cmap,1)==1        
-        cmap_i=cmap(ones(n,1),:);
+%Get range
+maxC=max(cMap(:));
+minC=min(cMap(:));
+
+%Resample colormap
+if n~=size(cMap,1) %If resampling is required
+
+    % Attempt conversion to L,a,b color space for homogeneous interpolation
+    try
+        cMap=rgb2lab(cMap); %Convert RGB to L,a,b color space
+    catch
+        %waring('rgb2lab and/or lab2rgb not found, using RGB based interpolation ')
+    end
+
+    if size(cMap,1)==1        
+        cMap_i=cMap(ones(n,1),:);
     else
-        ind=(1:1:size(cmap,1))';
-        ind_i=linspace(1,size(cmap,1),n)';
-        cmap_i=zeros(n,size(cmap,2));
+        ind=(1:1:size(cMap,1))';
+        ind_i=linspace(1,size(cMap,1),n)';
+        cMap_i=zeros(n,size(cMap,2));
         
         %Interpolate color data
-        for q=1:1:size(cmap,2)
-            cmap_i(:,q)=interp1(ind,cmap(:,q),ind_i,'linear');
+        for q=1:1:size(cMap,2)
+            cMap_i(:,q)=interp1(ind,cMap(:,q),ind_i,'linear');
         end
     end
+
+    %Attempt conversion from L,a,b to RGB
+    try
+        cMap_i=lab2rgb(cMap_i); %Convert back to RGB from L,a,b color space
+
+        %Fix minor overshoot (e.g. due to numerical precission)
+        cMap_i(cMap_i>maxC)=maxC;
+        cMap_i(cMap_i<minC)=minC;
+    catch
+        %waring('rgb2lab and/or lab2rgb not found, using RGB based interpolation ')
+    end
 else
-    cmap_i=cmap;
+    cMap_i=cMap;
 end
 
 %% 

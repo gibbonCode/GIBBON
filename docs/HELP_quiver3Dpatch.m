@@ -13,7 +13,7 @@ edgeColor1='none';
 edgeColor2='none';
 cMap1=gjet(250);
 cMap2=gray(250);
-fontSize=8; 
+fontSize=15; 
 
 %% Plotting a vector
 % Below is a visualisation of the basec vector style
@@ -30,11 +30,10 @@ a=[min(G(:)) max(G(:))]; %Arrow length scaling to magnitude range
 
 cFigure;
 title('Basic vector style using 7 vertices and 6 faces');
-xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize);zlabel('Z','FontSize',fontSize);
-patch('Faces',F1,'Vertices',V1,'EdgeColor','k', 'CData',C1,'FaceColor','flat','FaceAlpha',0.5,'Marker','.','MarkerSize',25); 
-colormap(cMap1); colorbar; caxis(cLim);
-view(3); grid on; axis equal; axis tight; axis vis3d; 
-set(gca,'FontSize',fontSize);
+gpatch(F1,V1,C1);
+colormap(cMap1); colorbar; clim(cLim);
+axisGeom(gca,fontSize); 
+drawnow; 
 
 %% Defining vector lengths and colours
 
@@ -48,40 +47,32 @@ a=[min(G(:)) max(G(:))]; %Arrow length scaling to magnitude range
 Cv=zeros(size(X));
 [F3,V3,C3]=quiver3Dpatch(X,Y,Z,u,v,w,Cv,a);
 
-C4=gray2RGBColorMap(C3,cMap2,cLim);
+C4=cmaperise(C3,cMap2,cLim);
 
 cFigure;
 subplot(2,2,1);
-title('Vector with length and color according to magnitude');
-xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize);zlabel('Z','FontSize',fontSize);
-patch('Faces',F1,'Vertices',V1,'EdgeColor','k', 'CData',C1,'FaceColor','flat','FaceAlpha',1); 
-colormap(cMap1); colorbar; caxis(cLim);
-view(3); grid on; axis equal; axis tight; axis vis3d; 
-set(gca,'FontSize',fontSize);
+title('Length+color according to magnitude');
+gpatch(F1,V1,C1);
+colormap(gca,cMap1); colorbar; clim(cLim);
+axisGeom(gca,fontSize); 
 
 subplot(2,2,2);
-title('Vector with a scaled length but color according to magnitude');
-xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize);zlabel('Z','FontSize',fontSize);
-patch('Faces',F2,'Vertices',V2,'EdgeColor','k', 'CData',C2,'FaceColor','flat','FaceAlpha',1); 
-colormap(cMap1); colorbar; caxis(cLim);
-view(3); grid on; axis equal; axis tight; axis vis3d; 
-set(gca,'FontSize',fontSize);
+title('Scaled length, color according to magnitude');
+gpatch(F2,V2,C2);
+colormap(gca,cMap1); colorbar; clim(cLim);
+axisGeom(gca,fontSize); 
 
 subplot(2,2,3);
-title('Vector with length according to magnitude a user specified colormapo driven color');
-xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize);zlabel('Z','FontSize',fontSize);
-patch('Faces',F3,'Vertices',V3,'EdgeColor','k', 'CData',C3,'FaceColor','flat','FaceAlpha',1); 
-colormap(cMap1); colorbar; caxis(cLim);
-view(3); grid on; axis equal; axis tight; axis vis3d; 
-set(gca,'FontSize',fontSize);
+title('Length according to magnitude, colormap driven color');
+gpatch(F3,V3,C3);
+colormap(gca,cMap1); colorbar; clim(cLim);
+axisGeom(gca,fontSize); 
 
 subplot(2,2,4);
-title('Vector with length according to magnitude and user specified RGB driven color');
-xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize);zlabel('Z','FontSize',fontSize);
-patch('Faces',F3,'Vertices',V3,'EdgeColor','k', 'FaceVertexCData',C4,'FaceColor','flat','FaceAlpha',1); 
-view(3); grid on; axis equal; axis tight; axis vis3d; 
-set(gca,'FontSize',fontSize);
-camlight headlight; lighting phong
+title('Length according to magnitude, RGB driven color');
+gpatch(F3,V3,C4);
+colormap(gca,cMap1); colorbar; clim(cLim);
+axisGeom(gca,fontSize); 
 drawnow;
 
 %% Example visualising coordinate system base vectors
@@ -98,27 +89,12 @@ C2=[5 4 3];
 [Fc2,Vc2,Cc2]=quiver3Dpatch(originBasis2(1)*ones(1,3), originBasis2(2)*ones(1,3), originBasis2(3)*ones(1,3),E2(:,1),E2(:,2),E2(:,3),C2',[1 1]);
 
 cFigure;
-xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize);zlabel('Z','FontSize',fontSize);
 title('Visualizing base vectors','FontSize',fontSize);
-hp1=patch('Faces',Fc1,'Vertices',Vc1,'EdgeColor','k','FaceColor','flat','FaceVertexCData',Cc1,'FaceAlpha',1); hold on;
-hp1=patch('Faces',Fc2,'Vertices',Vc2,'EdgeColor','k','FaceColor','flat','FaceVertexCData',Cc2,'FaceAlpha',0.5); hold on;
-view(3); grid on; axis equal; axis vis3d; view([137.5,24]);
-set(gca,'FontSize',fontSize);
-colormap jet; 
+gpatch(Fc1,Vc1,Cc1,'k',1);
+gpatch(Fc1,Vc1,Cc1,'k',0.5);
+colormap(cMap1); colorbar; clim(cLim);
+axisGeom(gca,fontSize); view([137.5,24]);
 drawnow;
-
-%% Example visualising face normals of patch data
-cFigure;
-[Fs,Vs,~]=geoSphere(2,1);
-title('Displaying face normals','FontSize',fontSize);
-hp=patch('Faces',Fs,'Vertices',Vs,'FaceColor','g');
-
-%Plotting face normals
-[hn]=patchNormPlot(Fs,Vs,0.3);
-
-set(gca,'FontSize',fontSize);
-view(3); axis tight;  axis equal;  axis vis3d; axis off;
-camlight('headlight'); lighting flat;
 
 %% Example for multidimensional image data 1: colormap driven vectors combined with RGB driven iso-surfaces
 
@@ -144,19 +120,16 @@ L=G>0.9; %Logic indices for arrows
 [Fv,Vv,Cv]=quiver3Dpatch(X(L),Y(L),Z(L),u(L),v(L),w(L),G(L),a);
 
 cLim=[min(M(:)) max(M(:))]; %Colorbar limits
-[Ci1n]=gray2RGBColorMap(Ci1,cMap2,cLim);
-[Ci2n]=gray2RGBColorMap(Ci2,cMap2,cLim);
+[Ci1n]=cmaperise(Ci1,cMap2,cLim);
+[Ci2n]=cmaperise(Ci2,cMap2,cLim);
 
-cFigure;
-xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize);zlabel('Z','FontSize',fontSize);
+cFigure; hold on; 
 title('Colormap driven vector colors and RGB driven isosurfaces','FontSize',fontSize);
-patch('Faces',Fv,'Vertices',Vv,'EdgeColor',edgeColor1, 'CData',Cv,'FaceColor','flat','FaceAlpha',1); 
-patch('Faces',Fi1,'Vertices',Vi1,'FaceColor','flat','FaceVertexCData',Ci1n,'EdgeColor',edgeColor2,'FaceAlpha',faceAlpha2); hold on;
-patch('Faces',Fi2,'Vertices',Vi2,'FaceColor','flat','FaceVertexCData',Ci2n,'EdgeColor',edgeColor2,'FaceAlpha',faceAlpha2); hold on;
-colormap(cMap1); colorbar; caxis([min(Cv(:)) max(Cv(:))]);
-view(3); grid on; axis equal; axis vis3d; 
-set(gca,'FontSize',fontSize);
-camlight headlight; lighting flat
+gpatch(Fv,Vv,Cv,edgeColor1,1);
+gpatch(Fi1,Vi1,Ci1n,edgeColor2,faceAlpha2);
+gpatch(Fi2,Vi2,Ci2n,edgeColor2,faceAlpha2);
+colormap(cMap1); colorbar; clim([min(Cv(:)) max(Cv(:))]);
+axisGeom(gca,fontSize); camlight headlight; 
 drawnow;
 
 %% Example for multidimensional image data 2: RGB driven vectors combined with colormap driven iso-surfaces
@@ -184,25 +157,25 @@ xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize);zlabel('Z','Font
 title('RGB driven vector colors and colormap driven isosurfaces','FontSize',fontSize);
 
 Cv=vecnormalize(Vv);
+
+gpatch(Fv,Vv,Crgb,edgeColor1,1);
+gpatch(Fi1,Vi1,Ci1,edgeColor2,faceAlpha2);
+gpatch(Fi2,Vi2,Ci2,edgeColor2,faceAlpha2);
+
 patch('Faces',Fv,'Vertices',Vv,'EdgeColor','none', 'FaceVertexCData',Crgb,'FaceColor','flat','FaceAlpha',1); 
 patch('Faces',Fi1,'Vertices',Vi1,'FaceColor','flat','CData',Ci1,'EdgeColor',edgeColor2,'FaceAlpha',faceAlpha2); hold on;
 patch('Faces',Fi2,'Vertices',Vi2,'FaceColor','flat','CData',Ci2,'EdgeColor',edgeColor2,'FaceAlpha',faceAlpha2); hold on;
-view(3); grid on; axis equal; axis vis3d; 
-set(gca,'FontSize',fontSize);
-colormap(cMap2); colorbar; 
-camlight headlight; lighting flat
+colormap(cMap2); colorbar; clim([min(Cv(:)) max(Cv(:))]);
+axisGeom(gca,fontSize); camlight headlight; 
 
 subplot(1,2,2);
-hp=patch('Faces',F,'Vertices',V);
-set(hp,'FaceColor','flat','FaceVertexCData',abs(C),'EdgeColor','none','FaceAlpha',1);
+hp=gpatch(F,V,abs(C),'none',1);
 DCM=eye(3,3);
 origin=[0 0 0];
 [Fa,Va,Ca]=quiver3Dpatch(origin(1)*ones(1,3), origin(2)*ones(1,3), origin(3)*ones(1,3),-DCM(:,1),-DCM(:,2),DCM(:,3),[],[3,3]);
-hp2=patch('Faces',Fa,'Vertices',Va,'EdgeColor','k','FaceColor','flat','FaceVertexCData',repmat(eye(3,3),6,1),'FaceAlpha',1); hold on;
+hp2=gpatch(Fa,Va,repmat(eye(3,3),6,1),'none',1); hold on;
 
-view(3); axis tight; axis square; axis vis3d; view(-45,30);
-set(gca,'FontSize',fontSize); drawnow;
-axis off; 
+axisGeom(gca,fontSize); view(-45,30);
 drawnow;
 
 %% 

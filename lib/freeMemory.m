@@ -1,5 +1,11 @@
 function [numFreeBytes]=freeMemory
 
+% function [numFreeBytes]=freeMemory
+% ------------------------------------------------------------------------
+% Estimated the curretnly available bytes of free memory
+% ------------------------------------------------------------------------
+
+%%
 try
     if ispc        
         %Can be slow on windows

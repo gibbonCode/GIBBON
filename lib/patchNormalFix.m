@@ -1,11 +1,12 @@
 function [varargout]=patchNormalFix(varargin)
 
-% function [F,L]=patchNormalFix(F,logicGroup,waitbarOn)
+% function [F,L]=patchNormalFix(F,logicStart,waitbarOn)
 % ------------------------------------------------------------------------
 %
 %
-% Change log (started 2019/03/29): 
-%  
+% Change log:
+% 2019/03/29 KMM: Created
+% 
 % ------------------------------------------------------------------------
 
 %% Parse input
@@ -13,30 +14,38 @@ function [varargout]=patchNormalFix(varargin)
 switch nargin
     case 1
         F=varargin{1};
-        logicGroup=[];
+        logicStart=[];
         waitbarOn=0;
     case 2
         F=varargin{1};
-        logicGroup=varargin{2};
+        logicStart=varargin{2};
         waitbarOn=0;
     case 3
         F=varargin{1};
-        logicGroup=varargin{2};
+        logicStart=varargin{2};
         waitbarOn=varargin{3};
 end
 
 %%
-if isempty(logicGroup)
-    logicGroup=false(size(F,1),1);
-    logicGroup(1)=1;
-elseif nnz(logicGroup)==0    
-    logicGroup(1)=1;
+if isempty(logicStart)
+    logicStart=false(size(F,1),1);
+    logicStart(1)=1;
+elseif nnz(logicStart)==0    
+    logicStart(1)=1;
 end
 
-if ~islogical(logicGroup) 
-    indGroup=logicGroup;
-    logicGroup=false(size(F,1),1);
-    logicGroup(indGroup(:))=1;
+if ~islogical(logicStart) 
+    indGroup=logicStart;
+    logicStart=false(size(F,1),1);
+    logicStart(indGroup(:))=1;
+end
+
+if nnz(logicStart)>1
+    %Check if start set is consistently oriented
+    [F(logicStart,:),L]=patchNormalFix(F(logicStart,:));
+    if any(L)
+        warning('Start face set provided was not self-consistent, start set was fixed using first element');
+    end
 end
 
 %%
@@ -52,16 +61,16 @@ end
 L=false(size(F,1),1);
 while 1
 
-    logicFriends=any(ismember(E_ind,E_ind(logicGroup,:)),2) & ~logicGroup;    
+    logicFriends=any(ismember(E_ind,E_ind(logicStart,:)),2) & ~logicStart;    
     indCheck1=find(logicFriends,1);    
-    indCheckEdge1=find(ismember(E_ind(indCheck1,:),E_ind(logicGroup,:)),1);
+    indCheckEdge1=find(ismember(E_ind(indCheck1,:),E_ind(logicStart,:)),1);
     edgeCheck1= [E1(indCheck1,indCheckEdge1) E2(indCheck1,indCheckEdge1)];
     
     if isempty(indCheck1)
         break
     end
     
-    logicCheckFriends=any(ismember(E_ind,E_ind(indCheck1,indCheckEdge1)),2) & logicGroup;    
+    logicCheckFriends=any(ismember(E_ind,E_ind(indCheck1,indCheckEdge1)),2) & logicStart;    
     indCheck2=find(logicCheckFriends,1);
     indCheckEdge2=find(E_ind(indCheck2,:)==E_ind(indCheck1,indCheckEdge1),1);
     edgeCheck2= [E1(indCheck2,indCheckEdge2) E2(indCheck2,indCheckEdge2)];
@@ -71,10 +80,10 @@ while 1
         L(indCheck1)=1;
         [E_ind,E1,E2]=getEdgeSets(F);        
     end    
-    logicGroup(indCheck1)=1;        
+    logicStart(indCheck1)=1;        
     
     if waitbarOn
-        c=nnz(logicGroup);
+        c=nnz(logicStart);
         waitbar(c/numSteps,hw,['Reorienting faces coherently...',num2str(round(100.*c/numSteps)),'%']);
     end
 end

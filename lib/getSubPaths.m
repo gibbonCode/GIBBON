@@ -3,9 +3,9 @@ function [pathNames]=getSubPaths(pathName)
 % function [pathNames]=getSubPaths(pathName)
 % ------------------------------------------------------------------------
 %
-%This function (based on the GENPATH command) creates the output pathNames
-%which contains all folders and sub-folders within the folder specified by
-%the input pathName.
+% This function (based on the GENPATH command) creates the output pathNames
+% which contains all folders and sub-folders within the folder specified by
+% the input pathName.
 %
 % Kevin Mattheus Moerman
 % gibbon.toolbox@gmail.com

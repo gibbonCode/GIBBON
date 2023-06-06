@@ -21,7 +21,7 @@ faceAlpha=1;
 edgeColor='k';
 edgeWidth=1;
 
-%% Fix face normals using |patchNormalFix|
+%% Example 1: Fix face normals using |patchNormalFix|
 
 %%
 % Create example geometry with incoherent face normals
@@ -33,10 +33,8 @@ edgeWidth=1;
 % [F,V]=tri2quad(F,V); %Conver to quadrilaterals for testing
 
 %Alter face orientations
-X=V(:,1);
-Z=V(:,3);
-logicFlip=X>0 | Z>0;
-logicFlip=any(logicFlip(F),2);
+VF=patchCentre(F,V);
+logicFlip=VF(:,1)>0 | VF(:,3)>0;
 F(logicFlip,:)=fliplr(F(logicFlip,:));
 F=fliplr(F);
 
@@ -50,6 +48,7 @@ cFigure;
 subplot(1,2,1); hold on; 
 title('Incoherent faces','FontSize',fontSize);
 gpatch(F,V,'g');
+gpatch(F(1,:),V,'none','r',1,3);
 patchNormPlot(F,V);
 axisGeom(gca,fontSize);
 camlight('headlight');
@@ -64,10 +63,10 @@ camlight('headlight');
 
 drawnow; 
 
-%% Control face orientation by providing a proper face
+%% Example 2: Control face orientation by providing a proper face
 
-indKeep=250; %Index of face with correct orientation
-[F_fix,L]=patchNormalFix(F,indKeep);
+indStart=250; %Index of face with correct orientation
+[F_fix,L]=patchNormalFix(F,indStart);
 
 %%
 % Visualisation
@@ -75,7 +74,33 @@ cFigure;
 subplot(1,2,1); hold on; 
 title('Incoherent faces','FontSize',fontSize);
 gpatch(F,V,'g');
-gpatch(F(indKeep,:),V,'none','r',1,3);
+gpatch(F(indStart,:),V,'none','r',1,3);
+patchNormPlot(F,V);
+axisGeom(gca,fontSize);
+camlight('headlight');
+
+subplot(1,2,2); hold on; 
+title('Coherent faces','FontSize',fontSize);
+gpatch(F_fix,V,L);
+patchNormPlot(F_fix,V);
+axisGeom(gca,fontSize);
+colormap(gjet(2)); icolorbar; 
+camlight('headlight');
+
+drawnow; 
+
+%% Example 3: Control face orientation by providing a proper face
+
+logicStart=~logicFlip; 
+[F_fix,L]=patchNormalFix(F,logicStart);
+
+%%
+% Visualisation
+cFigure;
+subplot(1,2,1); hold on; 
+title('Incoherent faces','FontSize',fontSize);
+gpatch(F,V,'g');
+gpatch(F(logicStart,:),V,'none','r',1,3);
 patchNormPlot(F,V);
 axisGeom(gca,fontSize);
 camlight('headlight');

@@ -4,11 +4,17 @@
 %%
 clear; close all; clc;
 
+%% Syntax
+% |patch2STL(fileName,V,F,N,solidName);|
+
+%% Description
+% This function generates an STL file using the vertices (V) and triangular
+% faces (F) provided
+%
+% See also: |export_STL_txt|
+
 %%
-% Plot settings
-fig_color='w'; fig_colordef='white'; 
-edgeColor1='none';
-edgeColor2='none';
+clear; close all; clc;
 
 %% 
 % Get patch data
@@ -17,14 +23,10 @@ edgeColor2='none';
 %%
 % Plotting the model 
 
-cFigure;;
-xlabel('X');ylabel('Y'); zlabel('Z'); hold on;
-
-patch('Faces',F,'Vertices',V,'FaceColor','b','EdgeColor','k','FaceAlpha',1);
-
-view(3); axis equal; axis tight; axis vis3d; grid on; 
-camlight('headlight');
-lighting phong; axis off; 
+cFigure; hold on;
+xlabel('X');ylabel('Y'); zlabel('Z'); 
+gpatch(F,V,'bw');
+axisGeom; camlight('headlight');
 drawnow;
 
 %% Exporting an STL file from patch data

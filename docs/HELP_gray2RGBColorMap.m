@@ -8,7 +8,7 @@ clear; close all; clc;
 % |[C]=gray2RGBColorMap(varargin);|
 
 %% Description 
-% UNDOCUMENTED 
+% DEPRICATED 
 %% Examples 
 % 
 %%

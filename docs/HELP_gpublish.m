@@ -6,11 +6,17 @@ clear; close all; clc;
 
 %% Syntax
 % |gpublish(docName);|
+% |gpublish docName;|
 
 %% Description 
-% UNDOCUMENTED 
+% The gpublish function is similar to MATLAB's publish command. Except it
+% produces the output as suitable for publishing the HTML documentation on
+% the GIBBON website. It also includes image scale settings for the output
+% HTML. 
+
 %% Examples 
-% 
+% |gpublish HELP_gpatch|
+
 %%
 % 
 % <<gibbVerySmall.gif>>

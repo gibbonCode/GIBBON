@@ -8,9 +8,13 @@ clear; close all; clc;
 % |[numFreeBytes]=freeMemory;|
 
 %% Description 
-% UNDOCUMENTED 
+% Estimated the curretnly available bytes of free memory
+
 %% Examples 
 % 
+
+[numFreeBytes]=freeMemory
+
 %%
 % 
 % <<gibbVerySmall.gif>>

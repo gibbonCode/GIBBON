@@ -1,4 +1,4 @@
-function GB=gaborFilter(Vr,S,f,tagShift,d,siz,p)
+function [GB]=gaborFilter(Vr,S,f,tagShift,d,siz,p)
 
 S=S(:)';
 Sm=ones(size(Vr,1),1)*S;
@@ -23,10 +23,6 @@ GB=reshape(GB,siz);
 
 %Flip sign if required
 GB=p.*GB;
-
-
-
-
  
 %% 
 % _*GIBBON footer text*_ 

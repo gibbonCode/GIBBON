@@ -4,9 +4,9 @@ function [C]=gray2RGBColorMap(varargin)
 % ------------------------------------------------------------------------
 % This function maps the monochrome data vector G, containing for instance 
 % gray scale values, to a colormapped RGB array C using the colormap cMap
-% and the color limits cLim. If C is not provided the jet colormap is used.
-% If cLim is not provided or empty the colorlimits are adjusted according
-% to the extreme values in G. 
+% and the color limits cLim. If C is not provided the viridis colormap is
+% used. If cLim is not provided, or empty, the colorlimits are adjusted
+% according to the extreme values in G. 
 % 
 %
 % Kevin Mattheus Moerman
@@ -17,10 +17,11 @@ function [C]=gray2RGBColorMap(varargin)
 
 %% Parse input
 
+warning('The gray2RGBColorMap function is depricated in favour of cmaperise. Update code to avoid future error')
 switch nargin
     case 1
         G=varargin{1};
-        cMap=jet(250);
+        cMap=viridis(250);
         cLim=[];
     case 2
         G=varargin{1};

@@ -11,9 +11,10 @@ function [varargout]=getColumns(V)
 % kevinmoerman@hotmail.com
 % 2013/13/08
 %------------------------------------------------------------------------
+
+%%
+
 varargout = mat2cell(V,size(V,1),ones(size(V,2),1));
-
-
  
 %% 
 % _*GIBBON footer text*_ 

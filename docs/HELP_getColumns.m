@@ -8,9 +8,19 @@ clear; close all; clc;
 % |[varargout]=getColumns(V);|
 
 %% Description 
-% UNDOCUMENTED 
+% This function simply outputs each colum in V as a seperate vector. For
+% instance if V represents 3 colums of data e.g. X, Y and Z coordinates
+% then one could use [X,Y,Z]=getColumns(V);
+
 %% Examples 
 % 
+
+%Example array
+V=rand(5,3)
+
+%Using |getColumns| to obtain the columns: 
+[X,Y,Z]=getColumns(V)
+
 %%
 % 
 % <<gibbVerySmall.gif>>

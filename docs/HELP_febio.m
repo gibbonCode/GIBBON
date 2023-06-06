@@ -8,9 +8,21 @@ clear; close all; clc;
 % |febio(varargin);|
 
 %% Description 
-% UNDOCUMENTED 
+% This function calls FEBio from MATLAB and runs it in the command window.
+% If no input is provided this commend simply triggers FEBio to run without
+% an input file. 
+% If the input is a valid FEBio model input file path then FEBio will run
+% the analysis for that file. 
+% The input may also be a structure with the following default fields: 
+%   defaultOptionStruct.FEBioPath=getFEBioPath; %The FEBio path
+%   defaultOptionStruct.run_filename=[]; %The .feb file name
+%   defaultOptionStruct.run_logname=[]; %The log file name
+%   defaultOptionStruct.runMode='internal'; %Running internally
+
 %% Examples 
 % 
+% |febio|
+
 %%
 % 
 % <<gibbVerySmall.gif>>

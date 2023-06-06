@@ -1,17 +1,30 @@
 function [varargout]=tri2quad(varargin)
 
-% function [Fq,Vq,Cq]=tri2quad(Ft,Vt,convertMethod)
+% function [Fq,Vq,Cq]=tri2quad(Ft,Vt,centerType)
+% ------------------------------------------------------------------------
+% This function converts the input triangulation defined by the faces Ft
+% and vertices Vt to a quandrangulation defined by the output faces Fq and
+% Vq. The optional output Cq contains vertex color labels for the output
+% vertices whereby Cq is 0, 1, or 3 depending on whether the output vertex
+% is an original node, a new mid-edge node, or a new mid-face node. 
+%
+% The optional additional input centerType sets the method used. The
+% following methods are supported
+% centerType = 1 (DEFAULT) -> The central points are the triangle centres    
+% centerType = 2 -> The central points are the triangle incentres
+%
+% ------------------------------------------------------------------------
 
 %%
 switch nargin
     case 2
         Ft=varargin{1};
         Vt=varargin{2};
-        convertMethod=1; 
+        centerType=1; 
     case 3
         Ft=varargin{1};
         Vt=varargin{2};        
-        convertMethod=varargin{3};         
+        centerType=varargin{3};         
 end
 
 %Cope with 2D input
@@ -45,10 +58,6 @@ indV_31=full(A(indA_31));
 
 %% Mid face
 
-% Ft_sort=sort(Ft,2); %Sorted edges matrix
-% [~,ind1,ind2]=unique(Ft_sort,'rows');
-% Ft=Ft(ind1,:);
-
 indV_midFace=(1:1:size(Ft,1))';
 indOffset=numPoints+size(edgeMat,1);
 
@@ -66,9 +75,8 @@ indV_midFace123=(indV_midFace((1-1)*size(Ft,1)+(1:size(Ft,1))))+indOffset;
 %new mid-edge points
 Vn=0.5*(Vt(edgeMat(:,1),:)+Vt(edgeMat(:,2),:));
      
-switch convertMethod
-    case 1        
-        %new mid-element points
+switch centerType
+    case 1 %Use mean of triangle coordinates for central point                       
         Vm=zeros(size(Ft,1),3);
         for q=1:1:size(Vt,2)
             X=Vt(:,q);
@@ -78,22 +86,21 @@ switch convertMethod
                 Vm(:,q)=mean(X(Ft),2);
             end
         end        
-    case 2        
-        %new mid-face points
-        TR=triangulation(Ft,Vt);
-        Vm = incenter(TR,(1:size(Ft,1))');     
+    case 2 %Use triangle incentres for central point                
+        Vm=triIncenter(Ft,Vt);
 end
 
 Vq=[Vt; Vn; Vm]; %Join point sets
 
-CVq=[0*ones(size(Vt,1),1); 1*ones(size(Vn,1),1); 2*ones(size(Vm,1),1);];
+CVq=[0*ones(size(Vt,1),1); 1*ones(size(Vn,1),1); 2*ones(size(Vm,1),1);]; %Vertex colors for original, mid-edge, and mid-face nodes
 
-%%
+%% Collect ouput
 
 varargout{1}=Fq;
 varargout{2}=Vq;
 varargout{3}=CVq;
 
+end
  
 %% 
 % _*GIBBON footer text*_ 

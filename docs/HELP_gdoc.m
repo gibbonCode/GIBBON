@@ -5,12 +5,18 @@
 clear; close all; clc;
 
 %% Syntax
-% |gdoc(varargin);|
+% |gdoc(functionName)|
+% |gdoc functionName|
 
 %% Description 
-% UNDOCUMENTED 
+% Opens GIBBON documentation for the function defined by functionName
+
 %% Examples 
 % 
+
+%%
+% |gdoc gpatch|
+
 %%
 % 
 % <<gibbVerySmall.gif>>

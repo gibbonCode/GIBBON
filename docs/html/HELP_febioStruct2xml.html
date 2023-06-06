@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>febioStruct2xml</title><meta name="generator" content="MATLAB 9.9"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2020-12-09"><meta name="DC.source" content="HELP_febioStruct2xml.m"><style type="text/css">
+      --><title>febioStruct2xml</title><meta name="generator" content="MATLAB 9.14"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2023-06-06"><meta name="DC.source" content="HELP_febioStruct2xml.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -81,7 +81,7 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 <span class="comment">%           &lt;density&gt;0.97&lt;density&gt;</span>
 <span class="comment">%       &lt;/solute&gt;</span>
 <span class="comment">% &lt;/Globals&gt;</span>
-</pre><p>Here Globals is an element with the entries Constants and Solutes being child elements (and Constants and Solutes have R,T,Fc and solute as their respective child elements,... etc). The symbols <a href="..">..</a> start an element and <a href="/..">/..</a> closes that element. Components within <a href="..">..</a> sometimes contain attributes. An example of this is id="1", here the attribute "id" has the value "1" associated with it, another example of an attribute is name="Na". Elements may contain child elements and may have a value. For instance the element Constants has children but the element R has the value 8.314e-6 associated with it. To code these features in MATLAB a particular syntax was developed. Structures are suitable as they are tree-like similar to XML. However structures lack the attribute feature, i.e. fields in structures have values but do not have attributes associated with them. To solve this keywords are used here to denote attributes and to distinguish them from values or elements. For instance node.ATTR.id=1 will become <a href="node">id="1"</a>, where the ATTR keyword is here simply used as a target/trigger keyword for determining wheter the subsequent feature is an element, value or attribute. Futhermore the VAL keyword exists to denote a value, e.g. node.ATTR.id=1; node.VAL=2;  will become: <a href="node">id="1"</a> 2 <a href="/node">/node</a>.</p><p>One may use arrays for values as well i.e. node.ATTR.id=nodeIdArray; node.VAL=nodeCoordinateArray; can be used to define sets of attributes and sets of values simultaneously.</p><p>In principle all FEBio functionality (based on XML content) can be coded for in a similar fashion. Study the FEBio user manual for more information.</p><p>The remainder of this documentation will describe how various XML components of the FEBio input file can be coded. A structure is created with the name "febio_spec". For more information on coding the febio structure see the various FEBio demos provided.</p><h2 id="12">Set febio_spec version</h2><pre class="codeinput">febio_spec.ATTR.version=<span class="string">'3.0'</span>;
+</pre><p>Here Globals is an element with the entries Constants and Solutes being child elements (and Constants and Solutes have R,T,Fc and solute as their respective child elements,... etc). The symbols <a href="..">..</a> start an element and <a href="/..">/..</a> closes that element. Components within <a href="..">..</a> sometimes contain attributes. An example of this is id="1", here the attribute "id" has the value "1" associated with it, another example of an attribute is name="Na". Elements may contain child elements and may have a value. For instance the element Constants has children but the element R has the value 8.314e-6 associated with it. To code these features in MATLAB a particular syntax was developed. Structures are suitable as they are tree-like similar to XML. However structures lack the attribute feature, i.e. fields in structures have values but do not have attributes associated with them. To solve this keywords are used here to denote attributes and to distinguish them from values or elements. For instance node.ATTR.id=1 will become <a href="node">id="1"</a>, where the ATTR keyword is here simply used as a target/trigger keyword for determining wheter the subsequent feature is an element, value or attribute. Futhermore the VAL keyword exists to denote a value, e.g. node.ATTR.id=1; node.VAL=2;  will become: <a href="node">id="1"</a> 2 <a href="/node">/node</a>.</p><p>One may use arrays for values as well i.e. node.ATTR.id=nodeIdArray; node.VAL=nodeCoordinateArray; can be used to define sets of attributes and sets of values simultaneously.</p><p>In principle all FEBio functionality (based on XML content) can be coded for in a similar fashion. Study the FEBio user manual for more information.</p><p>The remainder of this documentation will describe how various XML components of the FEBio input file can be coded. A structure is created with the name "febio_spec". For more information on coding the febio structure see the various FEBio demos provided.</p><h2 id="12">Set febio_spec version</h2><pre class="codeinput">febio_spec.ATTR.version=<span class="string">'4.0'</span>;
 </pre><h2 id="13">Module section</h2><p>XML syntax example: <a href="Module">type="Solid"/</a></p><p>Implementation example</p><pre class="codeinput">febio_spec.Module.ATTR.type=<span class="string">'solid'</span>;
 </pre><h2 id="15">Control section</h2><h2 id="16">Example 1: Globals section</h2><pre class="codeinput"><span class="comment">% &lt;Globals&gt;</span>
 <span class="comment">%   &lt;Constants&gt;</span>
@@ -251,8 +251,10 @@ fileName=fullfile(savePath,<span class="string">'tempModel.feb'</span>);
 
 optionStruct.arrayParseMethod=1;
 [domNode]=febioStruct2xml(febio_spec,fileName,optionStruct);
-</pre><h2 id="24">Viewing the FEBio input file</h2><p>The <tt>febView</tt> command can be used to render an XML file in a figure window. Alternatively the <tt>textView</tt> command can be used:</p><pre class="codeinput">h=febView(fileName,2);
-</pre><p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2006-2020 Kevin Mattheus Moerman</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2020b</a><br></p></div><!--
+</pre><h2 id="24">Viewing the FEBio input file</h2><p>The <tt>febView</tt> command can be used to render an XML file in a figure window. Alternatively the <tt>textView</tt> command can be used:</p><pre class="codeinput">h=febView(fileName,1);
+</pre><pre class="codeoutput">Warning: febView no longer works in the latest MATLAB releases, defaulting to
+use edit function until resolved 
+</pre><p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2006-2023 Kevin Mattheus Moerman and the GIBBON contributors</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2023a</a><br></p></div><!--
 ##### SOURCE BEGIN #####
 %% febioStruct2xml
 % Below is a demonstration of the features of the |febioStruct2xml| function
@@ -334,7 +336,7 @@ clear; close all; clc;
 % structure see the various FEBio demos provided. 
 
 %% Set febio_spec version
-febio_spec.ATTR.version='3.0';
+febio_spec.ATTR.version='4.0';
 
 %% Module section
 % XML syntax example:
@@ -399,7 +401,6 @@ febio_spec.Material.material{1}.ATTR.id=1;
 febio_spec.Material.material{1}.c1=1;
 febio_spec.Material.material{1}.m1=6;
 febio_spec.Material.material{1}.k=100;
-
 
 %%
 % A visco-elastic material
@@ -548,7 +549,7 @@ optionStruct.arrayParseMethod=1;
 %% Viewing the FEBio input file
 % The |febView| command can be used to render an XML file in a figure
 % window. Alternatively the |textView| command can be used:
-h=febView(fileName,2);
+h=febView(fileName,1);
 
 %% 
 %
@@ -568,7 +569,7 @@ h=febView(fileName,2);
 % image segmentation, image-based modeling, meshing, and finite element
 % analysis.
 % 
-% Copyright (C) 2006-2020 Kevin Mattheus Moerman
+% Copyright (C) 2006-2023 Kevin Mattheus Moerman and the GIBBON contributors
 % 
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by

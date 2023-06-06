@@ -8,9 +8,16 @@ clear; close all; clc;
 % |[pathNames]=getSubPaths(pathName);|
 
 %% Description 
-% UNDOCUMENTED 
+% Returns a cell array for all the sub-paths nested for the input folder
+% pathName. 
+
 %% Examples 
 % 
+
+pathToCheck = fullfile(fileparts(fileparts(mfilename('fullpath'))),'data')
+
+[pathNames]=getSubPaths(pathToCheck)
+
 %%
 % 
 % <<gibbVerySmall.gif>>

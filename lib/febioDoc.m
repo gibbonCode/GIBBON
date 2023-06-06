@@ -22,15 +22,15 @@ end
 
 switch docType
     case {'UM','um',1} %User manual
-        fileTarget='FEBio_um';        
+        fileTarget='FEBio_User_Manual';        
     case {'TM','tm',2} %Theory manual
-        fileTarget='FEBio_tm';        
+        fileTarget='FEBio_Theory_Manual';        
 end
 
 %% Get pdf file location
 
 febioPath=getFEBioPath;
-documentationPath=fullfile(fileparts(fileparts(febioPath)),'doc');
+documentationPath=fullfile(fileparts(fileparts(febioPath)),'doc')
 
 %Get list of pdf files in folder
 files = dir(fullfile(documentationPath,'*.pdf'));
@@ -40,11 +40,17 @@ NumberOfFiles=numel(files);
 
 %% View pdf file
 
+hFig=[];
 if NumberOfFiles>1
     for q=1:1:NumberOfFiles
         if gcontains(files{q},fileTarget) %If it contains the search pattern
             fileName=fullfile(documentationPath,files{q}); %The full pdf file name
-            [hFig]=pdfView(fileName); %View pdf file using pdfView            
+            
+            warning('febView no longer works in the latest MATLAB releases, defaulting to use "open" function until resolved')
+            % [hFig]=pdfView(fileName,2); %View pdf file using pdfView            
+
+            open(fileName);
+
             if nargout==1
                 varargout{1}=hFig;
             end

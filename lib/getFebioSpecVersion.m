@@ -14,7 +14,7 @@ function [febio_spec]=getFebioSpecVersion(febXML)
 % 2014/10/10
 %------------------------------------------------------------------------
 
-if ischar(febXML); %If input is a string assume is the filename for the XML
+if ischar(febXML) %If input is a string assume is the filename for the XML
    febXML=xmlread(febXML);  
 end
 

@@ -23,40 +23,41 @@ if any(L(:))
         
         %Plot settings        
         fontSize=20;
-        markerSize1=round(max(voxelSize)*25);
-        faceAlpha1=1;
+        markerSize1=50;
+        faceAlpha1=0.75;
         
         cFigure        
         hold on;
         
         %Found voxel location
-        plotV(V_in,'r.','MarkerSize',markerSize1);
+        hp=plotV(V_in,'r.','MarkerSize',markerSize1);
         
         %Local slices
         L_plot=false(size(L));
         L_plot(:,:,K_in)=1;
         L_plot=L_plot&L>0;
-        [Fm,Vm,Cm]=ind2patch(L_plot,double(L),'sk');
+        [Fm,Vm,Cm]=im2patch(L,L_plot,'sk');
         [Vm(:,1),Vm(:,2),Vm(:,3)]=im2cart(Vm(:,2),Vm(:,1),Vm(:,3),voxelSize);
         gpatch(Fm,Vm,Cm,'k',faceAlpha1);
         
         L_plot=false(size(L));
         L_plot(I_in,:,:)=1;
         L_plot=L_plot&L>0;
-        [Fm,Vm,Cm]=ind2patch(L_plot,L,'si');
+        [Fm,Vm,Cm]=im2patch(L,L_plot,'si');
         [Vm(:,1),Vm(:,2),Vm(:,3)]=im2cart(Vm(:,2),Vm(:,1),Vm(:,3),voxelSize);
         gpatch(Fm,Vm,Cm,'k',faceAlpha1);
         
         L_plot=false(size(L));
         L_plot(:,J_in,:)=1;
         L_plot=L_plot&L>0;
-        [Fm,Vm,Cm]=ind2patch(L_plot,L,'sj');
+        [Fm,Vm,Cm]=im2patch(L,L_plot,'sj');
         [Vm(:,1),Vm(:,2),Vm(:,3)]=im2cart(Vm(:,2),Vm(:,1),Vm(:,3),voxelSize);
         gpatch(Fm,Vm,Cm,'k',faceAlpha1);
         
         colormap(gray(3));
         axisGeom(gca,fontSize);   
         camlight headlight;
+        legend(hp,'Interior point','Location','NorthOutSide')
         drawnow;
     end
 else
