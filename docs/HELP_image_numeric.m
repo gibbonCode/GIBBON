@@ -8,9 +8,22 @@ clear; close all; clc;
 % |[varargout]=image_numeric(varargin);|
 
 %% Description 
-% UNDOCUMENTED 
+% Plots the intensities of an image (rounded to fit 4 digits) in the image
+% at the pixel coordinates.
+
 %% Examples 
 % 
+
+M=rand(5,3);
+
+%%
+
+cFigure; hold on;
+imagesc(M); 
+image_numeric(M);
+axis tight; axis equal;
+drawnow; 
+
 %%
 % 
 % <<gibbVerySmall.gif>>

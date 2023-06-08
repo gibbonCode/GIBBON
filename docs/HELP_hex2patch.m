@@ -8,7 +8,7 @@ clear; close all; clc;
 % |[F,C]=hex2patch(E,C);|
 
 %% Description 
-% UNDOCUMENTED 
+% DEPRICATED
 %% Examples 
 % 
 %%

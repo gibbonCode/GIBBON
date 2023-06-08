@@ -11,6 +11,13 @@ clear; close all; clc;
 % UNDOCUMENTED 
 %% Examples 
 % 
+
+M=rand(5,3,4)
+voxelSize=[1 1 1];
+
+voxelSizeNew=[0.5 0.5 0.5];
+[M_new]=imageResample(M,voxelSize,voxelSizeNew)
+
 %%
 % 
 % <<gibbVerySmall.gif>>

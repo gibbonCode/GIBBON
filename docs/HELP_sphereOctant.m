@@ -1,16 +1,33 @@
-%% hemiSphereMeshHalf
-% Below is a demonstration of the features of the |hemiSphereMeshHalf| function
+%% sphereOctant
+% Below is a demonstration of the features of the |sphereOctant| function
 
 %%
 clear; close all; clc;
 
 %% Syntax
-% |[varargout]=hemiSphereMeshHalf(varargin);|
+% |[F,V,C]=sphereOctant(nRefineSteps,sphereRadius,closeOpt)|
 
 %% Description 
-% UNDOCUMENTED 
+% Creates the patch data for a sphere octant i.e. an 1/8th of a sphere. 
+%
+% See also: |geoSphere|
+
 %% Examples 
 % 
+
+nRefineSteps=3; 
+sphereRadius=1;
+closeOpt=1;
+[F,V,C]=sphereOctant(nRefineSteps,sphereRadius,closeOpt);
+
+%%
+% Visualization
+
+cFigure;
+gpatch(F,V,C);
+axisGeom; camlight headlight; 
+gdrawnow; 
+
 %%
 % 
 % <<gibbVerySmall.gif>>

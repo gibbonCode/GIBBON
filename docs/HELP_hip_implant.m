@@ -8,9 +8,21 @@ clear; close all; clc;
 % |[F,V]=hip_implant;|
 
 %% Description 
-% UNDOCUMENTED 
+% Loads patch data for a basic hip implant like mesh. 
+
 %% Examples 
 % 
+
+[F,V]=hip_implant;
+
+%%
+% Visualization
+
+cFigure;
+gpatch(F,V,'w');
+axisGeom; camlight headlight; 
+gdrawnow; 
+
 %%
 % 
 % <<gibbVerySmall.gif>>

@@ -1,5 +1,6 @@
 function [F,C]=hex2patch(E,C)
 
+warning('This function is depricated in favour of element2patch. Update your code to avoid a future error')
 [F,C]=element2patch(E,C);
 
 end

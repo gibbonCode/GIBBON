@@ -1,10 +1,10 @@
-function [varargout]=hemiSphereMeshHalf(varargin)
+function [varargout]=sphereOctant(varargin)
 
-% function [F,V,C]=hemiSphereMeshHalf(nRefineSteps,sphereRadius,closeOpt)
+% function [F,V,C]=sphereOctant(nRefineSteps,sphereRadius,closeOpt)
 %-------------------------------------------------------------------------
-% 
+% Creates the patch data for a sphere octant i.e. an 1/8th of a sphere. 
 %
-%
+% See also: |geoSphere|
 % 
 %-------------------------------------------------------------------------
 
@@ -79,6 +79,7 @@ varargout{2}=V;
 if nargout>2
     varargout{3}=C;
 end
+
 %% 
 % _*GIBBON footer text*_ 
 % 
