@@ -1,6 +1,6 @@
-function [Q_mean]=imlabelMean(M,ML)
+function [varargout]=imlabelMean(varargin)
 
-% function [Q_mean]=imlabelMean(M,ML)
+% function [Q_mean]=imlabelMean(M,ML,methodOpt)
 % ------------------------------------------------------------------------
 %
 % This function takes the mean for each of the labeled groups (NaN's
@@ -8,21 +8,32 @@ function [Q_mean]=imlabelMean(M,ML)
 %
 %
 % Kevin Mattheus Moerman
-% kevinmoerman@hotmail.com
 % 2014/04/01
 %------------------------------------------------------------------------
 
-defaultMethod=1; %Hard coded for now
-switch defaultMethod    
-    case 1 %SPARSE ARRAY BASED (more efficient for large arrays)
-        labelSet=unique(ML(:));
-        labelSet=labelSet(~isnan(labelSet)); %Remove the nan labelled group
-        
-        numLabels=max(labelSet);
-        
-        logic_ML_not_nan=~isnan(ML);
+%%
+
+switch nargin
+    case 2
+        M=varargin{1};
+        ML=varargin{2};
+        methodOpt=1; 
+    case 3
+        M=varargin{1};
+        ML=varargin{2};
+        methodOpt=varargin{3};
+end
+
+%%
+logic_ML_not_nan=~isnan(ML); %Logic for nan entries
+[labelSet,~,ind2]=unique(ML(logic_ML_not_nan)); %Get the unique label set and ind2 (reconstructor)
+numLabels=numel(labelSet); %The number of unique labels
+labelIndices=1:1:numLabels; %Label indices (used to replace arbitary labels e.g. -1,0,pi to 1,2,3)
+
+switch methodOpt    
+    case 1 %SPARSE ARRAY BASED (more efficient for large arrays)        
         nnzQ=nnz(logic_ML_not_nan);
-        Iq=ML(logic_ML_not_nan);
+        Iq=labelIndices(ind2);
         Jq=1:nnzQ;
         Sq=M(logic_ML_not_nan);
         sizQ=[numLabels,nnzQ];
@@ -33,12 +44,20 @@ switch defaultMethod
         Q_voxelCount=full(sum(spones(Q),2));
         Q_mean=Q_sum./Q_voxelCount;
     case 2 %REGIONPROPS BASED
-        ML(isnan(ML))=0;
-        A=regionprops(ML,M,'MeanIntensity');
+        M_id=nan(size(ML));
+        M_id(logic_ML_not_nan)=labelIndices(ind2);
+        M_id(isnan(M_id))=0;
+        A=regionprops(M_id,M,'MeanIntensity');
         Q_mean=[A.MeanIntensity];
         Q_mean=Q_mean(:);
 end
 
+%%
+
+varargout{1}=Q_mean;
+if nargout==2
+    varargout{2}=labelSet;
+end
 
  
 %% 

@@ -6,9 +6,11 @@
 
 %% Description
 % This function meshes a 3D region. It is conceptually similar to
-% regionTrimMesh2D. The 3D regions are rigidly transformed to a nearly 2D
-% form and |regionTrimMesh2D| is then used for 2D meshing. Then
+% |regionTriMesh2D|. The 3D regions are rigidly transformed to a nearly 2D
+% form and |regionTriMesh2D| is then used for 2D meshing. Then
 % interpolation is to get the coordinates in the 3rd dimension. 
+%
+% See also: |regionTriMesh2D|
 
 %% Examples
 
