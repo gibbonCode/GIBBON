@@ -50,7 +50,7 @@ axis tight; axis square;
 
 subplot(2,2,3); hold on; 
 title('Geometry');
-gpatch(F,V,'w','none');
+gpatch(F,V,'w','k');
 axisGeom; camlight headlight;
 drawnow;
 

@@ -162,7 +162,10 @@ if disp_on==1
 end
 
 try
-    [Fn,Vn]=import_obj_geom(outputFileName);
+    objImportOptionStruct.fullMode=0;
+    objStruct=import_obj(outputFileName,objImportOptionStruct);
+    Fn=objStruct.F;
+    Vn=objStruct.V;
 catch ME
     warning('import of OBJ file not successful. Set disp_on=1 to see any Geogram error messages.');    
     rethrow(ME);

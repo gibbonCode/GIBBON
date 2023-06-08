@@ -1,3 +1,4 @@
+
 function [outputStruct]=import_obj(varargin)
 
 % function [outputStruct]=import_obj(fileName,objOptionStruct)
@@ -123,12 +124,18 @@ if fullMode==1
 
     faceTypeSet=unique(nf);
     numFaceTypes=numel(faceTypeSet);
-    F=cell(numFaceTypes,1);
-    F_uv=cell(numFaceTypes,1);
-    for q=1:1:numFaceTypes
-        logicNow = nf==faceTypeSet(q);
-        F{q}=cell2mat(FC(logicNow));
-        F_uv{q}=cell2mat(FtC(logicNow));
+    if numFaceTypes>1
+        F=cell(numFaceTypes,1);
+        F_uv=cell(numFaceTypes,1);
+        for q=1:1:numFaceTypes
+            logicNow = nf==faceTypeSet(q);
+            F{q}=cell2mat(FC(logicNow));
+            F_uv{q}=cell2mat(FtC(logicNow));
+        end
+    else
+        logicNow = nf==faceTypeSet;
+        F=cell2mat(FC(logicNow));
+        F_uv=cell2mat(FtC(logicNow));
     end
     C=textureCoord2FaceColor(F_uv,ij_M,m,colorMappingOpt);
 else
@@ -143,10 +150,15 @@ else
 
     faceTypeSet=unique(nf);
     numFaceTypes=numel(faceTypeSet);
-    F=cell(numFaceTypes,1);
-    for q=1:1:numFaceTypes
-        logicNow = nf==faceTypeSet(q);
-        F{q}=cell2mat(FC(logicNow));
+    if numFaceTypes>1
+        F=cell(numFaceTypes,1);
+        for q=1:1:numFaceTypes
+            logicNow = nf==faceTypeSet(q);
+            F{q}=cell2mat(FC(logicNow));
+        end
+    else % Just one face type
+        logicNow = nf==faceTypeSet;
+        F=cell2mat(FC(logicNow));
     end
 end
 
