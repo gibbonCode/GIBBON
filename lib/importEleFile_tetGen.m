@@ -1,8 +1,19 @@
 function [varargout]=importEleFile_tetGen(fileName)
 
+% function [elementID,E,elementMaterialID]=importEleFile_tetGen(fileName)
+% ------------------------------------------------------------------------
+% Import tetgen ELE file
+%
+% ------------------------------------------------------------------------
+
+%% Parse file
+
+%Open file and parse to cell array using textscan
 fid=fopen(fileName,'r');
 [A]=textscan(fid,'%d %d %d %d %d %f','HeaderLines',1,'Delimiter',' ','CommentStyle','Shell','MultipleDelimsAsOne',1);
 fclose(fid);
+
+% Create element and element material arrays
 elementID=double(A{1});
 E=nan(max(elementID),4);
 E(elementID,:)=double([A{2} A{3} A{4} A{5}]);
@@ -12,10 +23,11 @@ if all(isnan(elementMaterialID(:)))
     elementMaterialID=-ones(size(E,1),1);
 end
 
+%% Collect output
+
 varargout{1}=elementID;
 varargout{2}=E;
 varargout{3}=elementMaterialID;
-
  
 %% 
 % _*GIBBON footer text*_ 

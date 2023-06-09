@@ -5,12 +5,45 @@
 clear; close all; clc;
 
 %% Syntax
-% |[cMap]=inferno(varargin);|
+% |[cMap]=inferno;|
+% |[cMap]=inferno(n);|
 
 %% Description 
-% UNDOCUMENTED 
+% The inferno colormap
+
 %% Examples 
 % 
+
+%%
+%Plot settings
+fontSize=15;
+
+%% Example 1: Accessing the colormap
+
+cMap=inferno(250); %Get 25 color levels from the colormap
+
+%% Example 2: Applying/using the colormap
+
+% Create example data for visualizations
+n=250;
+s=1;
+[X,Y]=ndgrid(linspace(-3*s,3*s,n));
+Z=exp( -0.5.*((X./s).^2+(Y./s).^2));
+Z=Z./max(Z(:));
+Z(X<0)=-Z(X<0);
+colorLim=[-1 1];
+
+%%
+cFigure; hold on;
+title('inferno colormap','FontSize',fontSize);
+imagesc(Z);
+colormap(cMap); colorbar;
+axis tight; axis equal; axis xy; box on;
+axis off;
+set(gca,'FontSize',fontSize);
+clim(colorLim);
+drawnow;
+
 %%
 % 
 % <<gibbVerySmall.gif>>

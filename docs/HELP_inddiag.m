@@ -8,9 +8,34 @@ clear; close all; clc;
 % |[ind]=inddiag(A);|
 
 %% Description 
-% UNDOCUMENTED 
+% Returns the indices of the diagonal elements of A. If A is not a 2D array
+% an error is return. If size(A,1)~=size(A,2) the function still returns
+% the valid indices for when i=j in terms of A_ij. 
+
 %% Examples 
+%
+
+%%
 % 
+
+[ind]=inddiag(rand(1,1))
+
+%%
+%
+[ind]=inddiag(rand(2,2))
+
+%%
+%
+[ind]=inddiag(rand(5,5))
+
+%%
+%
+[ind]=inddiag(rand(5,3))
+
+%%
+%
+[ind]=inddiag(rand(3,5))
+
 %%
 % 
 % <<gibbVerySmall.gif>>

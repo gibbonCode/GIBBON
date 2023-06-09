@@ -8,9 +8,26 @@ clear; close all; clc;
 % |[L]=ind2logic(ind,siz);|
 
 %% Description 
-% UNDOCUMENTED 
+% This function converts the linear indicies ind to the logic array L. 
+
 %% Examples 
 % 
+
+%% Converting linear indices without specifying size
+ind=[1 5 6]
+[L]=ind2logic(ind)
+
+%% Converting linear indices with size specification
+ind=[1 5 6]
+siz=[3,3]
+[L]=ind2logic(ind,siz)
+
+%% Converting linear indices for higher order arrays
+
+ind=[1 5 6 26]
+siz=[3,3,3]
+[L]=ind2logic(ind,siz)
+
 %%
 % 
 % <<gibbVerySmall.gif>>

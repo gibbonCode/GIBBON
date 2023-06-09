@@ -8,7 +8,18 @@ clear; close all; clc;
 % |[meshOutput]=importTETGEN(loadNameStruct);|
 
 %% Description 
-% UNDOCUMENTED 
+% This function imports the TetGen output files specified by
+% loadNameStruct. The data is returned in the meshOutput structure with the
+% following fields: 
+%                 nodes
+%         facesBoundary
+%        boundaryMarker
+%                 faces
+%              elements
+%     elementMaterialID
+%        faceMaterialID
+%        loadNameStruct
+
 %% Examples 
 % 
 %%

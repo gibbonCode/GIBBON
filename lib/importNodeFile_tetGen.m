@@ -1,15 +1,27 @@
 function [varargout]=importNodeFile_tetGen(fileName)
 
+% function [nodeID,V]=importNodeFile_tetGen(fileName)
+% ------------------------------------------------------------------------
+% This function imports the tetgen NODE file
+% 
+% ------------------------------------------------------------------------
+
+%% Parse file
+
+%Open file and parse to cell array using textscan
 fid=fopen(fileName,'r');
 [A]=textscan(fid,'%d %f %f %f','HeaderLines',1,'Delimiter',' ','CommentStyle','Shell','MultipleDelimsAsOne',1);
 fclose(fid);
+
+% Create nodeID and nodal coordinate arrays
 nodeID=double(A{1});
 V=nan(max(nodeID),3);
 V(nodeID,:)=[A{2} A{3} A{4}];
 
+%% Collect output
+
 varargout{1}=nodeID;
 varargout{2}=V;
-
  
 %% 
 % _*GIBBON footer text*_ 

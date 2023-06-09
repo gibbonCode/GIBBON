@@ -1,10 +1,28 @@
 function [ind]=inddiag(A)
 
-i=1:size(A,2);
-if size(A,2)>size(A,1)
-    i=i(1:size(A,2));
+% function [ind]=inddiag(A)
+% ------------------------------------------------------------------------
+% Returns the indices of the diagonal elements of A. If A is not a 2D array
+% an error is return. If size(A,1)~=size(A,2) the function still returns
+% the valid indices for when i=j in terms of A_ij. 
+%
+% 2023/06/09 KMM: Fixed bug in relation to size(A,1)~=size(A,2)
+% 2023/06/09 KMM: Simplified, sped up, by using find on speye. 
+% ------------------------------------------------------------------------
+
+%% 
+
+siz=size(A);
+if numel(siz)~=2
+    error('diagonal only defined for 2D matrices')
 end
-ind=sub2ind(size(A),i,i);
+
+ind=find(speye(min(siz)));
+
+% % Alternative not relying on sparse arrays
+% i=1:min(siz);
+% ind=sub2ind(size(A),i,i);
+
 %% 
 % _*GIBBON footer text*_ 
 % 

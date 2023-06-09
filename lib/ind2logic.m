@@ -1,11 +1,31 @@
-function [L]=ind2logic(ind,siz)
+function [L]=ind2logic(varargin)
+
+% function [L]=ind2logic(ind,siz)
+% ------------------------------------------------------------------------
+% This function converts the linear indicies ind to the logic array L. 
+% ------------------------------------------------------------------------
+
+%% Parse input
+
+switch nargin
+    case 1
+        ind=varargin{1};
+        siz=[max(ind(:)) 1];
+    case 2
+        ind=varargin{1};
+        siz=varargin{2};        
+end
 
 %Assume vector if size has one entry
 if numel(siz)==1
     siz=[siz 1];
 end
-L=false(siz);
-L(ind)=1;
+
+%%
+% Create logic
+L=false(siz); %Initialise as all false
+L(ind)=1; %Set to true and the indices ind
+
 %% 
 % _*GIBBON footer text*_ 
 % 

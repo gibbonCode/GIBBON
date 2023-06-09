@@ -5,12 +5,17 @@
 clear; close all; clc;
 
 %% Syntax
-% |[varargout]=importEleFile_tetGen(fileName);|
+% |[elementID,E,elementMaterialID]=importEleFile_tetGen(fileName);|
 
 %% Description 
-% UNDOCUMENTED 
+% Imports a TetGen ELE file
+%
+% See also: |runTetGen|
+
 %% Examples 
-% 
+%
+
+
 %%
 % 
 % <<gibbVerySmall.gif>>

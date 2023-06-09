@@ -8,9 +8,34 @@ clear; close all; clc;
 % |[A] = ind2subn(siz,ind);|
 
 %% Description 
-% UNDOCUMENTED 
+% This function is similar to MATLAB's ind2sub function. However the output
+% is collected in an array that is numel(ind) x numel(siz). This function
+% constructs an array where the columns represent the subscripts indices
+% for the input linear indices (ind). 
+%
+%   See also: |ind2sub|, |sub2ind|
+
 %% Examples 
 % 
+
+%%
+% 2D indices
+ind=[1 2 6 12]
+siz=[6 6]
+[IJ] = ind2subn(siz,ind)
+
+%%
+% 3D indices
+ind=[1 2 6 12 666]
+siz=[11 11 11]
+[IJK] = ind2subn(siz,ind)
+
+%%
+% 4D indices
+ind=[1 2 6 12 666 6666]
+siz=[11 11 11 11]
+[IJKL] = ind2subn(siz,ind)
+
 %%
 % 
 % <<gibbVerySmall.gif>>

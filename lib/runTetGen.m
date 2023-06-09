@@ -352,11 +352,11 @@ end
 
 try
     [meshOutput]=importTETGEN(loadNameStructTemp); 
-    meshOutput.loadNameStruct=loadNameStruct; 
-catch
-   error('Error importing TetGen output files. Check file names.');
+catch ME
+   warning('Importing TetGen output files unsuccesful. Check tetgen error messages, and check file names.');
+   rethrow(ME);
 end
-
+meshOutput.loadNameStruct=loadNameStruct; 
 
 %% Convert element type if required
 

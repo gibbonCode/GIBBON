@@ -5,12 +5,15 @@
 clear; close all; clc;
 
 %% Syntax
-% |[varargout]=importNodeFile_tetGen(fileName);|
+% |[nodeID,V]=importNodeFile_tetGen(fileName);|
 
 %% Description 
-% UNDOCUMENTED 
+% Imports a TetGen NODE file
+%
+% See also: |runTetGen|
+
 %% Examples 
-% 
+%
 %%
 % 
 % <<gibbVerySmall.gif>>

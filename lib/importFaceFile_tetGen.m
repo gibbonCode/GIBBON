@@ -1,8 +1,18 @@
 function [varargout]=importFaceFile_tetGen(fileName)
 
+% function [faceId,F,faceBoundaryID]=importFaceFile_tetGen(fileName)
+% ------------------------------------------------------------------------
+% This funciton imports the tetgen FACE file. 
+% ------------------------------------------------------------------------
+
+%% Parse file
+
+%Open file and parse to cell array using textscan
 fid=fopen(fileName,'r');
 [A]=textscan(fid,'%d %d %d %d %f','HeaderLines',1,'Delimiter',' ','CommentStyle','Shell','MultipleDelimsAsOne',1);
 fclose(fid);
+
+% Create face and face boundary label/id arrays
 faceID=double(A{1});
 F=nan(max(faceID),3);
 F(faceID,:)=double([A{2} A{3} A{4}]);
@@ -11,6 +21,8 @@ faceBoundaryID=double(A{5});
 if all(isnan(faceBoundaryID(:)))
     faceBoundaryID=-ones(size(F,1),1);
 end
+
+%% Collect ouput
 
 varargout{1}=faceID;
 varargout{2}=F;

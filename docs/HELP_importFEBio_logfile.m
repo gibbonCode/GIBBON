@@ -5,12 +5,59 @@
 clear; close all; clc;
 
 %% Syntax
-% |[TIME, DATA, Data_label]=importFEBio_logfile(import_name);|
+% |dataStruct=importFEBio_logfile(fileNameImport,addZeroInitialOpt,removeIndicesOpt)|
 
 %% Description 
-% UNDOCUMENTED 
+% This function imports FEBio output log files such as for node outputs
+% (e.g. displacement) and element outputs (e.g. stress). The inputs include
+% the file name to import as well as the following optional inputs: 
+% 
+% * addZeroInitialOpt => Set to 0 or 1 to import as is, or to add a zero
+% initial state. Note this functionality is not obsolute, since FEBio can
+% now import an initial state (which may be non-zero e.g. for stretch
+% data). 
+% * removeIndicesOpt => set to 0 or 1 to keep or remove the index column
+% from the data 
+
 %% Examples 
 % 
+
+%%
+
+% Path names
+defaultFolder = fileparts(fileparts(mfilename('fullpath'))); 
+savePath=fullfile(defaultFolder,'data','temp');
+
+% Defining file names
+febioFebFileNamePart='tempModel';
+febioFebFileName=fullfile(savePath,[febioFebFileNamePart,'.feb']); %FEB file name
+febioLogFileName=[febioFebFileNamePart,'.txt']; %FEBio log file name
+febioLogFileName_disp=[febioFebFileNamePart,'_disp_out.txt']; %Log file name for exporting displacement
+febioLogFileName_stress=[febioFebFileNamePart,'_stress_out.txt']; %Log file name for exporting stress sigma_z
+
+%%
+% Check for existing output files in the temp folder. Run febio demo 1 if not found. 
+
+if ~exist(febioLogFileName_disp,'file')
+    DEMO_febio_0001_cube_uniaxial
+end
+
+%% Importing nodal displacements from a log file
+% Importing the output data into a data structure: 
+
+addZeroInitialOpt=0;
+removeIndicesOpt=1;
+dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_disp),addZeroInitialOpt,removeIndicesOpt)
+
+%%
+% The data structure contains the time vector and the data. For k
+% dimensional data, n nodes (or elements), and m time steps the data is nxkxm+1 (or m
+% when the initial state is not requested or not added by FEBio). 
+
+%Access data
+U_disp=dataStruct.data; %Displacement data 
+timeVec=dataStruct.time; %Time vector
+
 %%
 % 
 % <<gibbVerySmall.gif>>

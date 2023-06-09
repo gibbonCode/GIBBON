@@ -5,12 +5,18 @@
 clear; close all; clc;
 
 %% Syntax
-% |[abaqusData]=importAbaqusDat(varargin);|
+% |[abaqusData]=importAbaqusDat(fileName,optionStruct);|
 
 %% Description 
-% UNDOCUMENTED 
+% Imports an Abaqus .dat file to a structure. 
+
 %% Examples 
 % 
+
+%%
+% |[abaqusData]=importAbaqusDat(abaqusDATFileName)|
+
+
 %%
 % 
 % <<gibbVerySmall.gif>>

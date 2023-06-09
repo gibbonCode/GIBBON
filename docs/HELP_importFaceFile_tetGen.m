@@ -5,12 +5,16 @@
 clear; close all; clc;
 
 %% Syntax
-% |[varargout]=importFaceFile_tetGen(fileName);|
+% |[faceId,F,faceBoundaryID]=importFaceFile_tetGen(fileName);|
 
 %% Description 
-% UNDOCUMENTED 
+% Imports a TetGen FACE file
+%
+% See also: |runTetGen|
+
 %% Examples 
-% 
+%
+
 %%
 % 
 % <<gibbVerySmall.gif>>

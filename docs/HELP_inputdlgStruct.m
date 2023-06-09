@@ -11,6 +11,17 @@ clear; close all; clc;
 % UNDOCUMENTED 
 %% Examples 
 % 
+
+nameCell={'Apple','Banana','Monkey'};
+defaultOptions={'1','2','nope'};
+dialogTitle='Enter stuff';
+
+%%
+% |[S]=inputdlgStruct(nameCell,defaultOptions,dialogTitle)| 
+
+%%
+% <<inputdlgStruct_example.png>>
+
 %%
 % 
 % <<gibbVerySmall.gif>>
