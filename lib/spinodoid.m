@@ -1,5 +1,6 @@
 function [varargout]=spinodoid(inputStruct)
 
+% function [F,V,C,GRF,X,Y,Z,levelSet]=spinodoid(inputStruct)
 % -----------------------------------------------------------------------
 % This function generates Spinodoid microstructures which are non-periodic
 % and stochastic bi-continous microstructures that approximate the
@@ -56,7 +57,8 @@ function [varargout]=spinodoid(inputStruct)
 %                                                trimDomainFunction(x,y,z)
 %                                                should output true if 
 %                                                (x.^2+y.^2+z.^2 <= 1^2).
-%
+% inputStruct.patchDomain.F=[];
+% inputStruct.patchDomain.V=[];
 %
 % Original author: Siddhant Kumar, September 2020
 % (contact: Sid.Kumar@tudelft.nl)
@@ -99,6 +101,8 @@ defaultInputStruct.trimDomainFunction = @doNothing; % A function handle handle (
 %                                                     trimDomainFunction(x,y,z)
 %                                                     should output true if 
 %                                                     (x.^2+y.^2+z.^2 <= 1^2).
+defaultInputStruct.patchDomain.F=[];
+defaultInputStruct.patchDomain.V=[];
 
 %Complete input with default if incomplete
 [inputStruct]=structComplete(inputStruct,defaultInputStruct,1); %Complement provided with default if missing or empty
@@ -114,6 +118,8 @@ thetas= inputStruct.thetas; % conical half angles (in degrees)
 R = inputStruct.R; % Rotate the GRF, R must be SO(3)
 ignoreChecks = inputStruct.ignoreChecks; %Ignore checks on parameter values
 trimDomainFunction = inputStruct.trimDomainFunction; %trimDomainFunction handle
+F_patchDomain=inputStruct.patchDomain.F;
+V_patchDomain=inputStruct.patchDomain.V;
 
 %% Input checks
 if(ignoreChecks)
@@ -226,8 +232,31 @@ for i=1:numWaves
 end
 
 %% Trim domain
+
+% Create trim logic using domain function 
 is_inside_domain = trimDomainFunction(X,Y,Z);
-GRF = GRF + (1-is_inside_domain)*100000000;
+
+% Create/adjust trim logic using patch data
+if ~isempty(F_patchDomain)
+    voxelSize=domainSize./resolution;
+    imOrigin=[0 0 0];
+    imSiz=size(GRF);
+    M=patch2Im(F_patchDomain,V_patchDomain,ones(size(F_patchDomain,1),1),voxelSize,imOrigin,imSiz);
+    M=permute(M,[2 1 3]);
+    is_inside_domain = is_inside_domain & M==1;
+end
+
+if nnz(~is_inside_domain)>0 %If any domain trimming is needed
+    % GRF = GRF + (1-is_inside_domain)*1e8;
+
+    % D = bwdist(is_inside_domain,'Euclidean');
+    % D=D./2;
+    % D(D>1)=1;
+    % D=1-D;
+    % GRF = GRF.*D;
+
+    GRF(~is_inside_domain) = 2*max(GRF(:));
+end
 
 %% Apply levelset
 levelset = sqrt(2)*erfinv(2*relativeDensity-1);
@@ -236,6 +265,7 @@ levelset = sqrt(2)*erfinv(2*relativeDensity-1);
 
 %Compute isosurface
 [f,v] = isosurface(X,Y,Z,GRF,levelset);
+
 c=zeros(size(f,1),1);
 
 %Isocaps
@@ -243,18 +273,19 @@ if isocap==1
     %Compute isocaps
     [fc,vc] = isocaps(X,Y,Z,GRF,levelset,'enclose','below');
 
-    nc=patchNormal(fc,vc);
-    cc=zeros(size(fc,1),1);
-    cc(nc(:,1)<-0.5)=1;
-    cc(nc(:,1)>0.5)=2;
-    cc(nc(:,2)<-0.5)=3;
-    cc(nc(:,2)>0.5)=4;
-    cc(nc(:,3)<-0.5)=5;
-    cc(nc(:,3)>0.5)=6;    
-    
-    %Join sets
-    [f,v,c]=joinElementSets({f,fc},{v,vc},{c,cc});
-    
+    if ~isempty(fc)
+        nc=patchNormal(fc,vc);
+        cc=zeros(size(fc,1),1);
+        cc(nc(:,1)<-0.5)=1;
+        cc(nc(:,1)>0.5)=2;
+        cc(nc(:,2)<-0.5)=3;
+        cc(nc(:,2)>0.5)=4;
+        cc(nc(:,3)<-0.5)=5;
+        cc(nc(:,3)>0.5)=6;
+
+        %Join sets
+        [f,v,c]=joinElementSets({f,fc},{v,vc},{c,cc});
+    end
 end
 
 %% Merge nodes and clean-up mesh 
@@ -291,7 +322,7 @@ end
 
 
 function [var] = doNothing(x,y,z)
-    var = true;
+    var = true(size(x));
 end
 %% 
 %

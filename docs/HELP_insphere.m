@@ -5,12 +5,55 @@
 clear; close all; clc;
 
 %% Syntax
-% |[R,Xc]=insphere(E,X);|
+% |[R,Vc]=insphere(E,V);|
 
 %% Description 
-% UNDOCUMENTED 
+% Computes the incentres Vc, and inraddi R of the inspheres for the
+% tetrahedral input mesh defined by the element array E and the vertices V.
 %% Examples 
 % 
+
+%%
+% Plot settings
+
+fontSize=20;
+faceAlpha1=0.1;
+
+%% 
+% % A tetrahedral mesh
+boxDim=[2 2 1]; % Box dimenstions
+pointSpacing=1; 
+
+[meshStruct]=tetMeshBox(boxDim,pointSpacing);
+
+%%
+% Acces output fields
+E=meshStruct.elements;
+V=meshStruct.nodes;
+F=meshStruct.faces;
+Fb=meshStruct.facesBoundary;
+faceBoundaryMarker=meshStruct.boundaryMarker;
+
+%%
+% Compute incentres and inradii for the set of tetrahedra
+[R,Vc]=insphere(E,V);
+
+%%
+% Visualise inspheres
+
+cFigure; hold on;
+title('A tetrahedral mesh showing inspheres','FontSize',fontSize);
+
+hp1=gpatch(F,V,'w','k',faceAlpha1,2);
+
+[Fs,Vs]=geoSphere(2,1);
+for q=1:1:size(E,1)
+    hp2=gpatch(Fs,Vs.*R(q)+Vc(q,:),'rw','none');
+end
+legend([hp1,hp2],{'Tetrahedral mesh','inspheres'},'Location','northeastoutside');
+axisGeom(gca,fontSize); camlight headlight; 
+drawnow; 
+
 %%
 % 
 % <<gibbVerySmall.gif>>

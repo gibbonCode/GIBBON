@@ -8,7 +8,10 @@ clear; close all; clc;
 % |S=inputdlgStruct(varargin);|
 
 %% Description 
-% UNDOCUMENTED 
+% A simplified interface to inputdlg. This function creates an input dialog
+% based on the input field names in nameCell, the default options in
+% defaultOptions. The input dialog gets the title dialogTitle. 
+
 %% Examples 
 % 
 

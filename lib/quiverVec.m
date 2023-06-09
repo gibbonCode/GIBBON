@@ -71,7 +71,7 @@ if size(P,1)==1 %Expand to match V if single origin is given
 end
 
 %%
-if ~isempty(P) || ~isempty(V)
+if ~isempty(P) && ~isempty(V)
     
     if isempty(edgeColorOpt)
         edgeColorOpt='none';

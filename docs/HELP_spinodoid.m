@@ -101,6 +101,7 @@ edgeColor2='none';
 fontSize=15;
 
 %% Example 1: Isotropic spinodoid
+
 inputStruct.isocap=true; % option to cap the isosurface
 inputStruct.domainSize=1; % domain size
 inputStruct.resolution=75; % resolution for sampling GRF
@@ -131,6 +132,8 @@ colormap gjet; icolorbar;
 gdrawnow;
 
 %% Example 2: Lamellar spinodoid
+
+clear inputStruct; %Clear previous
 inputStruct.isocap=true; % option to cap the isosurface
 inputStruct.domainSize=1; % domain size
 inputStruct.resolution=100; % resolution for sampling GRF
@@ -161,6 +164,8 @@ colormap gjet; icolorbar;
 gdrawnow;
 
 %% Example 3: Columnar spinodoid
+
+clear inputStruct; %Clear previous
 inputStruct.isocap=true; % option to cap the isosurface
 inputStruct.domainSize=1; % domain size
 inputStruct.resolution=100; % resolution for sampling GRF
@@ -192,6 +197,8 @@ gdrawnow;
 
 
 %% Example 4: Cubic spinodoid
+
+clear inputStruct; %Clear previous
 inputStruct.isocap=true; % option to cap the isosurface
 inputStruct.domainSize=1; % domain size
 inputStruct.resolution=100; % resolution for sampling GRF
@@ -222,7 +229,7 @@ colormap gjet; icolorbar;
 gdrawnow;
 
 
-%% Example 5: Non-cubic specimens
+%% Example 5: Non-cubic domains by specifying "trimDomainFunction"
 
 % In this example, we create a spinodoid in the shape of 1/8th of a sphere
 % with radius=1 and centered at (0,0,0). % For this purpose, we first
@@ -232,7 +239,7 @@ gdrawnow;
 % so all operations should be element-wise (denoted by '.').
 trimDomainFunction = @(x,y,z)(x.^2+y.^2+z.^2 <= 1^2);
 
-
+clear inputStruct; %Clear previous
 inputStruct.isocap=true; % option to cap the isosurface
 inputStruct.domainSize=1; % domain size
 inputStruct.resolution=100; % resolution for sampling GRF
@@ -263,8 +270,49 @@ axisGeom; camlight headlight;
 colormap gjet; icolorbar;
 gdrawnow;
 
+%% Example 6: Non-cubic domains by specifying a domain surface
 
-%% Example 6: Spatially-graded spinodoids
+domainSize=2;
+
+%Create example domain cropping surface
+[Fd,Vd]=stanford_bunny; 
+Vd=Vd-min(Vd,[],1); %Start at 0
+Vd=Vd./max(Vd(:),[],1); %End at 1
+Vd=0.1*domainSize+(Vd.*0.8.*domainSize); %Scale to fit in domain
+
+clear inputStruct
+inputStruct.isocap=true; % option to cap the isosurface
+inputStruct.domainSize=domainSize; % domain size
+inputStruct.resolution=150; % resolution for sampling GRF
+inputStruct.waveNumber=15*pi; % GRF wave number
+inputStruct.numWaves=1000; % number of waves in GRF
+inputStruct.relativeDensity=0.5; % relative density: between [0.3,1]
+inputStruct.thetas=[90 0 0]; % conical half angles (in degrees) along xyz
+inputStruct.R = eye(3); % Rotate the GRF, R must be SO(3)
+inputStruct.patchDomain.F=Fd; 
+inputStruct.patchDomain.V=Vd; 
+
+% Create spinodoid
+[F,V,C,GRF]=spinodoid(inputStruct);
+
+% Using grouping to keep only largest group
+groupOptStruct.outputType='label';
+[G,~,groupSize]=tesgroup(F,groupOptStruct); %Group connected faces
+[~,indKeep]=max(groupSize); %Index of largest group
+
+%Keep only largest group
+F=F(G==indKeep,:); %Trim faces
+C=C(G==indKeep,:); %Trim color data 
+[F,V]=patchCleanUnused(F,V); %Remove unused nodes
+
+% Visualize surface
+cFigure; 
+gpatch(F,V,'bw','none');
+gpatch(Fd,Vd,'w','none',0.25);
+axisGeom; camlight headlight; 
+gdrawnow;
+
+%% Example 7: Spatially-graded spinodoids
 
 % -----------------------------------------------------------------------
 % For reference, see Appendix A of the following paper:
