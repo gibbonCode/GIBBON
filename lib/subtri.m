@@ -20,6 +20,7 @@ function [Fs,Vs]=subtri(varargin)
 % 2010/06/01 Created
 % 2014/02/27 Added splitting method
 % 2017/11/29 Updated (removed example in) help text in function
+% 2023/06/06 Updated to use new subTriSplit function for linear splitting
 % ------------------------------------------------------------------------
 
 %% Parse input
@@ -54,42 +55,8 @@ else
 end
 
 switch subMethod
-    case 'split' %iteratively split edges (no double points created, unique operation avoided)
-            Fs=F; Vs=V;
-        for q=1:1:nSplitIterations
-            F=Fs; V=Vs;
-            E=[F(:,[1 2]); F(:,[2 3]);  F(:,[3 1])]; %Edges matrix
-            Es=sort(E,2); %Sorted edges matrix
-            [~,ind1,~]=unique(Es,'rows');
-            E=E(ind1,:);
-            
-            numPoints = size(V,1);
-            numEdges = size(E,1);
-            
-            % Get indices of the three edges associated with each face            
-            A = sparse(E(:,1),E(:,2),(1:numEdges)+numPoints,numPoints,numPoints,numEdges);            
-            A = max(A,A'); %Copy symmetric
-            
-            %Indices for A matrix
-            indA_12=F(:,1)+(F(:,2)-1)*numPoints;
-            indA_23=F(:,2)+(F(:,3)-1)*numPoints;
-            indA_31=F(:,3)+(F(:,1)-1)*numPoints;
-            
-            %Get indices for vertex array
-            indV_12=full(A(indA_12));
-            indV_23=full(A(indA_23));
-            indV_31=full(A(indA_31));
-            
-            %Create faces array
-            Fs=[[F(:,1)  indV_12 indV_31];...
-                [F(:,2)  indV_23 indV_12];...
-                [F(:,3)  indV_31 indV_23];...
-                [indV_12 indV_23 indV_31]];
-            
-            %Create vertex array
-            Vn=0.5*(V(E(:,1),:)+V(E(:,2),:)); %new mid-edge points
-            Vs = [V; Vn]; %Join point sets
-        end
+    case 'split' %iteratively split edges (no double points created, unique operation avoided)        
+        [Fs,Vs]=subTriSplit(F,V,nSplitIterations);
     case 'seed' %Seed edge points and remove doubles (more memory intensive)
         nDim=size(V,2);
         if nDim==2
