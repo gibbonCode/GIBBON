@@ -21,6 +21,8 @@ function [Fs,Vs]=subtri(varargin)
 % 2014/02/27 Added splitting method
 % 2017/11/29 Updated (removed example in) help text in function
 % 2023/06/06 Updated to use new subTriSplit function for linear splitting
+% 2023/06/07 Removed scaling to "condition" shared point merging, since
+% mergeVertices should take care of that.
 % ------------------------------------------------------------------------
 
 %% Parse input
@@ -64,17 +66,6 @@ switch subMethod
         end
         
         no_faces=size(F,1);
-        
-        EF=edges(triangulation(F,V));
-        X=V(:,1); Y=V(:,2); Z=V(:,3);
-        X_EF=X(EF); Y_EF=Y(EF); Z_EF=Z(EF);
-        edgeLengthMin=min(sqrt(sum(([X_EF(:,1) Y_EF(:,1) Z_EF(:,1)]-[X_EF(:,2) Y_EF(:,2) Z_EF(:,2)]).^2,2)));
-        if edgeLengthMin>0
-            scaleFactor=1./edgeLengthMin;
-        else
-            scaleFactor=1;
-        end
-        V=V.*scaleFactor;
         
         X=V(:,1); Y=V(:,2); Z=V(:,3);
         
@@ -144,7 +135,7 @@ switch subMethod
         if uniqueOpt 
             [Fs,Vs]=mergeVertices(Fs,Vs);
         end
-        Vs=Vs./scaleFactor;
+        
         if nDim==2
            Vs=Vs(:,[1 2]); 
         end

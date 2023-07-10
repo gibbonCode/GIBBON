@@ -1,5 +1,5 @@
-%% subtri
-% Below is a demonstration of the features of the |subtri| function
+%% subTriSplit
+% Below is a demonstration of the features of the |subTriSplit| function
 
 %% Syntax
 % |[Fs,Vs]=subTriSplit(F,V,n);|
