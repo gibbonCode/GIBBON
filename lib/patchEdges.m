@@ -44,7 +44,7 @@ else %Non-cell input
     E=[E1(:) E2(:)];
 end
 
-%% Remove doulble entire if requested
+%% Remove double entries if requested
 
 if uniOpt==1
     [Es,indSort]=sort(E,2); %Sorted so [1 4] and [4 1] are seen as the same edge

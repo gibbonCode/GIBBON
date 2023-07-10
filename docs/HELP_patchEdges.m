@@ -5,12 +5,36 @@
 clear; close all; clc;
 
 %% Syntax
-% |varargout=patchEdges(varargin);|
+% | [E] = patchEdges(F,uniOpt);|
 
 %% Description 
-% UNDOCUMENTED 
+% Get the nx2 patch array for the input faces (F) and vertices (V). If
+% uniOpt=1 then only unique edges are returned e.g. the edges spanning from
+% node 1 to node 2 is the same as from node 2 to node 1. If uniOpt=0 then
+% such non-unique edges are also inluded. 
+
 %% Examples 
 % 
+
+%%
+% Example geometry
+[F,V]=geoSphere(1,1);
+
+uniOpt=0;
+E=patchEdges(F,uniOpt);
+
+cFigure; 
+subplot(1,2,1); 
+title('Patch geometry')
+gpatch(F,V,'rw','r'); 
+axisGeom; camlight headlight; 
+
+subplot(1,2,2); 
+title('Edges')
+gedge(E,V,'r',2);
+axisGeom; 
+
+drawnow; 
 %%
 % 
 % <<gibbVerySmall.gif>>
