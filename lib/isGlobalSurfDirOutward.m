@@ -12,18 +12,22 @@ function [L]=isGlobalSurfDirOutward(F,V)
 %-------------------------------------------------------------------------
 %%
 
-%Compute edge lengths
-[edgeLengths]=patchEdgeLengths(F,V);
-minLength=min(edgeLengths(:));
+% %Compute edge lengths
+% [edgeLengths]=patchEdgeLengths(F,V);
+% growSize=mean(edgeLengths)/10;
+% 
+% %Get vertex normals
+% [~,~,N]=patchNormal(F,V);
+% 
+% %Compute volumes before and after "contraction/inflation" and flip faces if required.
+% [volFV1]=patchVolume(F,V); %Initial volume
+% 
+% [volFV2]=patchVolume(F,V+(growSize/10.*N)); %"contracted/inflated" volume
+% 
+% L=volFV2>volFV1; %if the volume increased the global direction is outward
 
-%Get vertex normals
-[~,~,N]=patchNormal(F,V);
-
-%Compute volumes before and after "contraction/inflation" and flip faces if required.
-[volFV1]=triSurfVolume(F,V); %Initial volume
-[volFV2]=triSurfVolume(F,V+(minLength/10.*N)); %"contracted/inflated" volume
-
-L=volFV2>volFV1; %if the volume increased the global direction is outward
+volFV = patchVolume(F,V,0);
+L = volFV>0; %Check for positive volume
 
 end
  

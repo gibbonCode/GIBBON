@@ -1,8 +1,16 @@
 function [logicEuler]=isConvexPolyhedron(F,V)
 
-[eulerVal]=eulerChar(F,V);
- 
- logicEuler=eulerVal==2;
+% function [logicEuler]=isConvexPolyhedron(F,V)
+% ------------------------------------------------------------------------
+% This function returns if a surface's Euler characteristic equals 2. 
+%
+% ------------------------------------------------------------------------
+
+%%
+
+[eulerVal]=eulerChar(F,V); %Euler characteristic
+
+logicEuler=eulerVal==2; %Check if it equals 2
  
 %% 
 % _*GIBBON footer text*_ 

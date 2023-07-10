@@ -11,6 +11,25 @@ clear; close all; clc;
 % UNDOCUMENTED 
 %% Examples 
 % 
+
+%%
+% Example surface
+[F,V]=stanford_bunny;
+
+% This one should be true
+[L]=isGlobalSurfDirOutward(F,V)
+
+% Reversed should be false
+[L]=isGlobalSurfDirOutward(fliplr(F),V)
+
+%%
+
+cFigure; 
+gpatch(F,V);
+patchNormPlot(F,V);
+axisGeom; camlight headlight; 
+drawnow; 
+
 %%
 % 
 % <<gibbVerySmall.gif>>

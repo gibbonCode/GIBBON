@@ -1,4 +1,5 @@
-function [surfaceVolume]=patchVolume(F,V)
+function [surfaceVolume]=patchVolume(varargin)
+% function [surfaceVolume]=patchVolume(F,V,makeAbsolute)
 % ------------------------------------------------------------------------
 % Volume derivation based on Gauss divergence theorem
 %
@@ -6,6 +7,17 @@ function [surfaceVolume]=patchVolume(F,V)
 %
 %
 % ------------------------------------------------------------------------
+%% parse input
+switch nargin
+    case 2
+        F=varargin{1};
+        V=varargin{2};
+        makeAbsolute=0;
+    case 3
+        F=varargin{1};
+        V=varargin{2};
+        makeAbsolute=varargin{3};
+end
 
 %%
 
@@ -13,28 +25,31 @@ if isa(F,'cell')
     surfaceVolume=0;
     for q=1:1:numel(F)
         if isa(V,'cell')
-            [surfaceVolumeContributions]=getVolumeContributions(F{q},V{q});
+            [surfaceVolumeContributions]=getVolumeContributions(F{q},V{q},makeAbsolute);
         else
-            [surfaceVolumeContributions]=getVolumeContributions(F{q},V);
+            [surfaceVolumeContributions]=getVolumeContributions(F{q},V,makeAbsolute);
         end
         %Total volume. Ignore NaNs, which may result from normal computation on zero-area faces
         surfaceVolume = surfaceVolume + sum(surfaceVolumeContributions(~isnan(surfaceVolumeContributions)));
     end
 else
-    [surfaceVolumeContributions]=getVolumeContributions(F,V);
+    [surfaceVolumeContributions]=getVolumeContributions(F,V,makeAbsolute);
 end
 %Total volume. Ignore NaNs, which may result from normal computation on zero-area faces
 surfaceVolume = sum(surfaceVolumeContributions(~isnan(surfaceVolumeContributions))); 
 
 end
 
-function [surfaceVolumeContributions]=getVolumeContributions(F,V)    
+function [surfaceVolumeContributions]=getVolumeContributions(F,V,makeAbsolute)    
     N=patchNormal(F,V);%Face normals
     surfaceAreas=patchArea(F,V); %Face areas
     Z=V(:,3);
     Zm=mean(Z(F),2); %Mean Z-coordinates for faces            
     Nz = N(:,3); %Z component of normal
     surfaceVolumeContributions = surfaceAreas.*Zm.*Nz; %Contributions
+    if makeAbsolute
+        surfaceVolumeContributions=abs(surfaceVolumeContributions);
+    end
 end
 
 %% 

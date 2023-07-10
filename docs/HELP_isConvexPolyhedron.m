@@ -8,9 +8,22 @@ clear; close all; clc;
 % |[logicEuler]=isConvexPolyhedron(F,V);|
 
 %% Description 
-% UNDOCUMENTED 
+% This function returns if a surface's Euler characteristic equals 2. 
 %% Examples 
 % 
+
+%%
+% Example for a closed surface
+[F,V]=stanford_bunny;
+[logicEuler]=isConvexPolyhedron(F,V)
+
+%%
+% Example for a non-closed surface
+
+F2=F(2:end,:); %Remove some faces to create a hole
+
+[logicEuler]=isConvexPolyhedron(F2,V)
+
 %%
 % 
 % <<gibbVerySmall.gif>>

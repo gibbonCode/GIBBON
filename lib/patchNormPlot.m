@@ -1,6 +1,6 @@
 function varargout=patchNormPlot(varargin)
 
-% function [hp]=patchNormPlot(F,V,a,pathType)
+% function [hp]=patchNormPlot(F,V,a,pathType,patchColor)
 %
 % Simple function to plot surface normal vectors with magnitude a for the
 % patch data specified by the faces F and vertices V. The option third

@@ -13,14 +13,14 @@ clear; close all; clc;
 
 %% Examples
 %
-
-for testCase=1:8
+makeAbsolute=0;
+for testCase=1:9
 
 switch testCase    
     case 1 %Trianglulated sphere
         r=2;
         ns=5;
-        [F,V]=geoSphere(ns,r); 
+        [F,V]=geoSphere(ns,r);         
         volTotalTrue=4/3*pi*r^3; %True theoretical volume
     case 2 %Trianglulated sphere
         r=2;
@@ -69,12 +69,18 @@ switch testCase
         [Ft,Vt]=geoSphere(ns,r);
         [V,F]=patch_dual(Vt,Ft);        
         volTotalTrue=4/3*pi*r^3; %True theoretical volume
+    case 9 %Trianglulated sphere
+        r=2;
+        ns=5;
+        [F,V]=geoSphere(ns,r);         
+        F=fliplr(F);
+        volTotalTrue=-4/3*pi*r^3; %True theoretical volume
 end
 
 %%
 
 %Compute volume for the patch surface 
-volEst=patchVolume(F,V)
+volEst=patchVolume(F,V,makeAbsolute)
 
 volTotalTrue
 

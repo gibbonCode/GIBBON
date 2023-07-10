@@ -1,6 +1,7 @@
 function [varargout]=regionTriMesh2D(varargin)
 
 % function [F,V,boundaryInd]=regionTriMesh2D(inputStructure)
+% function [F,V,boundaryInd]=regionTriMesh2D(regionCell,pointSpacing,resampleCurveOpt,plotOn);
 % ------------------------------------------------------------------------
 % This function creates a 2D triangulation for the region specified in the
 % variable regionCell. The mesh aims to obtain a point spacing as defined
@@ -177,7 +178,7 @@ for qCurve=1:1:numel(regionCell)
     end
     
     [Vss]=evenlySpaceCurve(Vs,pointSpacing,interpMethod,closeLoopOpt,indMust);
-    
+
     %Create refined set for distance based edge point removal
     [Vss_split]=subCurve(Vss,1,1);
     
@@ -322,7 +323,7 @@ else
         smoothPar.Method='LAP';
         smoothPar.n=smoothIterations;
         smoothPar.Tolerance=0.01;
-        smoothPar.RigidConstraints=[boundaryInd(:); indMustPointsInner];
+        smoothPar.RigidConstraints=[boundaryInd(:); indMustPointsInner];        
         [V]=tesSmooth(F,V,[],smoothPar);
     end
     
