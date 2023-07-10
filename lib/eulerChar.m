@@ -1,7 +1,16 @@
 function [eulerVal]=eulerChar(F,V)
+% function [eulerVal]=eulerChar(F,V)
+% ------------------------------------------------------------------------
+%
+% 2023/06/13 KMM: Added the use of patchCleanUnused so that unused points
+% are not counted 
+% ------------------------------------------------------------------------
 
-E=patchEdges(F,1);
-eulerVal=size(V,1)-size(E,1)+size(F,1);
+%%
+
+[F,V]=patchCleanUnused(F,V); %Remove unused vertices from the list
+E=patchEdges(F,1); %Get the edges
+eulerVal=size(V,1)-size(E,1)+size(F,1); %Compute Euler characteristic
  
 %% 
 % _*GIBBON footer text*_ 
