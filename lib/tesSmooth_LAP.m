@@ -29,8 +29,8 @@ end
 %%
 
 if ~isempty(SSQD_Tol)
-    SSQD_old=[];
-    SSQD_ratio=0;
+    SSQD_old=nan;
+    SSQD_diff=nan;
 end
 
 if isempty(IND_V)
@@ -71,14 +71,17 @@ for qIter=1:nMax
         %Compute sum of squared differences with respect to previous iteration
         SSQD_new=gnansum((P(:)-Q(:)).^2);
         if ~isempty(SSQD_old)
-            SSQD_ratio=SSQD_new./SSQD_old;            
+            SSQD_diff=abs(SSQD_new-SSQD_old);            
         end
         
         %Store current metrics
         Q=P;
         SSQD_old=SSQD_new;        
-        if abs(1-SSQD_ratio)<=SSQD_Tol
+        if SSQD_diff<=SSQD_Tol
+              % disp(['Tolerance reached at iteration ',num2str(qIter)]);
            break %STOP SMOOTHING LOOP IF TOLERANCE IS REACHED 
+        % else
+            % disp(['----- Current SSQD_diff at iteration ',num2str(qIter),' ',num2str(SSQD_diff)]);
         end
     end    
 end
