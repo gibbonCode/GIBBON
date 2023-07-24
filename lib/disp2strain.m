@@ -9,13 +9,17 @@ function [D_out]=disp2strain(Ux, Uy, Uz, v, strain_type)
 %gradient along the Nth dimension of F."
 % Therefore the gradient of A: [Gdim2,Gdim1,Gdim3] = gradient(A,v1,v2,v3)
 
+%% 
+% Compute gradients
 [Ugxx,Ugxy,Ugxz] = gradient(Ux,v(1),v(2),v(3));
 [Ugyx,Ugyy,Ugyz] = gradient(Uy,v(1),v(2),v(3));
 [Ugzx,Ugzy,Ugzz] = gradient(Uz,v(1),v(2),v(3));
 
-UG=[Ugxx(:) Ugxy(:) Ugxz(:)...
-    Ugyx(:) Ugyy(:) Ugyz(:)...
-    Ugzx(:) Ugzy(:) Ugzz(:)];
+%Displacement gradient
+UG=[Ugxx(:) Ugyx(:) Ugzx(:)...
+    Ugxy(:) Ugyy(:) Ugzy(:)...
+    Ugxz(:) Ugyz(:) Ugzz(:)];
+
 UG=reshape(UG',3,3,size(UG,1));
 UG=reshape(mat2cell(UG,3,3,ones(size(UG,3),1)),size(Ux));
 
@@ -23,7 +27,7 @@ UG=reshape(mat2cell(UG,3,3,ones(size(UG,3),1)),size(Ux));
 I_unity=eye(3,3);
 
 %Allocating memory
-F=UG; C=UG; E=UG; U=UG; Cp=UG;
+F=UG; C=UG; E=UG; U=UG; V=UG; Q=UG; R=UG; Cp=UG;
 Emaxp=ones(size(Ux)); Eminp=Emaxp; Emidp=Emaxp; Eoct=Emaxp; 
 Exx=Emaxp; Exy=Emaxp; Exz=Emaxp;
 Eyx=Emaxp; Eyy=Emaxp; Eyz=Emaxp;
@@ -33,20 +37,16 @@ Ezx=Emaxp; Ezy=Emaxp; Ezz=Emaxp;
 for i=1:1:size(UG,1)
     for j=1:1:size(UG,2)
         for k=1:1:size(UG,3)
-            UG{i,j,k}
-            
-            Fijk=UG{i,j,k}+I_unity;
-            F(i,j,k)={Fijk};
-            Cijk=Fijk'*Fijk; %The right Cauchy Green tensor
-            C(i,j,k)={Cijk};
+            Fijk=UG{i,j,k}+I_unity; %Deformation gradient tensor            
+            Cijk=Fijk'*Fijk; %The right Cauchy Green tensor            
             if any(isnan(Cijk))
                 Qijk=NaN(size(Cijk));
                 Up_ijk=NaN(size(Cijk));
                 Ep_ijk=NaN(size(Cijk));
             else
                 [Qijk,Lpsq_ijk] = eig(Cijk); %The rotation (and translation) tensor and the squared principal stretches
-                Up_ijk=sqrt(Lpsq_ijk); %Right stretch tensor in principal space
-                Cp(i,j,k)={Lpsq_ijk};
+                Up_ijk=sqrt(Lpsq_ijk); %Right stretch tensor in principal space                
+                
                 switch strain_type
                     case 1 %Principal Biot strain tensor
                         Ep_ijk=(Up_ijk)-I_unity; 
@@ -59,10 +59,19 @@ for i=1:1:size(UG,1)
             end
             Ep_ijk(Up_ijk==0)=0; 
             
-            Uijk=Qijk*Up_ijk*Qijk'; %Right stretch tensor in cartesian space
-            U(i,j,k)={Uijk};
+            Uijk=Qijk*Up_ijk*Qijk'; %Right stretch tensor in Cartesian space                        
+            Rijk=Fijk/Uijk; %Rotation tensor for polar decomposition
+            Vijk=Fijk*Rijk'; %Left stretch tensor in Cartesian space
+            Eijk=Qijk*Ep_ijk*Qijk'; %Strain tensor in Cartesian space
 
-            Eijk=Qijk*Ep_ijk*Qijk'; %Strain tensor in cartesian space
+            % Fill cells
+            C(i,j,k)={Cijk};
+            Cp(i,j,k)={Lpsq_ijk};
+            F(i,j,k)={Fijk};            
+            U(i,j,k)={Uijk};            
+            Q(i,j,k)={Qijk};
+            R(i,j,k)={Rijk};
+            V(i,j,k)={Vijk};
             E(i,j,k)={Eijk};
 
             %Principal strains
@@ -91,6 +100,9 @@ D_out.F=F;
 D_out.C=C; 
 D_out.Cp=Cp; 
 D_out.U=U; 
+D_out.V=V; 
+D_out.Q=Q; 
+D_out.R=R; 
 D_out.E=E; 
 D_out.Emaxp=Emaxp; 
 D_out.Emidp=Emidp; 
