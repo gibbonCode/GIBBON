@@ -228,8 +228,8 @@ febio_spec.Mesh.Elements{1}.elem.VAL=E; %The element matrix
 % -> Surfaces
 surfaceName1='LoadedSurface';
 febio_spec.Mesh.Surface{1}.ATTR.name=surfaceName1;
-febio_spec.Mesh.Surface{1}.tri3.ATTR.id=(1:1:size(F_pressure,1))';
-febio_spec.Mesh.Surface{1}.tri3.VAL=F_pressure;
+febio_spec.Mesh.Surface{1}.quad4.ATTR.id=(1:1:size(F_pressure,1))';
+febio_spec.Mesh.Surface{1}.quad4.VAL=F_pressure;
 
 % -> NodeSets
 nodeSetName1='bcSupportList';

@@ -79,7 +79,7 @@ dtmin=(1/numTimeSteps)/100; %Minimum time step size
 dtmax=1/numTimeSteps; %Maximum time step size
 symmetric_stiffness=0;
 
-runMode='internal';% 'internal' or 'external'
+runMode='external';% 'internal' or 'external'
 
 %Contact parameters
 contactPenalty=0.5;
