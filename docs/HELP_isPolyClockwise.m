@@ -8,9 +8,30 @@ clear; close all; clc;
 % |[L]=isPolyClockwise(V);|
 
 %% Description 
-% UNDOCUMENTED 
+% This function uses the "signed area" of the polygon to return if its
+% orientation is clockwise L=1 or anti-clockwise L=0. 
+
 %% Examples 
 % 
+
+n=25; % Number of points
+t=linspace(0,2*pi,n+1)'; t=t(1:end-1); % Angles
+
+V=[cos(t) sin(t)]; % Polygon vertices
+
+%%
+
+[L]=isPolyClockwise(V)
+
+[L]=isPolyClockwise(flipud(V))
+
+%%
+
+cFigure; hold on; 
+plotV(V,'b.-','LineWidth',2,'MarkerSize',25)
+axisGeom; view(2); 
+drawnow; 
+
 %%
 % 
 % <<gibbVerySmall.gif>>

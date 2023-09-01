@@ -8,9 +8,37 @@ clear; close all; clc;
 % |[Q]=kabschRotationMatrix(V1,V2);|
 
 %% Description 
-% UNDOCUMENTED 
+% This function uses the "Kabsch" algorithm to determine the rotation
+% tensor to best rotate the coordinates V1 to V2. 
+
 %% Examples 
-% 
+
+%% Example 1: Determine the rotation between two coordinate sets  
+
+[F,V1] = parasaurolophus; % Example geometry for first coordinate set
+
+Qt = euler2DCM([0.25*pi 0.25*pi 0.25*pi]) %Example true rotation
+
+V2 = V1 * Qt'; %Create rotated second set
+
+%%
+% Using the Kabsch algorithm to determine the rotation matrix
+
+Q = kabschRotationMatrix(V1,V2) %Determine rotation between V1 and V2
+
+V3 = V2 * Q; 
+
+%%
+% Visualisation 
+
+cFigure; 
+gpatch(F,V1,'bw','b',0.5)
+gpatch(F,V2,'gw','g',0.5)
+gpatch(F,V3,'rw','r')
+
+axisGeom; camlight headlight; 
+gdrawnow; 
+
 %%
 % 
 % <<gibbVerySmall.gif>>

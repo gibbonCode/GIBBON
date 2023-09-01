@@ -46,6 +46,7 @@ febioFebFileNamePart='tempModel';
 febioFebFileName=fullfile(savePath,[febioFebFileNamePart,'.feb']); %FEB file name
 febioLogFileName=[febioFebFileNamePart,'.txt']; %FEBio log file name
 febioLogFileName_disp=[febioFebFileNamePart,'_disp_out.txt']; %Log file name for exporting displacement
+febioLogFileName_force=[febioFebFileNamePart,'_force_out.txt']; %Log file name for exporting force
 febioLogFileName_stress=[febioFebFileNamePart,'_stress_out.txt']; %Log file name for exporting stress
 
 %Specifying dimensions and number of elements
@@ -53,7 +54,7 @@ cubeSize=10;
 sampleWidth=cubeSize; %Width 
 sampleThickness=cubeSize; %Thickness 
 sampleHeight=cubeSize; %Height
-pointSpacings=2*ones(1,3); %Desired point spacing between nodes
+pointSpacings=5*ones(1,3); %Desired point spacing between nodes
 numElementsWidth=round(sampleWidth/pointSpacings(1)); %Number of elemens in dir 1
 numElementsThickness=round(sampleThickness/pointSpacings(2)); %Number of elemens in dir 2
 numElementsHeight=round(sampleHeight/pointSpacings(3)); %Number of elemens in dir 3
@@ -74,7 +75,7 @@ c1=1e-3; %Shear-modulus-like parameter
 m1=2; %Material parameter setting degree of non-linearity
 k_factor=100; %Bulk modulus factor 
 k=c1*k_factor; %Bulk modulus
-g1=1/2; %Viscoelastic QLV proportional coefficient
+g1=1/4; %Viscoelastic QLV proportional coefficient
 t1=12; %Viscoelastic QLV time coefficient
 d=1e-9; %Density (not required for static analysis)
 uncoupledLaw=1; %1=uncoupled, 2=coupled
@@ -83,14 +84,14 @@ analysisType='STATIC';
 
 % FEA control settings
 
-t_load=2; %Time from start to max load
+t_load=5; %Time from start to max load
 t_step_ini1=t_load/20; %Initial desired step size
 numTimeSteps1=round(t_load/t_step_ini1); %Number of time steps desired
 t_step1=t_load/numTimeSteps1; %Step size
 dtmin1=t_step1/100; %Smallest allowed step size
 dtmax1=t_step1; %Largest allowed step size
 
-t_hold=100;
+t_hold=40;
 t_step_ini2=t_step_ini1; %Initial desired step size
 numTimeSteps2=round(t_hold/t_step_ini2); %Number of time steps desired
 t_step2=t_hold/numTimeSteps2; %Step size
@@ -345,6 +346,10 @@ febio_spec.Output.logfile.node_data{1}.ATTR.file=febioLogFileName_disp;
 febio_spec.Output.logfile.node_data{1}.ATTR.data='ux;uy;uz';
 febio_spec.Output.logfile.node_data{1}.ATTR.delim=',';
 
+febio_spec.Output.logfile.node_data{2}.ATTR.file=febioLogFileName_force;
+febio_spec.Output.logfile.node_data{2}.ATTR.data='Rx;Ry;Rz';
+febio_spec.Output.logfile.node_data{2}.ATTR.delim=',';
+
 febio_spec.Output.logfile.element_data{1}.ATTR.file=febioLogFileName_stress;
 febio_spec.Output.logfile.element_data{1}.ATTR.data='sz';
 febio_spec.Output.logfile.element_data{1}.ATTR.delim=',';
@@ -472,9 +477,8 @@ if runFlag==1 %i.e. a succesful run
     drawnow;
     
     %% 
-    % Calculate metrics to visualize time-stress curve
-    
-    stress_cauchy_sim=mean(squeeze(E_stress_mat),1)';
+    % Calculate metrics to visualize time-stress curve    
+    stress_cauchy_sim=squeeze(mean(E_stress_mat,1)); %Cauchy stress sigma_z
     
     %%    
     % Visualize stress-stretch curve
@@ -489,7 +493,31 @@ if runFlag==1 %i.e. a succesful run
     view(2); axis tight;  grid on; axis square; box on; 
     set(gca,'FontSize',fontSize);
     drawnow;
+
+    %%
+    % Importing element stress from a log file
+    dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_force),0,1);
     
+    %Access data
+    N_force_mat=dataStruct.data;
+    
+    force_sim=-squeeze(sum(N_force_mat(:,3,:),1));
+
+    %%    
+    % Visualize stress-stretch curve
+    
+
+    cFigure; hold on;    
+    title('Uniaxial stress-time curve','FontSize',fontSize);
+    xlabel('Time [s]','FontSize',fontSize,'Interpreter','Latex'); 
+    ylabel('$F_{z}$ [N]','FontSize',fontSize,'Interpreter','Latex'); 
+    
+    plot(timeVec(:),force_sim(:),'r-','lineWidth',lineWidth);
+    
+    view(2); axis tight;  grid on; axis square; box on; 
+    set(gca,'FontSize',fontSize);
+    drawnow;
+
 end
 
 %% 

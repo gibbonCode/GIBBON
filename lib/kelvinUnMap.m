@@ -1,9 +1,20 @@
-function C=kelvinUnMap(cKelvin)
+function [C]=kelvinUnMap(cKelvin)
 
-x=[1 1 1 sqrt(2) sqrt(2) sqrt(2)]'; %conversion Voigt to Kelvin form
+% function C=kelvinUnMap(cKelvin)
+% ------------------------------------------------------------------------
+% This function transforms the Kelvin mapped tensor cKelvin to the normal
+% tensorial representation C. 
+%
+% Change log: 
+% 2023/09/01 KMM: Updated description/documentation
+% ------------------------------------------------------------------------
+
+%%
+
+x=[1 1 1 sqrt(2) sqrt(2) sqrt(2)]; %conversion Voigt to Kelvin form
 
 if isvector(cKelvin) 
-   cVoigt=cKelvin(:)./x;
+   cVoigt=cKelvin(:)./x';
 else
     X=x.'*x;
     cVoigt=cKelvin./X;

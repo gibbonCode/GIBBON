@@ -1,7 +1,15 @@
 function [Q]=kabschRotationMatrix(V1,V2)
 
-%2017/01/19 Fixed bug in relation to forcing right handed coordinate
-%system. This will avoid inverting as well. 
+% function [Q]=kabschRotationMatrix(V1,V2)
+% ------------------------------------------------------------------------
+% This function uses the "Kabsch" algorithm to determine the rotation
+% tensor to best rotate the coordinates V1 to V2.  
+% 
+% Change log: 
+% 2017/01/19 KMM: Fixed bug in relation to forcing right handed coordinate
+% system. This will avoid inverting as well. 
+% 2023/09/01 KMM: Improved description/documentation
+% ------------------------------------------------------------------------
 
 %%
 %Force input to 3D
@@ -41,7 +49,6 @@ d=sign(det(U'*V));
 D=eye(3,3);
 D(3,3)=d; 
 Q=V*D*U';
-
  
 %% 
 % _*GIBBON footer text*_ 

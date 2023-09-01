@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>isGlobalSurfDirOutward</title><meta name="generator" content="MATLAB 9.14"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2023-07-10"><meta name="DC.source" content="HELP_isGlobalSurfDirOutward.m"><style type="text/css">
+      --><title>isGlobalSurfDirOutward</title><meta name="generator" content="MATLAB 9.14"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2023-08-31"><meta name="DC.source" content="HELP_isGlobalSurfDirOutward.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -68,13 +68,9 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
   </style></head><body><div class="content"><h1>isGlobalSurfDirOutward</h1><!--introduction--><p>Below is a demonstration of the features of the <tt>isGlobalSurfDirOutward</tt> function</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#2">Syntax</a></li><li><a href="#3">Description</a></li><li><a href="#4">Examples</a></li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
-</pre><h2 id="2">Syntax</h2><p><tt>[L]=isGlobalSurfDirOutward(F,V);</tt></p><h2 id="3">Description</h2><p>UNDOCUMENTED</p><h2 id="4">Examples</h2><p>Example surface</p><pre class="codeinput">[F,V]=stanford_bunny;
-
-<span class="comment">% This one should be true</span>
+</pre><h2 id="2">Syntax</h2><p><tt>[L]=isGlobalSurfDirOutward(F,V);</tt></p><h2 id="3">Description</h2><p>This function returns a boolean denoting wether surface normals are pointing outward (1) (which would result in a positive volume being computed) or inward (2) (which would result in a negative volume being computed). The method assumes that the normal directions are coherent across the surface.</p><h2 id="4">Examples</h2><p>Example surface</p><pre class="codeinput">[F,V]=stanford_bunny;
+</pre><p>Computing a logic denoting whether the normals point outward or inwards. For the example surface the normals point outward, so the logical should return a true</p><pre class="codeinput"><span class="comment">% This one should be true</span>
 [L]=isGlobalSurfDirOutward(F,V)
-
-<span class="comment">% Reversed should be false</span>
-[L]=isGlobalSurfDirOutward(fliplr(F),V)
 </pre><pre class="codeoutput">
 L =
 
@@ -82,7 +78,9 @@ L =
 
    1
 
-
+</pre><p>However inverting the surface causes the normal directions to point inward, hence a false is returned.</p><pre class="codeinput"><span class="comment">% Reversed should be false</span>
+[L]=isGlobalSurfDirOutward(fliplr(F),V)
+</pre><pre class="codeoutput">
 L =
 
   logical
@@ -106,7 +104,12 @@ clear; close all; clc;
 % |[L]=isGlobalSurfDirOutward(F,V);|
 
 %% Description 
-% UNDOCUMENTED 
+% This function returns a boolean denoting wether surface normals are
+% pointing outward (1) (which would result in a positive volume being computed)
+% or inward (2) (which would result in a negative volume being computed). 
+% The method assumes that the normal directions are coherent across the
+% surface. 
+
 %% Examples 
 % 
 
@@ -114,8 +117,17 @@ clear; close all; clc;
 % Example surface
 [F,V]=stanford_bunny;
 
+%% 
+% Computing a logic denoting whether the normals point outward or inwards.
+% For the example surface the normals point outward, so the logical should
+% return a true
+
 % This one should be true
 [L]=isGlobalSurfDirOutward(F,V)
+
+%%
+% However inverting the surface causes the normal directions to point
+% inward, hence a false is returned. 
 
 % Reversed should be false
 [L]=isGlobalSurfDirOutward(fliplr(F),V)

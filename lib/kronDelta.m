@@ -1,8 +1,14 @@
-function kd=kronDelta(i,j)
+function [kd]=kronDelta(i,j)
 
-  
+% function [kd]=kronDelta(i,j)
+% ------------------------------------------------------------------------
+% Computes the Kronecker delta for the indices i,j. 
+%
+% 2023/09/01 KMM: Updated documentation/description
+% ------------------------------------------------------------------------
+%%
 kd=double(i==j);
- 
+
 %% 
 % _*GIBBON footer text*_ 
 % 

@@ -8,9 +8,40 @@ clear; close all; clc;
 % |c=ivoigtMap(cVoigt);|
 
 %% Description 
-% UNDOCUMENTED 
+% This function reverses Voigt mapped tensors from their Voigt array for
+% back to their tensorial form. 
+
 %% Examples 
 % 
+
+%% Example 1: The Voigt mapping of the elasticity tensor for Hooke's law with Lame parameters
+
+%%
+
+%Constructing 4th order base tensor set
+I=eye(3,3); %The 2nd order identity tensor
+II1=dyadicProduct(I,I,1); %4th order base tensor 1                                                                
+II3=dyadicProduct(I,I,3); %4th order base tensor 3
+
+%Lame parameters for Hooke's law
+mu=2; %The shear modulus
+lambda=3; %The lambda lame parameter
+
+%Construct 4th order stiffness tensor
+C=lambda.*II1+2.*mu.*II3; 
+
+Cv=voigtMap(C) % Voigt map version
+
+Cr=ivoigtMap(Cv) 
+
+%%
+
+s=rand(3,3);
+S=s*s'
+
+Sv=voigtMap(S)
+
+Sr=ivoigtMap(Sv)
 %%
 % 
 % <<gibbVerySmall.gif>>

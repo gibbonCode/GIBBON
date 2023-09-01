@@ -1,0 +1,1715 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>DEMO_febio_0087_inverse_FEA_cube_uniaxial_viscoelastic</title><meta name="generator" content="MATLAB 9.14"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2023-09-01"><meta name="DC.source" content="DEMO_febio_0087_inverse_FEA_cube_uniaxial_viscoelastic.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; }
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+span.typesection { color:#A0522D }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h1>DEMO_febio_0087_inverse_FEA_cube_uniaxial_viscoelastic</h1><!--introduction--><p>Below is a demonstration for:</p><div><ul><li>Inverse FEA based material parameter optimisation for uniaxial compression</li></ul></div><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Keywords</a></li><li><a href="#4">Control parameters</a></li><li><a href="#5">SIMULATE EXPERIMENTAL DATA</a></li><li><a href="#7">CREATING MESHED BOX</a></li><li><a href="#9">DEFINE BC's</a></li><li><a href="#11">Defining the FEBio input structure</a></li><li><a href="#12">Quick viewing of the FEBio input file structure</a></li><li><a href="#14">Exporting the FEBio input file</a></li><li><a href="#15">Running the FEBio analysis</a></li><li><a href="#16">Import FEBio results</a></li><li><a href="#27">Create structures for optimization</a></li><li><a href="#28">start optimization</a></li><li><a href="#30">Unnormalize and constrain parameters</a></li><li><a href="#35">Unnormalize and constrain parameters</a></li><li><a href="#36">Setting material parameters</a></li><li><a href="#37">START FEBio</a></li></ul></div><h2 id="1">Keywords</h2><div><ul><li>febio_spec version 4.0</li><li>febio, FEBio</li><li>hexahedral elements, hex8</li><li>static, solid</li><li>hyperelastic, Ogden</li><li>displacement logfile</li><li>stress logfile</li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
+</pre><p>Plot settings</p><pre class="codeinput">fontSize=20;
+faceAlpha1=0.8;
+faceAlpha2=1;
+edgeColor=0.25*ones(1,3);
+edgeWidth=1.5;
+markerSize=25;
+markerSize2=50;
+lineWidth=5;
+lineWidth2=3;
+cMap=viridis(20);
+</pre><h2 id="4">Control parameters</h2><pre class="codeinput"><span class="comment">% Path names</span>
+defaultFolder = fileparts(fileparts(mfilename(<span class="string">'fullpath'</span>)));
+savePath=fullfile(defaultFolder,<span class="string">'data'</span>,<span class="string">'temp'</span>);
+
+<span class="comment">% Defining file names</span>
+febioFebFileNamePart=<span class="string">'tempModel'</span>;
+febioFebFileName=fullfile(savePath,[febioFebFileNamePart,<span class="string">'.feb'</span>]); <span class="comment">%FEB file name</span>
+febioLogFileName=[febioFebFileNamePart,<span class="string">'.txt'</span>]; <span class="comment">%FEBio log file name</span>
+febioLogFileName_disp=[febioFebFileNamePart,<span class="string">'_disp_out.txt'</span>]; <span class="comment">%Log file name for exporting displacement</span>
+febioLogFileName_force=[febioFebFileNamePart,<span class="string">'_force_out.txt'</span>]; <span class="comment">%Log file name for exporting force</span>
+febioLogFileName_stress=[febioFebFileNamePart,<span class="string">'_stress_out.txt'</span>]; <span class="comment">%Log file name for exporting stress sigma_z</span>
+febioLogFileName_stretch=[febioFebFileNamePart,<span class="string">'_stretch_out.txt'</span>]; <span class="comment">%Log file name for exporting stretch U_z</span>
+
+<span class="comment">%Specifying dimensions and number of elements</span>
+sampleWidth=10;
+sampleThickness=10;
+sampleHeight=10;
+pointSpacings=10*ones(1,3);
+initialArea=sampleWidth*sampleThickness;
+
+numElementsWidth=round(sampleWidth/pointSpacings(1));
+numElementsThickness=round(sampleThickness/pointSpacings(2));
+numElementsHeight=round(sampleHeight/pointSpacings(3));
+
+stretchLoad=0.7;
+displacementMagnitude=(stretchLoad*sampleHeight)-sampleHeight;
+
+<span class="comment">%True material parameter set</span>
+c1_true=1e-3; <span class="comment">%Shear-modulus-like parameter</span>
+m1_true=2; <span class="comment">%Material parameter setting degree of non-linearity</span>
+k_factor=100; <span class="comment">%Bulk modulus factor</span>
+k_true=c1_true*k_factor; <span class="comment">%Bulk modulus</span>
+g1_true=1/4; <span class="comment">%Viscoelastic QLV proportional coefficient</span>
+t1_true=12; <span class="comment">%Viscoelastic QLV time coefficient</span>
+d=1e-9; <span class="comment">%Density (not required for static analysis)</span>
+
+<span class="comment">%Initial material parameter set</span>
+c1_ini=1e-3; <span class="comment">%Shear-modulus-like parameter</span>
+m1_ini=2; <span class="comment">%Material parameter setting degree of non-linearity</span>
+k_factor=100; <span class="comment">%Bulk modulus factor</span>
+k_ini=c1_ini*k_factor; <span class="comment">%Bulk modulus</span>
+g1_ini=1/2; <span class="comment">%Viscoelastic QLV proportional coefficient</span>
+t1_ini=6; <span class="comment">%Viscoelastic QLV time coefficient</span>
+
+P=[g1_ini t1_ini];
+
+analysisType=<span class="string">'STATIC'</span>;
+
+<span class="comment">% FEA control settings</span>
+
+t_load=5; <span class="comment">%Time from start to max load</span>
+t_step_ini1=t_load/20; <span class="comment">%Initial desired step size</span>
+numTimeSteps1=round(t_load/t_step_ini1); <span class="comment">%Number of time steps desired</span>
+t_step1=t_load/numTimeSteps1; <span class="comment">%Step size</span>
+dtmin1=t_step1/100; <span class="comment">%Smallest allowed step size</span>
+dtmax1=t_step1; <span class="comment">%Largest allowed step size</span>
+
+t_hold=40;
+t_step_ini2=t_step_ini1; <span class="comment">%Initial desired step size</span>
+numTimeSteps2=round(t_hold/t_step_ini2); <span class="comment">%Number of time steps desired</span>
+t_step2=t_hold/numTimeSteps2; <span class="comment">%Step size</span>
+dtmin2=t_step2/100; <span class="comment">%Smallest allowed step size</span>
+dtmax2=1; <span class="comment">%Largest allowed step size</span>
+
+max_refs=25; <span class="comment">%Max reforms</span>
+max_ups=0; <span class="comment">%Set to zero to use full-Newton iterations</span>
+opt_iter=6; <span class="comment">%Optimum number of iterations</span>
+max_retries=5; <span class="comment">%Maximum number of retires</span>
+
+runMode=<span class="string">'external'</span>;<span class="comment">%'internal';</span>
+</pre><h2 id="5">SIMULATE EXPERIMENTAL DATA</h2><pre class="codeinput">t_load=5;
+t_hold=40;
+
+<span class="comment">%Basic set</span>
+force_exp=[0;0.00571888681803200;0.0116845163681410;0.0179162765196900;0.0244353227043800;0.0312647752859100;0.0384299426054900;0.0459585735483400;0.0538811441288000;0.0622311833719200;0.0710456446934800;0.0803653300982600;0.0902353758465800;0.100705809855340;0.111832193037600;0.123676359159160;0.136307270652760;0.149802011356620;0.164246941444300;0.179739045129600;0.196387508289600;0.195682558372200;0.194584712122700;0.193211083940900;0.191658961409100;0.190005829450600;0.188311247269800;0.186619511002600;0.184962460638900;0.183362088368000;0.181832796240100;0.180383262875100;0.179017938235800;0.177738212392000;0.176543312424500;0.175430980123800;0.174397977083200;0.173440456306600;0.172554232000100;0.171734972580800;0.170978336335100;0.170280064622900;0.169636043901800;0.169042345069400;0.168495246448000;0.167991245115200;0.167527060048000;0.167099629619300;0.166706105308800;0.166343842962100;0.166010392578100;0.165703487299700;0.165421032102400;0.165161092511000;0.164921883878900;0.164701759509300;0.164499202499300;0.164312814805300;0.164141308604700;0.163983497880000;0.163838290574900;0.163704681296000;0.163581744545500;0.163468628452900;0.163389784106200];
+time_exp=[0;0.250000000000000;0.500000000000000;0.750000000000000;1;1.25000000000000;1.50000000000000;1.75000000000000;2;2.25000000000000;2.50000000000000;2.75000000000000;3;3.25000000000000;3.50000000000000;3.75000000000000;4;4.25000000000000;4.50000000000000;4.75000000000000;5;5.25000000000000;5.65000000000000;6.17000000000000;6.78600000000000;7.47880000000000;8.23304000000000;9.03643200000000;9.87914560000000;10.7533165000000;11.6526532000000;12.5721225000000;13.5076980000000;14.4561584000000;15.4149267000000;16.3819414000000;17.3555531000000;18.3344425000000;19.3175540000000;20.3040432000000;21.2932346000000;22.2845876000000;23.2776701000000;24.2721361000000;25.2677089000000;26.2641671000000;27.2613337000000;28.2590669000000;29.2572536000000;30.2558028000000;31.2546423000000;32.2537138000000;33.2529711000000;34.2523768000000;35.2519015000000;36.2515212000000;37.2512169000000;38.2509736000000;39.2507788000000;40.2506231000000;41.2504985000000;42.2503988000000;43.2503190000000;44.2502552000000;45];
+disp_exp=time_exp;
+disp_exp(time_exp&lt;=t_load)=-displacementMagnitude.*(time_exp(time_exp&lt;=t_load)./t_load);
+disp_exp(time_exp&gt;t_load)=-displacementMagnitude;
+
+loadCurveData = [0 0; 5 1; 45 1];
+</pre><pre class="codeinput">cFigure;
+subplot(1,2,1); hold <span class="string">on</span>;
+plot(time_exp,force_exp,<span class="string">'r.-'</span>,<span class="string">'MarkerSize'</span>,25);
+axis <span class="string">tight</span>; box <span class="string">on</span>; grid <span class="string">on</span>;
+
+subplot(1,2,2); hold <span class="string">on</span>;
+plot(time_exp,disp_exp,<span class="string">'b.-'</span>,<span class="string">'MarkerSize'</span>,25);
+axis <span class="string">tight</span>; box <span class="string">on</span>; grid <span class="string">on</span>;
+drawnow;
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0087_inverse_FEA_cube_uniaxial_viscoelastic_01.jpg" alt=""> <h2 id="7">CREATING MESHED BOX</h2><pre class="codeinput"><span class="comment">%Create box 1</span>
+boxDim=[sampleWidth sampleThickness sampleHeight]; <span class="comment">%Dimensions</span>
+boxEl=[numElementsWidth numElementsThickness numElementsHeight]; <span class="comment">%Number of elements</span>
+[box1]=hexMeshBox(boxDim,boxEl);
+E=box1.E;
+V=box1.V;
+Fb=box1.Fb;
+faceBoundaryMarker=box1.faceBoundaryMarker;
+
+X=V(:,1); Y=V(:,2); Z=V(:,3);
+VE=[mean(X(E),2) mean(Y(E),2) mean(Z(E),2)];
+
+elementMaterialIndices=ones(size(E,1),1);
+</pre><pre class="codeinput"><span class="comment">% Plotting boundary surfaces</span>
+
+cFigure; hold <span class="string">on</span>;
+title(<span class="string">'Model surfaces'</span>,<span class="string">'FontSize'</span>,fontSize);
+gpatch(Fb,V,faceBoundaryMarker,<span class="string">'k'</span>,0.5);
+colormap(gjet(6)); icolorbar;
+axisGeom(gca,fontSize);
+drawnow;
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0087_inverse_FEA_cube_uniaxial_viscoelastic_02.jpg" alt=""> <h2 id="9">DEFINE BC's</h2><pre class="codeinput"><span class="comment">%Define supported node sets</span>
+logicFace=faceBoundaryMarker==1;
+Fr=Fb(logicFace,:);
+bcSupportList_X=unique(Fr(:));
+
+logicFace=faceBoundaryMarker==3;
+Fr=Fb(logicFace,:);
+bcSupportList_Y=unique(Fr(:));
+
+logicFace=faceBoundaryMarker==5;
+Fr=Fb(logicFace,:);
+bcSupportList_Z=unique(Fr(:));
+
+<span class="comment">%Prescribed displacement nodes</span>
+logicPrescribe=faceBoundaryMarker==6;
+Fr=Fb(logicPrescribe,:);
+bcPrescribeList=unique(Fr(:));
+</pre><p>Visualize BC's</p><pre class="codeinput">cFigure; hold <span class="string">on</span>;
+title(<span class="string">'Complete model'</span>,<span class="string">'FontSize'</span>,fontSize);
+
+gpatch(Fb,V,<span class="string">'kw'</span>,<span class="string">'k'</span>,0.5);
+plotV(V(bcSupportList_X,:),<span class="string">'r.'</span>,<span class="string">'MarkerSize'</span>,markerSize);
+plotV(V(bcSupportList_Y,:),<span class="string">'g.'</span>,<span class="string">'MarkerSize'</span>,markerSize);
+plotV(V(bcSupportList_Z,:),<span class="string">'b.'</span>,<span class="string">'MarkerSize'</span>,markerSize);
+plotV(V(bcPrescribeList,:),<span class="string">'k.'</span>,<span class="string">'MarkerSize'</span>,markerSize);
+
+axisGeom(gca,fontSize);
+drawnow;
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0087_inverse_FEA_cube_uniaxial_viscoelastic_03.jpg" alt=""> <h2 id="11">Defining the FEBio input structure</h2><p>See also <tt>febioStructTemplate</tt> and <tt>febioStruct2xml</tt> and the FEBio user manual.</p><pre class="codeinput"><span class="comment">%Get a template with default settings</span>
+[febio_spec]=febioStructTemplate;
+
+<span class="comment">%febio_spec version</span>
+febio_spec.ATTR.version=<span class="string">'4.0'</span>;
+
+<span class="comment">%Module section</span>
+febio_spec.Module.ATTR.type=<span class="string">'solid'</span>;
+
+<span class="comment">%Control sections for each step</span>
+febio_spec.Step.step{1}.Control=febio_spec.Control; <span class="comment">%Copy from template</span>
+febio_spec.Step.step{1}.ATTR.id=1;
+febio_spec.Step.step{1}.Control.analysis=analysisType;
+febio_spec.Step.step{1}.Control.time_steps=numTimeSteps1;
+febio_spec.Step.step{1}.Control.step_size=t_step1;
+febio_spec.Step.step{1}.Control.solver.max_refs=max_refs;
+febio_spec.Step.step{1}.Control.time_stepper.dtmin=dtmin1;
+febio_spec.Step.step{1}.Control.time_stepper.dtmax=dtmax1;
+febio_spec.Step.step{1}.Control.time_stepper.max_retries=max_retries;
+febio_spec.Step.step{1}.Control.time_stepper.opt_iter=opt_iter;
+
+febio_spec.Step.step{2}.Control=febio_spec.Control; <span class="comment">%Copy from template</span>
+febio_spec.Step.step{2}.ATTR.id=2;
+febio_spec.Step.step{2}.Control.analysis=analysisType;
+febio_spec.Step.step{2}.Control.time_steps=numTimeSteps2;
+febio_spec.Step.step{2}.Control.step_size=t_step2;
+febio_spec.Step.step{2}.Control.solver.max_refs=max_refs;
+febio_spec.Step.step{2}.Control.time_stepper.dtmin=dtmin2;
+febio_spec.Step.step{2}.Control.time_stepper.dtmax=dtmax2;
+febio_spec.Step.step{2}.Control.time_stepper.max_retries=max_retries;
+febio_spec.Step.step{2}.Control.time_stepper.opt_iter=opt_iter;
+
+<span class="comment">%Remove control field (part of template) since step specific control sections are used</span>
+febio_spec=rmfield(febio_spec,<span class="string">'Control'</span>);
+
+<span class="comment">%Material section</span>
+materialName1=<span class="string">'Material1'</span>;
+febio_spec.Material.material{1}.ATTR.name=materialName1;
+
+<span class="comment">%Viscoelastic part</span>
+febio_spec.Material.material{1}.ATTR.type=<span class="string">'uncoupled viscoelastic'</span>;
+febio_spec.Material.material{1}.ATTR.id=1;
+febio_spec.Material.material{1}.g1=g1_ini;
+febio_spec.Material.material{1}.t1=t1_ini;
+febio_spec.Material.material{1}.k=k_ini;
+febio_spec.Material.material{1}.density=d;
+
+<span class="comment">%Elastic part</span>
+febio_spec.Material.material{1}.elastic{1}.ATTR.type=<span class="string">'Ogden'</span>;
+febio_spec.Material.material{1}.elastic{1}.c1=c1_ini;
+febio_spec.Material.material{1}.elastic{1}.m1=m1_ini;
+febio_spec.Material.material{1}.elastic{1}.c2=c1_ini;
+febio_spec.Material.material{1}.elastic{1}.m2=-m1_ini;
+febio_spec.Material.material{1}.elastic{1}.density=d;
+
+<span class="comment">% Mesh section</span>
+<span class="comment">% -&gt; Nodes</span>
+febio_spec.Mesh.Nodes{1}.ATTR.name=<span class="string">'Object1'</span>; <span class="comment">%The node set name</span>
+febio_spec.Mesh.Nodes{1}.node.ATTR.id=(1:size(V,1))'; <span class="comment">%The node id's</span>
+febio_spec.Mesh.Nodes{1}.node.VAL=V; <span class="comment">%The nodel coordinates</span>
+
+<span class="comment">% -&gt; Elements</span>
+partName1=<span class="string">'Part1'</span>;
+febio_spec.Mesh.Elements{1}.ATTR.name=partName1; <span class="comment">%Name of this part</span>
+febio_spec.Mesh.Elements{1}.ATTR.type=<span class="string">'hex8'</span>; <span class="comment">%Element type</span>
+febio_spec.Mesh.Elements{1}.elem.ATTR.id=(1:1:size(E,1))'; <span class="comment">%Element id's</span>
+febio_spec.Mesh.Elements{1}.elem.VAL=E; <span class="comment">%The element matrix</span>
+
+<span class="comment">% -&gt; NodeSets</span>
+nodeSetName1=<span class="string">'bcSupportList_X'</span>;
+nodeSetName2=<span class="string">'bcSupportList_Y'</span>;
+nodeSetName3=<span class="string">'bcSupportList_Z'</span>;
+nodeSetName4=<span class="string">'bcPrescribeList'</span>;
+
+febio_spec.Mesh.NodeSet{1}.ATTR.name=nodeSetName1;
+febio_spec.Mesh.NodeSet{1}.VAL=mrow(bcSupportList_X);
+
+febio_spec.Mesh.NodeSet{2}.ATTR.name=nodeSetName2;
+febio_spec.Mesh.NodeSet{2}.VAL=mrow(bcSupportList_Y);
+
+febio_spec.Mesh.NodeSet{3}.ATTR.name=nodeSetName3;
+febio_spec.Mesh.NodeSet{3}.VAL=mrow(bcSupportList_Z);
+
+febio_spec.Mesh.NodeSet{4}.ATTR.name=nodeSetName4;
+febio_spec.Mesh.NodeSet{4}.VAL=mrow(bcPrescribeList);
+
+<span class="comment">%MeshDomains section</span>
+febio_spec.MeshDomains.SolidDomain.ATTR.name=partName1;
+febio_spec.MeshDomains.SolidDomain.ATTR.mat=materialName1;
+
+<span class="comment">%Boundary condition section</span>
+<span class="comment">% -&gt; Fix boundary conditions</span>
+febio_spec.Boundary.bc{1}.ATTR.name=<span class="string">'zero_displacement_x'</span>;
+febio_spec.Boundary.bc{1}.ATTR.type=<span class="string">'zero displacement'</span>;
+febio_spec.Boundary.bc{1}.ATTR.node_set=nodeSetName1;
+febio_spec.Boundary.bc{1}.x_dof=1;
+febio_spec.Boundary.bc{1}.y_dof=0;
+febio_spec.Boundary.bc{1}.z_dof=0;
+
+febio_spec.Boundary.bc{2}.ATTR.name=<span class="string">'zero_displacement_y'</span>;
+febio_spec.Boundary.bc{2}.ATTR.type=<span class="string">'zero displacement'</span>;
+febio_spec.Boundary.bc{2}.ATTR.node_set=nodeSetName2;
+febio_spec.Boundary.bc{2}.x_dof=0;
+febio_spec.Boundary.bc{2}.y_dof=1;
+febio_spec.Boundary.bc{2}.z_dof=0;
+
+febio_spec.Boundary.bc{3}.ATTR.name=<span class="string">'zero_displacement_z'</span>;
+febio_spec.Boundary.bc{3}.ATTR.type=<span class="string">'zero displacement'</span>;
+febio_spec.Boundary.bc{3}.ATTR.node_set=nodeSetName3;
+febio_spec.Boundary.bc{3}.x_dof=0;
+febio_spec.Boundary.bc{3}.y_dof=0;
+febio_spec.Boundary.bc{3}.z_dof=1;
+
+febio_spec.Boundary.bc{4}.ATTR.name=<span class="string">'prescibed_displacement_z'</span>;
+febio_spec.Boundary.bc{4}.ATTR.type=<span class="string">'prescribed displacement'</span>;
+febio_spec.Boundary.bc{4}.ATTR.node_set=nodeSetName4;
+febio_spec.Boundary.bc{4}.dof=<span class="string">'z'</span>;
+febio_spec.Boundary.bc{4}.value.ATTR.lc=1;
+febio_spec.Boundary.bc{4}.value.VAL=displacementMagnitude;
+febio_spec.Boundary.bc{4}.relative=0;
+
+<span class="comment">%LoadData section</span>
+<span class="comment">% -&gt; load_controller</span>
+febio_spec.LoadData.load_controller{1}.ATTR.name=<span class="string">'LC1'</span>;
+febio_spec.LoadData.load_controller{1}.ATTR.id=1;
+febio_spec.LoadData.load_controller{1}.ATTR.type=<span class="string">'loadcurve'</span>;
+febio_spec.LoadData.load_controller{1}.interpolate=<span class="string">'LINEAR'</span>;
+febio_spec.LoadData.load_controller{1}.extend=<span class="string">'CONSTANT'</span>;
+febio_spec.LoadData.load_controller{1}.points.pt.VAL=loadCurveData;
+
+<span class="comment">%Output section</span>
+<span class="comment">% -&gt; log file</span>
+febio_spec.Output.logfile.ATTR.file=febioLogFileName;
+febio_spec.Output.logfile.node_data{1}.ATTR.file=febioLogFileName_disp;
+febio_spec.Output.logfile.node_data{1}.ATTR.data=<span class="string">'ux;uy;uz'</span>;
+febio_spec.Output.logfile.node_data{1}.ATTR.delim=<span class="string">','</span>;
+
+febio_spec.Output.logfile.node_data{2}.ATTR.file=febioLogFileName_force;
+febio_spec.Output.logfile.node_data{2}.ATTR.data=<span class="string">'Rx;Ry;Rz'</span>;
+febio_spec.Output.logfile.node_data{2}.ATTR.delim=<span class="string">','</span>;
+
+febio_spec.Output.logfile.element_data{1}.ATTR.file=febioLogFileName_stress;
+febio_spec.Output.logfile.element_data{1}.ATTR.data=<span class="string">'sz'</span>;
+febio_spec.Output.logfile.element_data{1}.ATTR.delim=<span class="string">','</span>;
+
+febio_spec.Output.logfile.element_data{2}.ATTR.file=febioLogFileName_stretch;
+febio_spec.Output.logfile.element_data{2}.ATTR.data=<span class="string">'Uz'</span>;
+febio_spec.Output.logfile.element_data{2}.ATTR.delim=<span class="string">','</span>;
+
+<span class="comment">% Plotfile section</span>
+febio_spec.Output.plotfile.compression=0;
+</pre><h2 id="12">Quick viewing of the FEBio input file structure</h2><p>The <tt>febView</tt> function can be used to view the xml structure in a MATLAB figure window.</p><p><tt>febView(febio_spec); %Viewing the febio file</tt></p><h2 id="14">Exporting the FEBio input file</h2><p>Exporting the febio_spec structure to an FEBio input file is done using the <tt>febioStruct2xml</tt> function.</p><pre class="codeinput">febioStruct2xml(febio_spec,febioFebFileName); <span class="comment">%Exporting to file and domNode</span>
+<span class="comment">%system(['gedit ',febioFebFileName,' &amp;']);</span>
+</pre><h2 id="15">Running the FEBio analysis</h2><p>To run the analysis defined by the created FEBio input file the <tt>runMonitorFEBio</tt> function is used. The input for this function is a structure defining job settings e.g. the FEBio input file name. The optional output runFlag informs the user if the analysis was run succesfully.</p><pre class="codeinput">febioAnalysis.run_filename=febioFebFileName; <span class="comment">%The input file name</span>
+febioAnalysis.run_logname=febioLogFileName; <span class="comment">%The name for the log file</span>
+febioAnalysis.disp_on=1; <span class="comment">%Display information on the command window</span>
+febioAnalysis.runMode=runMode;
+febioAnalysis.maxLogCheckTime=10; <span class="comment">%Max log file checking time</span>
+
+[runFlag]=runMonitorFEBio(febioAnalysis);<span class="comment">%START FEBio NOW!!!!!!!!</span>
+</pre><pre class="codeoutput"> 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+--------&gt;    RUNNING/MONITORING FEBIO JOB    &lt;-------- 01-Sep-2023 11:38:44
+FEBio path: /home/kevin/FEBioStudio/bin/febio4
+# Attempt removal of existing log files                01-Sep-2023 11:38:44
+ * Removal succesful                                   01-Sep-2023 11:38:44
+# Attempt removal of existing .xplt files              01-Sep-2023 11:38:44
+ * Removal succesful                                   01-Sep-2023 11:38:44
+# Starting FEBio...                                    01-Sep-2023 11:38:44
+  Max. total analysis time is: Inf s
+ * Waiting for log file creation                       01-Sep-2023 11:38:44
+   Max. wait time: 10 s
+ * Log file found.                                     01-Sep-2023 11:38:44
+# Parsing log file...                                  01-Sep-2023 11:38:44
+    number of iterations   : 3                         01-Sep-2023 11:38:45
+    number of reformations : 3                         01-Sep-2023 11:38:45
+------- converged at time : 0.25                       01-Sep-2023 11:38:45
+    number of iterations   : 3                         01-Sep-2023 11:38:45
+    number of reformations : 3                         01-Sep-2023 11:38:45
+------- converged at time : 0.5                        01-Sep-2023 11:38:45
+    number of iterations   : 3                         01-Sep-2023 11:38:45
+    number of reformations : 3                         01-Sep-2023 11:38:45
+------- converged at time : 0.75                       01-Sep-2023 11:38:45
+    number of iterations   : 3                         01-Sep-2023 11:38:45
+    number of reformations : 3                         01-Sep-2023 11:38:45
+------- converged at time : 1                          01-Sep-2023 11:38:45
+    number of iterations   : 3                         01-Sep-2023 11:38:45
+    number of reformations : 3                         01-Sep-2023 11:38:45
+------- converged at time : 1.25                       01-Sep-2023 11:38:45
+    number of iterations   : 3                         01-Sep-2023 11:38:45
+    number of reformations : 3                         01-Sep-2023 11:38:45
+------- converged at time : 1.5                        01-Sep-2023 11:38:45
+    number of iterations   : 3                         01-Sep-2023 11:38:45
+    number of reformations : 3                         01-Sep-2023 11:38:45
+------- converged at time : 1.75                       01-Sep-2023 11:38:45
+    number of iterations   : 3                         01-Sep-2023 11:38:45
+    number of reformations : 3                         01-Sep-2023 11:38:45
+------- converged at time : 2                          01-Sep-2023 11:38:45
+    number of iterations   : 3                         01-Sep-2023 11:38:45
+    number of reformations : 3                         01-Sep-2023 11:38:45
+------- converged at time : 2.25                       01-Sep-2023 11:38:45
+    number of iterations   : 3                         01-Sep-2023 11:38:45
+    number of reformations : 3                         01-Sep-2023 11:38:45
+------- converged at time : 2.5                        01-Sep-2023 11:38:45
+    number of iterations   : 3                         01-Sep-2023 11:38:45
+    number of reformations : 3                         01-Sep-2023 11:38:45
+------- converged at time : 2.75                       01-Sep-2023 11:38:45
+    number of iterations   : 3                         01-Sep-2023 11:38:45
+    number of reformations : 3                         01-Sep-2023 11:38:45
+------- converged at time : 3                          01-Sep-2023 11:38:45
+    number of iterations   : 3                         01-Sep-2023 11:38:45
+    number of reformations : 3                         01-Sep-2023 11:38:45
+------- converged at time : 3.25                       01-Sep-2023 11:38:45
+    number of iterations   : 3                         01-Sep-2023 11:38:45
+    number of reformations : 3                         01-Sep-2023 11:38:45
+------- converged at time : 3.5                        01-Sep-2023 11:38:45
+    number of iterations   : 3                         01-Sep-2023 11:38:45
+    number of reformations : 3                         01-Sep-2023 11:38:45
+------- converged at time : 3.75                       01-Sep-2023 11:38:45
+    number of iterations   : 3                         01-Sep-2023 11:38:45
+    number of reformations : 3                         01-Sep-2023 11:38:45
+------- converged at time : 4                          01-Sep-2023 11:38:45
+    number of iterations   : 3                         01-Sep-2023 11:38:45
+    number of reformations : 3                         01-Sep-2023 11:38:45
+------- converged at time : 4.25                       01-Sep-2023 11:38:45
+    number of iterations   : 3                         01-Sep-2023 11:38:45
+    number of reformations : 3                         01-Sep-2023 11:38:45
+------- converged at time : 4.5                        01-Sep-2023 11:38:45
+    number of iterations   : 3                         01-Sep-2023 11:38:45
+    number of reformations : 3                         01-Sep-2023 11:38:45
+------- converged at time : 4.75                       01-Sep-2023 11:38:45
+    number of iterations   : 3                         01-Sep-2023 11:38:45
+    number of reformations : 3                         01-Sep-2023 11:38:45
+------- converged at time : 5                          01-Sep-2023 11:38:45
+    number of iterations   : 2                         01-Sep-2023 11:38:45
+    number of reformations : 2                         01-Sep-2023 11:38:45
+------- converged at time : 5.25                       01-Sep-2023 11:38:45
+    number of iterations   : 2                         01-Sep-2023 11:38:45
+    number of reformations : 2                         01-Sep-2023 11:38:45
+------- converged at time : 5.65                       01-Sep-2023 11:38:45
+    number of iterations   : 2                         01-Sep-2023 11:38:45
+    number of reformations : 2                         01-Sep-2023 11:38:45
+------- converged at time : 6.17                       01-Sep-2023 11:38:45
+    number of iterations   : 2                         01-Sep-2023 11:38:45
+    number of reformations : 2                         01-Sep-2023 11:38:45
+------- converged at time : 6.786                      01-Sep-2023 11:38:45
+    number of iterations   : 2                         01-Sep-2023 11:38:45
+    number of reformations : 2                         01-Sep-2023 11:38:45
+------- converged at time : 7.4788                     01-Sep-2023 11:38:45
+    number of iterations   : 2                         01-Sep-2023 11:38:45
+    number of reformations : 2                         01-Sep-2023 11:38:45
+------- converged at time : 8.23304                    01-Sep-2023 11:38:45
+    number of iterations   : 2                         01-Sep-2023 11:38:45
+    number of reformations : 2                         01-Sep-2023 11:38:45
+------- converged at time : 9.03643                    01-Sep-2023 11:38:45
+    number of iterations   : 2                         01-Sep-2023 11:38:45
+    number of reformations : 2                         01-Sep-2023 11:38:45
+------- converged at time : 9.87915                    01-Sep-2023 11:38:45
+    number of iterations   : 2                         01-Sep-2023 11:38:45
+    number of reformations : 2                         01-Sep-2023 11:38:45
+------- converged at time : 10.7533                    01-Sep-2023 11:38:45
+    number of iterations   : 2                         01-Sep-2023 11:38:45
+    number of reformations : 2                         01-Sep-2023 11:38:45
+------- converged at time : 11.6527                    01-Sep-2023 11:38:45
+    number of iterations   : 2                         01-Sep-2023 11:38:45
+    number of reformations : 2                         01-Sep-2023 11:38:45
+------- converged at time : 12.5721                    01-Sep-2023 11:38:45
+    number of iterations   : 2                         01-Sep-2023 11:38:45
+    number of reformations : 2                         01-Sep-2023 11:38:45
+------- converged at time : 13.5077                    01-Sep-2023 11:38:45
+    number of iterations   : 2                         01-Sep-2023 11:38:45
+    number of reformations : 2                         01-Sep-2023 11:38:45
+------- converged at time : 14.4562                    01-Sep-2023 11:38:45
+    number of iterations   : 2                         01-Sep-2023 11:38:45
+    number of reformations : 2                         01-Sep-2023 11:38:45
+------- converged at time : 15.4149                    01-Sep-2023 11:38:45
+    number of iterations   : 2                         01-Sep-2023 11:38:45
+    number of reformations : 2                         01-Sep-2023 11:38:45
+------- converged at time : 16.3819                    01-Sep-2023 11:38:45
+    number of iterations   : 2                         01-Sep-2023 11:38:45
+    number of reformations : 2                         01-Sep-2023 11:38:45
+------- converged at time : 17.3556                    01-Sep-2023 11:38:45
+    number of iterations   : 2                         01-Sep-2023 11:38:45
+    number of reformations : 2                         01-Sep-2023 11:38:45
+------- converged at time : 18.3344                    01-Sep-2023 11:38:45
+    number of iterations   : 2                         01-Sep-2023 11:38:45
+    number of reformations : 2                         01-Sep-2023 11:38:45
+------- converged at time : 19.3176                    01-Sep-2023 11:38:45
+    number of iterations   : 2                         01-Sep-2023 11:38:45
+    number of reformations : 2                         01-Sep-2023 11:38:45
+------- converged at time : 20.304                     01-Sep-2023 11:38:45
+    number of iterations   : 2                         01-Sep-2023 11:38:45
+    number of reformations : 2                         01-Sep-2023 11:38:45
+------- converged at time : 21.2932                    01-Sep-2023 11:38:45
+    number of iterations   : 2                         01-Sep-2023 11:38:45
+    number of reformations : 2                         01-Sep-2023 11:38:45
+------- converged at time : 22.2846                    01-Sep-2023 11:38:45
+    number of iterations   : 2                         01-Sep-2023 11:38:45
+    number of reformations : 2                         01-Sep-2023 11:38:45
+------- converged at time : 23.2777                    01-Sep-2023 11:38:45
+    number of iterations   : 2                         01-Sep-2023 11:38:45
+    number of reformations : 2                         01-Sep-2023 11:38:45
+------- converged at time : 24.2721                    01-Sep-2023 11:38:45
+    number of iterations   : 2                         01-Sep-2023 11:38:45
+    number of reformations : 2                         01-Sep-2023 11:38:45
+------- converged at time : 25.2677                    01-Sep-2023 11:38:45
+    number of iterations   : 2                         01-Sep-2023 11:38:45
+    number of reformations : 2                         01-Sep-2023 11:38:45
+------- converged at time : 26.2642                    01-Sep-2023 11:38:45
+    number of iterations   : 2                         01-Sep-2023 11:38:45
+    number of reformations : 2                         01-Sep-2023 11:38:45
+------- converged at time : 27.2613                    01-Sep-2023 11:38:45
+    number of iterations   : 1                         01-Sep-2023 11:38:45
+    number of reformations : 1                         01-Sep-2023 11:38:45
+------- converged at time : 28.2591                    01-Sep-2023 11:38:45
+    number of iterations   : 1                         01-Sep-2023 11:38:45
+    number of reformations : 1                         01-Sep-2023 11:38:45
+------- converged at time : 29.2573                    01-Sep-2023 11:38:45
+    number of iterations   : 1                         01-Sep-2023 11:38:45
+    number of reformations : 1                         01-Sep-2023 11:38:45
+------- converged at time : 30.2558                    01-Sep-2023 11:38:45
+    number of iterations   : 1                         01-Sep-2023 11:38:45
+    number of reformations : 1                         01-Sep-2023 11:38:45
+------- converged at time : 31.2546                    01-Sep-2023 11:38:45
+    number of iterations   : 1                         01-Sep-2023 11:38:45
+    number of reformations : 1                         01-Sep-2023 11:38:45
+------- converged at time : 32.2537                    01-Sep-2023 11:38:45
+    number of iterations   : 1                         01-Sep-2023 11:38:45
+    number of reformations : 1                         01-Sep-2023 11:38:45
+------- converged at time : 33.253                     01-Sep-2023 11:38:45
+    number of iterations   : 1                         01-Sep-2023 11:38:45
+    number of reformations : 1                         01-Sep-2023 11:38:45
+------- converged at time : 34.2524                    01-Sep-2023 11:38:45
+    number of iterations   : 1                         01-Sep-2023 11:38:45
+    number of reformations : 1                         01-Sep-2023 11:38:45
+------- converged at time : 35.2519                    01-Sep-2023 11:38:45
+    number of iterations   : 1                         01-Sep-2023 11:38:45
+    number of reformations : 1                         01-Sep-2023 11:38:45
+------- converged at time : 36.2515                    01-Sep-2023 11:38:45
+    number of iterations   : 1                         01-Sep-2023 11:38:45
+    number of reformations : 1                         01-Sep-2023 11:38:45
+------- converged at time : 37.2512                    01-Sep-2023 11:38:45
+    number of iterations   : 1                         01-Sep-2023 11:38:45
+    number of reformations : 1                         01-Sep-2023 11:38:45
+------- converged at time : 38.251                     01-Sep-2023 11:38:45
+    number of iterations   : 1                         01-Sep-2023 11:38:45
+    number of reformations : 1                         01-Sep-2023 11:38:45
+------- converged at time : 39.2508                    01-Sep-2023 11:38:45
+    number of iterations   : 1                         01-Sep-2023 11:38:45
+    number of reformations : 1                         01-Sep-2023 11:38:45
+------- converged at time : 40.2506                    01-Sep-2023 11:38:45
+    number of iterations   : 1                         01-Sep-2023 11:38:45
+    number of reformations : 1                         01-Sep-2023 11:38:45
+------- converged at time : 41.2505                    01-Sep-2023 11:38:45
+    number of iterations   : 1                         01-Sep-2023 11:38:45
+    number of reformations : 1                         01-Sep-2023 11:38:45
+------- converged at time : 42.2504                    01-Sep-2023 11:38:45
+    number of iterations   : 1                         01-Sep-2023 11:38:45
+    number of reformations : 1                         01-Sep-2023 11:38:45
+------- converged at time : 43.2503                    01-Sep-2023 11:38:45
+    number of iterations   : 1                         01-Sep-2023 11:38:45
+    number of reformations : 1                         01-Sep-2023 11:38:45
+------- converged at time : 44.2503                    01-Sep-2023 11:38:45
+    number of iterations   : 1                         01-Sep-2023 11:38:45
+    number of reformations : 1                         01-Sep-2023 11:38:45
+------- converged at time : 45                         01-Sep-2023 11:38:45
+ Elapsed time : 0:00:00                                01-Sep-2023 11:38:45
+ N O R M A L   T E R M I N A T I O N
+# Done                                                 01-Sep-2023 11:38:45
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+</pre><h2 id="16">Import FEBio results</h2><pre class="codeinput"><span class="keyword">if</span> runFlag==1 <span class="comment">%i.e. a succesful run</span>
+</pre><pre class="codeinput">    <span class="comment">% Importing nodal displacements from a log file</span>
+    dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_disp),0,1);
+
+    <span class="comment">%Access data</span>
+    N_disp_mat=dataStruct.data; <span class="comment">%Displacement</span>
+    timeVec=dataStruct.time; <span class="comment">%Time</span>
+
+    <span class="comment">%Create deformed coordinate set</span>
+    V_DEF=N_disp_mat+repmat(V,[1 1 size(N_disp_mat,3)]);
+</pre><p>Plotting the simulated results using <tt>anim8</tt> to visualize and animate deformations</p><pre class="codeinput">    DN_magnitude=sqrt(sum(N_disp_mat(:,:,end).^2,2)); <span class="comment">%Current displacement magnitude</span>
+
+    <span class="comment">% Create basic view and store graphics handle to initiate animation</span>
+    hf=cFigure; <span class="comment">%Open figure</span>
+    gtitle([febioFebFileNamePart,<span class="string">': Press play to animate'</span>]);
+    title(<span class="string">'Displacement magnitude [mm]'</span>,<span class="string">'Interpreter'</span>,<span class="string">'Latex'</span>)
+    hp=gpatch(Fb,V_DEF(:,:,end),DN_magnitude,<span class="string">'k'</span>,1,2); <span class="comment">%Add graphics object to animate</span>
+    hp.Marker=<span class="string">'.'</span>;
+    hp.MarkerSize=markerSize2;
+    hp.FaceColor=<span class="string">'interp'</span>;
+    gpatch(Fb,V,0.5*ones(1,3),<span class="string">'none'</span>,0.25); <span class="comment">%A static graphics object</span>
+
+    axisGeom(gca,fontSize);
+    colormap(cMap); colorbar;
+    caxis([0 max(DN_magnitude)]); caxis <span class="string">manual</span>;
+    axis(axisLim(V_DEF)); <span class="comment">%Set axis limits statically</span>
+    view(140,30);
+    camlight <span class="string">headlight</span>;
+
+    <span class="comment">% Set up animation features</span>
+    animStruct.Time=timeVec; <span class="comment">%The time vector</span>
+    <span class="keyword">for</span> qt=1:1:size(N_disp_mat,3) <span class="comment">%Loop over time increments</span>
+        DN_magnitude=sqrt(sum(N_disp_mat(:,:,qt).^2,2)); <span class="comment">%Current displacement magnitude</span>
+
+        <span class="comment">%Set entries in animation structure</span>
+        animStruct.Handles{qt}=[hp hp]; <span class="comment">%Handles of objects to animate</span>
+        animStruct.Props{qt}={<span class="string">'Vertices'</span>,<span class="string">'CData'</span>}; <span class="comment">%Properties of objects to animate</span>
+        animStruct.Set{qt}={V_DEF(:,:,qt),DN_magnitude}; <span class="comment">%Property values for to set in order to animate</span>
+    <span class="keyword">end</span>
+    anim8(hf,animStruct); <span class="comment">%Initiate animation feature</span>
+    drawnow;
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0087_inverse_FEA_cube_uniaxial_viscoelastic_04.jpg" alt=""> <p>Importing element stress from a log file</p><pre class="codeinput">    dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_stress),0,1);
+
+    <span class="comment">%Access data</span>
+    E_stress_mat=dataStruct.data;
+</pre><p>Importing element stretch from a log file</p><pre class="codeinput">    dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_stretch),0,1);
+
+    <span class="comment">%Access data</span>
+    E_stretch_mat=dataStruct.data;
+</pre><p>Plotting the simulated results using <tt>anim8</tt> to visualize and animate deformations</p><pre class="codeinput">    [CV]=faceToVertexMeasure(E,V,E_stress_mat(:,:,end));
+
+    <span class="comment">% Create basic view and store graphics handle to initiate animation</span>
+    hf=cFigure; <span class="comment">%Open figure  /usr/local/MATLAB/R2020a/bin/glnxa64/jcef_helper: symbol lookup error: /lib/x86_64-linux-gnu/libpango-1.0.so.0: undefined symbol: g_ptr_array_copy</span>
+
+    gtitle([febioFebFileNamePart,<span class="string">': Press play to animate'</span>]);
+    title(<span class="string">'$\sigma_{zz}$ [MPa]'</span>,<span class="string">'Interpreter'</span>,<span class="string">'Latex'</span>)
+    hp=gpatch(Fb,V_DEF(:,:,end),CV,<span class="string">'k'</span>,1,2); <span class="comment">%Add graphics object to animate</span>
+    hp.Marker=<span class="string">'.'</span>;
+    hp.MarkerSize=markerSize2;
+    hp.FaceColor=<span class="string">'interp'</span>;
+    gpatch(Fb,V,0.5*ones(1,3),<span class="string">'none'</span>,0.25); <span class="comment">%A static graphics object</span>
+
+    axisGeom(gca,fontSize);
+    colormap(cMap); colorbar;
+    caxis([min(E_stress_mat(:)) max(E_stress_mat(:))]);
+    axis(axisLim(V_DEF)); <span class="comment">%Set axis limits statically</span>
+    view(140,30);
+    camlight <span class="string">headlight</span>;
+
+    <span class="comment">% Set up animation features</span>
+    animStruct.Time=timeVec; <span class="comment">%The time vector</span>
+    <span class="keyword">for</span> qt=1:1:size(N_disp_mat,3) <span class="comment">%Loop over time increments</span>
+
+        [CV]=faceToVertexMeasure(E,V,E_stress_mat(:,:,qt));
+
+        <span class="comment">%Set entries in animation structure</span>
+        animStruct.Handles{qt}=[hp hp]; <span class="comment">%Handles of objects to animate</span>
+        animStruct.Props{qt}={<span class="string">'Vertices'</span>,<span class="string">'CData'</span>}; <span class="comment">%Properties of objects to animate</span>
+        animStruct.Set{qt}={V_DEF(:,:,qt),CV}; <span class="comment">%Property values for to set in order to animate</span>
+    <span class="keyword">end</span>
+    anim8(hf,animStruct); <span class="comment">%Initiate animation feature</span>
+    drawnow;
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0087_inverse_FEA_cube_uniaxial_viscoelastic_05.jpg" alt=""> <p>Importing element stress from a log file</p><pre class="codeinput">    dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_force),0,1);
+
+    <span class="comment">%Access data</span>
+    N_force_mat=dataStruct.data;
+
+    time_sim=timeVec;
+    force_sim=-squeeze(sum(N_force_mat(:,3,:),1));
+</pre><p>Visualize stretch-stress curve</p><pre class="codeinput">    stretch_sim=squeeze(mean(E_stretch_mat,1)); <span class="comment">% Stretch U_z</span>
+    stress_cauchy_sim=squeeze(mean(E_stress_mat,1)); <span class="comment">%Cauchy stress sigma_z</span>
+</pre><p>Visualize stress-stretch curve</p><pre class="codeinput">    cFigure; hold <span class="string">on</span>;
+    title(<span class="string">'Force curve optimisation'</span>,<span class="string">'FontSize'</span>,fontSize);
+    xlabel(<span class="string">'t [s]'</span>,<span class="string">'FontSize'</span>,fontSize); ylabel(<span class="string">'$F_z$ [N]'</span>,<span class="string">'FontSize'</span>,fontSize,<span class="string">'Interpreter'</span>,<span class="string">'Latex'</span>); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize); hold <span class="string">on</span>;
+
+    Hn(1)=plot(time_sim,force_sim,<span class="string">'r.-'</span>,<span class="string">'lineWidth'</span>,lineWidth2,<span class="string">'markerSize'</span>,markerSize2);
+    Hn(2)=plot(time_exp,force_exp,<span class="string">'k-'</span>,<span class="string">'lineWidth'</span>,lineWidth);
+
+    legend(Hn,{<span class="string">'Simulation'</span>,<span class="string">'Experiment'</span>},<span class="string">'Location'</span>,<span class="string">'northeastoutside'</span>);
+    view(2); axis <span class="string">tight</span>;  grid <span class="string">on</span>; axis <span class="string">square</span>; axis <span class="string">manual</span>;
+    set(gca,<span class="string">'FontSize'</span>,fontSize);
+    drawnow;
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0087_inverse_FEA_cube_uniaxial_viscoelastic_06.jpg" alt=""> <pre class="codeinput"><span class="keyword">end</span>
+</pre><h2 id="27">Create structures for optimization</h2><pre class="codeinput"><span class="comment">% Material structure</span>
+mat_struct.id=1; <span class="comment">%Material id</span>
+mat_struct.par_names={<span class="string">'g1'</span>,<span class="string">'t1'</span>}; <span class="comment">%Parameter names</span>
+mat_struct.par_values={g1_ini t1_ini}; <span class="comment">%Parameter values</span>
+
+febioAnalysis.disp_on=0;
+febioAnalysis.disp_log_on=0;
+
+<span class="comment">%What should be known to the objective function:</span>
+objectiveStruct.h=Hn(1);
+objectiveStruct.time_exp=time_exp;
+objectiveStruct.force_exp=force_exp;
+objectiveStruct.febioAnalysis=febioAnalysis;
+objectiveStruct.febio_spec=febio_spec;
+objectiveStruct.febioFebFileName=febioFebFileName;
+objectiveStruct.mat_struct=mat_struct;
+objectiveStruct.parNormFactors=P; <span class="comment">%This will normalize the parameters to ones(size(P))</span>
+objectiveStruct.Pb_struct.xx_c=P; <span class="comment">%Parameter constraining centre</span>
+objectiveStruct.Pb_struct.xxlim=[P(1)/1000 100;<span class="keyword">...</span>
+                                 P(2)/1000 100]; <span class="comment">%Parameter bounds</span>
+
+<span class="comment">%Optimisation settings</span>
+maxNumberIterations=100; <span class="comment">%Maximum number of optimization iterations</span>
+maxNumberFunctionEvaluations=maxNumberIterations*10; <span class="comment">%Maximum number of function evaluations, N.B. multiple evaluations are used per iteration</span>
+functionTolerance=1e-6; <span class="comment">%Tolerance on objective function value</span>
+parameterTolerance=1e-6; <span class="comment">%Tolerance on parameter variation</span>
+displayTypeIterations=<span class="string">'iter'</span>;
+
+objectiveStruct.method=2;
+
+<span class="comment">%File names of output files</span>
+output_names.force=fullfile(savePath,febioLogFileName_force);
+objectiveStruct.run_output_names=output_names;
+</pre><h2 id="28">start optimization</h2><pre class="codeinput">Pn=P./objectiveStruct.parNormFactors;
+
+<span class="keyword">switch</span> objectiveStruct.method
+    <span class="keyword">case</span> 1 <span class="comment">%fminsearch and Nelder-Mead</span>
+        OPT_options=optimset(<span class="string">'fminsearch'</span>); <span class="comment">% 'Nelder-Mead simplex direct search'</span>
+        OPT_options = optimset(OPT_options,<span class="string">'MaxFunEvals'</span>,maxNumberFunctionEvaluations,<span class="keyword">...</span>
+            <span class="string">'MaxIter'</span>,maxNumberIterations,<span class="keyword">...</span>
+            <span class="string">'TolFun'</span>,functionTolerance,<span class="keyword">...</span>
+            <span class="string">'TolX'</span>,parameterTolerance,<span class="keyword">...</span>
+            <span class="string">'Display'</span>,displayTypeIterations,<span class="keyword">...</span>
+            <span class="string">'FinDiffRelStep'</span>,1e-2,<span class="keyword">...</span>
+            <span class="string">'DiffMaxChange'</span>,0.5);
+        [Pn_opt,OPT_out.fval,OPT_out.exitflag,OPT_out.output]= fminsearch(@(Pn) objectiveFunctionIFEA(Pn,objectiveStruct),Pn,OPT_options);
+    <span class="keyword">case</span> 2 <span class="comment">%lsqnonlin and Levenberg-Marquardt</span>
+        OPT_options = optimoptions(@lsqnonlin,<span class="string">'Algorithm'</span>,<span class="string">'levenberg-marquardt'</span>);
+        OPT_options = optimoptions(OPT_options,<span class="string">'MaxFunEvals'</span>,maxNumberFunctionEvaluations,<span class="keyword">...</span>
+            <span class="string">'MaxIter'</span>,maxNumberIterations,<span class="keyword">...</span>
+            <span class="string">'TolFun'</span>,functionTolerance,<span class="keyword">...</span>
+            <span class="string">'TolX'</span>,parameterTolerance,<span class="keyword">...</span>
+            <span class="string">'Display'</span>,displayTypeIterations,<span class="keyword">...</span>
+            <span class="string">'FinDiffRelStep'</span>,1e-2,<span class="keyword">...</span>
+            <span class="string">'DiffMaxChange'</span>,0.5);
+        [Pn_opt,OPT_out.resnorm,OPT_out.residual]= lsqnonlin(@(Pn) objectiveFunctionIFEA(Pn,objectiveStruct),Pn,[],[],OPT_options);
+<span class="keyword">end</span>
+</pre><pre class="codeinput">[Fopt,OPT_stats_out]=objectiveFunctionIFEA(Pn_opt,objectiveStruct);
+</pre><h2 id="30">Unnormalize and constrain parameters</h2><pre class="codeinput">P_opt=Pn_opt.*objectiveStruct.parNormFactors; <span class="comment">%Scale back, undo normalization</span>
+
+<span class="comment">%Constraining parameters</span>
+<span class="keyword">for</span> q=1:1:numel(P)
+    [P(q)]=boxconstrain(P(q),objectiveStruct.Pb_struct.xxlim(q,1),objectiveStruct.Pb_struct.xxlim(q,2),objectiveStruct.Pb_struct.xx_c(q));
+<span class="keyword">end</span>
+
+disp_text=sprintf(<span class="string">'%6.16e,'</span>,P_opt); disp_text=disp_text(1:end-1);
+disp([<span class="string">'P_opt='</span>,disp_text]);
+</pre><pre class="codeoutput">P_opt=2.2528813874812478e-01,1.2008168277296797e+01
+</pre><pre class="codeinput">cFigure; hold <span class="string">on</span>;
+title(<span class="string">'Force curve optimisation'</span>,<span class="string">'FontSize'</span>,fontSize);
+xlabel(<span class="string">'t [s]'</span>,<span class="string">'FontSize'</span>,fontSize); ylabel(<span class="string">'$F_z$ [N]'</span>,<span class="string">'FontSize'</span>,fontSize,<span class="string">'Interpreter'</span>,<span class="string">'Latex'</span>); zlabel(<span class="string">'Z'</span>,<span class="string">'FontSize'</span>,fontSize); hold <span class="string">on</span>;
+
+Hn(1)=plot(OPT_stats_out.time_sim,OPT_stats_out.force_sim,<span class="string">'r.-'</span>,<span class="string">'lineWidth'</span>,lineWidth2,<span class="string">'markerSize'</span>,markerSize2);
+Hn(2)=plot(time_exp,force_exp,<span class="string">'k-'</span>,<span class="string">'lineWidth'</span>,lineWidth);
+
+legend(Hn,{<span class="string">'Simulation'</span>,<span class="string">'Experiment'</span>},<span class="string">'Location'</span>,<span class="string">'northeastoutside'</span>);
+view(2); axis <span class="string">tight</span>;  grid <span class="string">on</span>; axis <span class="string">square</span>; axis <span class="string">manual</span>;
+set(gca,<span class="string">'FontSize'</span>,fontSize);
+drawnow;
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0087_inverse_FEA_cube_uniaxial_viscoelastic_29.jpg" alt=""> <pre class="codeinput"><span class="keyword">function</span> [Fopt,OPT_stats_out]=objectiveFunctionIFEA(Pn,objectiveStruct)
+</pre><pre class="codeinput">febioFebFileName=objectiveStruct.febioFebFileName;
+febio_spec=objectiveStruct.febio_spec;
+</pre><h2 id="35">Unnormalize and constrain parameters</h2><pre class="codeinput">P=Pn.*objectiveStruct.parNormFactors; <span class="comment">%Scale back, undo normalization</span>
+P_in=P; <span class="comment">%Proposed P</span>
+
+<span class="comment">%Constraining parameters</span>
+<span class="keyword">for</span> q=1:1:numel(P)
+    [P(q)]=boxconstrain(P(q),objectiveStruct.Pb_struct.xxlim(q,1),objectiveStruct.Pb_struct.xxlim(q,2),objectiveStruct.Pb_struct.xx_c(q));
+<span class="keyword">end</span>
+</pre><h2 id="36">Setting material parameters</h2><pre class="codeinput"><span class="comment">%Acces material parameters</span>
+mat_struct=objectiveStruct.mat_struct;
+mat_struct.par_values={P(1) P(2)};
+
+disp(<span class="string">'SETTING MATERIAL PARAMETERS...'</span>);
+disp([<span class="string">'Proposed (norm.): '</span>,sprintf(repmat(<span class="string">'%6.16e '</span>,[1,numel(Pn)]),Pn)]);
+disp([<span class="string">'Proposed        : '</span>,sprintf(repmat(<span class="string">'%6.16e '</span>,[1,numel(P_in)]),P_in)]);
+disp([<span class="string">'Set (constr.)   : '</span>,sprintf(repmat(<span class="string">'%6.16e '</span>,[1,numel(P)]),P)]);
+
+<span class="comment">%Assign material parameters</span>
+matId=mat_struct.id;
+<span class="keyword">for</span> q=1:1:numel(mat_struct.par_names)
+    parNameNow=mat_struct.par_names{q};
+    parValuesNow=mat_struct.par_values{q};
+    febio_spec.Material.material{matId}.(parNameNow)=mat2strIntDouble(parValuesNow);
+<span class="keyword">end</span>
+febioStruct2xml(febio_spec,febioFebFileName); <span class="comment">%Exporting to file and domNode</span>
+
+disp(<span class="string">'Done'</span>)
+</pre><pre class="codeoutput">SETTING MATERIAL PARAMETERS...
+Proposed (norm.): 1.0000000000000000e+00 1.0000000000000000e+00 
+Proposed        : 5.0000000000000000e-01 6.0000000000000000e+00 
+Set (constr.)   : 5.0000000000000000e-01 6.0000000000000000e+00 
+Done
+</pre><pre class="codeoutput">SETTING MATERIAL PARAMETERS...
+Proposed (norm.): 1.0100000000000000e+00 1.0000000000000000e+00 
+Proposed        : 5.0500000000000000e-01 6.0000000000000000e+00 
+Set (constr.)   : 5.0499999999579137e-01 6.0000000000000000e+00 
+Done
+</pre><pre class="codeoutput">SETTING MATERIAL PARAMETERS...
+Proposed (norm.): 1.0000000000000000e+00 1.0100000000000000e+00 
+Proposed        : 5.0000000000000000e-01 6.0600000000000005e+00 
+Set (constr.)   : 5.0000000000000000e-01 6.0599999918515186e+00 
+Done
+</pre><pre class="codeoutput">SETTING MATERIAL PARAMETERS...
+Proposed (norm.): 6.9607253819226256e-01 1.0615588742679349e+00 
+Proposed        : 3.4803626909613128e-01 6.3693532456076092e+00 
+Set (constr.)   : 3.5255738995047059e-01 6.3693513447651906e+00 
+Done
+</pre><pre class="codeoutput">SETTING MATERIAL PARAMETERS...
+Proposed (norm.): 7.0607253819226257e-01 1.0615588742679349e+00 
+Proposed        : 3.5303626909613128e-01 6.3693532456076092e+00 
+Set (constr.)   : 3.5713510575702756e-01 6.3693513447651906e+00 
+Done
+</pre><pre class="codeoutput">SETTING MATERIAL PARAMETERS...
+Proposed (norm.): 6.9607253819226256e-01 1.0721744630106143e+00 
+Proposed        : 3.4803626909613128e-01 6.4330467780636855e+00 
+Set (constr.)   : 3.5255738995047059e-01 6.4330437145220545e+00 
+Done
+</pre><pre class="codeoutput">SETTING MATERIAL PARAMETERS...
+Proposed (norm.): 4.8932036498949139e-01 1.4707271869607437e+00 
+Proposed        : 2.4466018249474569e-01 8.8243631217644616e+00 
+Set (constr.)   : 2.6479917960819727e-01 8.8235134956874308e+00 
+Done
+</pre><pre class="codeoutput">SETTING MATERIAL PARAMETERS...
+Proposed (norm.): 4.9932036498949139e-01 1.4707271869607437e+00 
+Proposed        : 2.4966018249474570e-01 8.8243631217644616e+00 
+Set (constr.)   : 2.6870887250333753e-01 8.8235134956874308e+00 
+Done
+</pre><pre class="codeoutput">SETTING MATERIAL PARAMETERS...
+Proposed (norm.): 4.8932036498949139e-01 1.4854344588303512e+00 
+Proposed        : 2.4466018249474569e-01 8.9126067529821071e+00 
+Set (constr.)   : 2.6479917960819727e-01 8.9116749977417626e+00 
+Done
+</pre><pre class="codeoutput">SETTING MATERIAL PARAMETERS...
+Proposed (norm.): 4.4710642238077963e-01 1.9117729485670072e+00 
+Proposed        : 2.2355321119038982e-01 1.1470637691402043e+01 
+Set (constr.)   : 2.4870193673443164e-01 1.1464469626755392e+01 
+Done
+</pre><pre class="codeoutput">SETTING MATERIAL PARAMETERS...
+Proposed (norm.): 4.5710642238077964e-01 1.9117729485670072e+00 
+Proposed        : 2.2855321119038982e-01 1.1470637691402043e+01 
+Set (constr.)   : 2.5245516860402145e-01 1.1464469626755392e+01 
+Done
+</pre><pre class="codeoutput">SETTING MATERIAL PARAMETERS...
+Proposed (norm.): 4.4710642238077963e-01 1.9308906780526773e+00 
+Proposed        : 2.2355321119038982e-01 1.1585344068316065e+01 
+Set (constr.)   : 2.4870193673443164e-01 1.1578780198571351e+01 
+Done
+</pre><pre class="codeoutput">SETTING MATERIAL PARAMETERS...
+Proposed (norm.): 4.5052342606079226e-01 2.0002499265835438e+00 
+Proposed        : 2.2526171303039613e-01 1.2001499559501262e+01 
+Set (constr.)   : 2.4998019633148721e-01 1.1993358239187607e+01 
+Done
+</pre><pre class="codeoutput">SETTING MATERIAL PARAMETERS...
+Proposed (norm.): 4.6052342606079227e-01 2.0002499265835438e+00 
+Proposed        : 2.3026171303039614e-01 1.2001499559501262e+01 
+Set (constr.)   : 2.5374623776873040e-01 1.1993358239187607e+01 
+Done
+</pre><pre class="codeoutput">SETTING MATERIAL PARAMETERS...
+Proposed (norm.): 4.5052342606079226e-01 2.0202524258493795e+00 
+Proposed        : 2.2526171303039613e-01 1.2121514555096276e+01 
+Set (constr.)   : 2.4998019633148721e-01 1.2112875552394470e+01 
+Done
+</pre><pre class="codeoutput">SETTING MATERIAL PARAMETERS...
+Proposed (norm.): 4.5057686158731325e-01 2.0013608744842006e+00 
+Proposed        : 2.2528843079365662e-01 1.2008165246905204e+01 
+Set (constr.)   : 2.5000022075070749e-01 1.1999996799035461e+01 
+Done
+</pre><pre class="codeoutput">SETTING MATERIAL PARAMETERS...
+Proposed (norm.): 4.6057686158731326e-01 2.0013608744842006e+00 
+Proposed        : 2.3028843079365663e-01 1.2008165246905204e+01 
+Set (constr.)   : 2.5376646232582262e-01 1.1999996799035461e+01 
+Done
+</pre><pre class="codeoutput">SETTING MATERIAL PARAMETERS...
+Proposed (norm.): 4.5057686158731325e-01 2.0213744832290428e+00 
+Proposed        : 2.2528843079365662e-01 1.2128246899374258e+01 
+Set (constr.)   : 2.5000022075070749e-01 1.2119579394503358e+01 
+Done
+</pre><pre class="codeoutput">SETTING MATERIAL PARAMETERS...
+Proposed (norm.): 4.5057627749624957e-01 2.0013613795494662e+00 
+Proposed        : 2.2528813874812478e-01 1.2008168277296797e+01 
+Set (constr.)   : 2.5000000186273563e-01 1.1999999817080514e+01 
+Done
+</pre><pre class="codeoutput">SETTING MATERIAL PARAMETERS...
+Proposed (norm.): 4.6057627749624958e-01 2.0013613795494662e+00 
+Proposed        : 2.3028813874812479e-01 1.2008168277296797e+01 
+Set (constr.)   : 2.5376624125022135e-01 1.1999999817080514e+01 
+Done
+</pre><pre class="codeoutput">SETTING MATERIAL PARAMETERS...
+Proposed (norm.): 4.5057627749624957e-01 2.0213749933449607e+00 
+Proposed        : 2.2528813874812478e-01 1.2128249960069764e+01 
+Set (constr.)   : 2.5000000186273563e-01 1.2119582442226841e+01 
+Done
+</pre><pre class="codeoutput">SETTING MATERIAL PARAMETERS...
+Proposed (norm.): 4.5057627749624957e-01 2.0013613795494662e+00 
+Proposed        : 2.2528813874812478e-01 1.2008168277296797e+01 
+Set (constr.)   : 2.5000000186273563e-01 1.1999999817080514e+01 
+Done
+</pre><h2 id="37">START FEBio</h2><pre class="codeinput">[runFlag]=runMonitorFEBio(objectiveStruct.febioAnalysis);
+
+<span class="comment">%pause(0.1);</span>
+
+time_exp=objectiveStruct.time_exp;
+force_exp=objectiveStruct.force_exp;
+
+<span class="keyword">if</span> runFlag==1
+
+    <span class="comment">% Importing element stress from a log file</span>
+    dataStruct=importFEBio_logfile(objectiveStruct.run_output_names.force,0,1);
+    N_force_mat=dataStruct.data;
+
+    force_sim=-squeeze(sum(N_force_mat(:,3,:),1));
+    time_sim=dataStruct.time;
+
+    <span class="keyword">if</span> ~isempty(objectiveStruct.h)
+        objectiveStruct.h.XData=time_sim;
+        objectiveStruct.h.YData=force_sim;
+        drawnow;
+    <span class="keyword">end</span>
+
+    <span class="comment">%Interpolate experiment onto simulated points</span>
+    force_sim_exp = interp1(time_sim,force_sim,time_exp,<span class="string">'pchip'</span>);
+
+    <span class="comment">%Derive Fopt</span>
+    forceDev=force_exp-force_sim_exp;
+
+    <span class="keyword">switch</span> objectiveStruct.method
+        <span class="keyword">case</span> 1
+            Fopt=sum((forceDev).^2); <span class="comment">%Sum of squared differences</span>
+        <span class="keyword">case</span> 2
+            Fopt=forceDev(:);<span class="comment">%(stressDev).^2; %Squared differences</span>
+    <span class="keyword">end</span>
+
+    OPT_stats_out.force_sim=force_sim;
+    OPT_stats_out.time_sim=time_sim;
+    OPT_stats_out.stressDev=forceDev;
+    OPT_stats_out.Fopt=Fopt;
+
+<span class="keyword">else</span> <span class="comment">%Output NaN</span>
+    <span class="keyword">switch</span> objectiveStruct.method
+        <span class="keyword">case</span> 1
+            Fopt=NaN;
+        <span class="keyword">case</span> 2
+            Fopt=NaN(size(time_exp)); <span class="comment">%Squared differences</span>
+    <span class="keyword">end</span>
+    OPT_stats_out=[];
+<span class="keyword">end</span>
+</pre><img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0087_inverse_FEA_cube_uniaxial_viscoelastic_07.jpg" alt=""> <img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0087_inverse_FEA_cube_uniaxial_viscoelastic_08.jpg" alt=""> <img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0087_inverse_FEA_cube_uniaxial_viscoelastic_09.jpg" alt=""> <img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0087_inverse_FEA_cube_uniaxial_viscoelastic_10.jpg" alt=""> <img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0087_inverse_FEA_cube_uniaxial_viscoelastic_11.jpg" alt=""> <img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0087_inverse_FEA_cube_uniaxial_viscoelastic_12.jpg" alt=""> <img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0087_inverse_FEA_cube_uniaxial_viscoelastic_13.jpg" alt=""> <img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0087_inverse_FEA_cube_uniaxial_viscoelastic_14.jpg" alt=""> <img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0087_inverse_FEA_cube_uniaxial_viscoelastic_15.jpg" alt=""> <img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0087_inverse_FEA_cube_uniaxial_viscoelastic_16.jpg" alt=""> <img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0087_inverse_FEA_cube_uniaxial_viscoelastic_17.jpg" alt=""> <img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0087_inverse_FEA_cube_uniaxial_viscoelastic_18.jpg" alt=""> <img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0087_inverse_FEA_cube_uniaxial_viscoelastic_19.jpg" alt=""> <img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0087_inverse_FEA_cube_uniaxial_viscoelastic_20.jpg" alt=""> <img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0087_inverse_FEA_cube_uniaxial_viscoelastic_21.jpg" alt=""> <img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0087_inverse_FEA_cube_uniaxial_viscoelastic_22.jpg" alt=""> <img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0087_inverse_FEA_cube_uniaxial_viscoelastic_23.jpg" alt=""> <img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0087_inverse_FEA_cube_uniaxial_viscoelastic_24.jpg" alt=""> <img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0087_inverse_FEA_cube_uniaxial_viscoelastic_25.jpg" alt=""> <img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0087_inverse_FEA_cube_uniaxial_viscoelastic_26.jpg" alt=""> <img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0087_inverse_FEA_cube_uniaxial_viscoelastic_27.jpg" alt=""> <img width="100%" height="auto" vspace="5" hspace="5" src="DEMO_febio_0087_inverse_FEA_cube_uniaxial_viscoelastic_28.jpg" alt=""> <pre class="codeinput"><span class="keyword">end</span>
+</pre><pre class="codeoutput">
+                                        First-order                     Norm of 
+ Iteration  Func-count      Resnorm      optimality       Lambda           step
+     0           3       0.00587745          0.0132         0.01
+     1           6       0.00118888         0.00276        0.001       0.310099
+     2           9      0.000291695         0.00122       0.0001       0.458438
+     3          12      1.37636e-05        0.000538        1e-05       0.443061
+     4          15      2.21641e-09        7.16e-06        1e-06      0.0885429
+     5          18      1.01341e-14        1.92e-08        1e-07     0.00111223
+     6          21      1.57421e-19        2.24e-12        1e-08    7.72174e-07
+
+Local minimum found.
+
+Optimization completed because the size of the gradient is less than
+1e-4 times the value of the function tolerance.
+
+</pre><p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2006-2023 Kevin Mattheus Moerman and the GIBBON contributors</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2023a</a><br></p></div><!--
+##### SOURCE BEGIN #####
+%% DEMO_febio_0087_inverse_FEA_cube_uniaxial_viscoelastic
+% Below is a demonstration for:
+% 
+% * Inverse FEA based material parameter optimisation for uniaxial
+% compression
+
+%% Keywords
+%
+% * febio_spec version 4.0
+% * febio, FEBio
+% * hexahedral elements, hex8
+% * static, solid
+% * hyperelastic, Ogden
+% * displacement logfile
+% * stress logfile
+
+%%
+
+clear; close all; clc;
+
+%%
+% Plot settings
+fontSize=20;
+faceAlpha1=0.8;
+faceAlpha2=1;
+edgeColor=0.25*ones(1,3);
+edgeWidth=1.5;
+markerSize=25;
+markerSize2=50;
+lineWidth=5; 
+lineWidth2=3; 
+cMap=viridis(20);
+
+%% Control parameters
+
+% Path names
+defaultFolder = fileparts(fileparts(mfilename('fullpath')));
+savePath=fullfile(defaultFolder,'data','temp');
+
+% Defining file names
+febioFebFileNamePart='tempModel';
+febioFebFileName=fullfile(savePath,[febioFebFileNamePart,'.feb']); %FEB file name
+febioLogFileName=[febioFebFileNamePart,'.txt']; %FEBio log file name
+febioLogFileName_disp=[febioFebFileNamePart,'_disp_out.txt']; %Log file name for exporting displacement
+febioLogFileName_force=[febioFebFileNamePart,'_force_out.txt']; %Log file name for exporting force
+febioLogFileName_stress=[febioFebFileNamePart,'_stress_out.txt']; %Log file name for exporting stress sigma_z
+febioLogFileName_stretch=[febioFebFileNamePart,'_stretch_out.txt']; %Log file name for exporting stretch U_z
+
+%Specifying dimensions and number of elements
+sampleWidth=10;
+sampleThickness=10; 
+sampleHeight=10;
+pointSpacings=10*ones(1,3);
+initialArea=sampleWidth*sampleThickness;
+
+numElementsWidth=round(sampleWidth/pointSpacings(1));
+numElementsThickness=round(sampleThickness/pointSpacings(2));
+numElementsHeight=round(sampleHeight/pointSpacings(3));
+
+stretchLoad=0.7;
+displacementMagnitude=(stretchLoad*sampleHeight)-sampleHeight;
+
+%True material parameter set
+c1_true=1e-3; %Shear-modulus-like parameter
+m1_true=2; %Material parameter setting degree of non-linearity
+k_factor=100; %Bulk modulus factor 
+k_true=c1_true*k_factor; %Bulk modulus
+g1_true=1/4; %Viscoelastic QLV proportional coefficient
+t1_true=12; %Viscoelastic QLV time coefficient
+d=1e-9; %Density (not required for static analysis)
+
+%Initial material parameter set
+c1_ini=1e-3; %Shear-modulus-like parameter
+m1_ini=2; %Material parameter setting degree of non-linearity
+k_factor=100; %Bulk modulus factor 
+k_ini=c1_ini*k_factor; %Bulk modulus
+g1_ini=1/2; %Viscoelastic QLV proportional coefficient
+t1_ini=6; %Viscoelastic QLV time coefficient
+
+P=[g1_ini t1_ini];
+
+analysisType='STATIC';
+
+% FEA control settings
+
+t_load=5; %Time from start to max load
+t_step_ini1=t_load/20; %Initial desired step size
+numTimeSteps1=round(t_load/t_step_ini1); %Number of time steps desired
+t_step1=t_load/numTimeSteps1; %Step size
+dtmin1=t_step1/100; %Smallest allowed step size
+dtmax1=t_step1; %Largest allowed step size
+
+t_hold=40;
+t_step_ini2=t_step_ini1; %Initial desired step size
+numTimeSteps2=round(t_hold/t_step_ini2); %Number of time steps desired
+t_step2=t_hold/numTimeSteps2; %Step size
+dtmin2=t_step2/100; %Smallest allowed step size
+dtmax2=1; %Largest allowed step size
+
+max_refs=25; %Max reforms
+max_ups=0; %Set to zero to use full-Newton iterations
+opt_iter=6; %Optimum number of iterations
+max_retries=5; %Maximum number of retires
+
+runMode='external';%'internal';
+
+%% SIMULATE EXPERIMENTAL DATA
+
+t_load=5;
+t_hold=40;
+
+%Basic set
+force_exp=[0;0.00571888681803200;0.0116845163681410;0.0179162765196900;0.0244353227043800;0.0312647752859100;0.0384299426054900;0.0459585735483400;0.0538811441288000;0.0622311833719200;0.0710456446934800;0.0803653300982600;0.0902353758465800;0.100705809855340;0.111832193037600;0.123676359159160;0.136307270652760;0.149802011356620;0.164246941444300;0.179739045129600;0.196387508289600;0.195682558372200;0.194584712122700;0.193211083940900;0.191658961409100;0.190005829450600;0.188311247269800;0.186619511002600;0.184962460638900;0.183362088368000;0.181832796240100;0.180383262875100;0.179017938235800;0.177738212392000;0.176543312424500;0.175430980123800;0.174397977083200;0.173440456306600;0.172554232000100;0.171734972580800;0.170978336335100;0.170280064622900;0.169636043901800;0.169042345069400;0.168495246448000;0.167991245115200;0.167527060048000;0.167099629619300;0.166706105308800;0.166343842962100;0.166010392578100;0.165703487299700;0.165421032102400;0.165161092511000;0.164921883878900;0.164701759509300;0.164499202499300;0.164312814805300;0.164141308604700;0.163983497880000;0.163838290574900;0.163704681296000;0.163581744545500;0.163468628452900;0.163389784106200];
+time_exp=[0;0.250000000000000;0.500000000000000;0.750000000000000;1;1.25000000000000;1.50000000000000;1.75000000000000;2;2.25000000000000;2.50000000000000;2.75000000000000;3;3.25000000000000;3.50000000000000;3.75000000000000;4;4.25000000000000;4.50000000000000;4.75000000000000;5;5.25000000000000;5.65000000000000;6.17000000000000;6.78600000000000;7.47880000000000;8.23304000000000;9.03643200000000;9.87914560000000;10.7533165000000;11.6526532000000;12.5721225000000;13.5076980000000;14.4561584000000;15.4149267000000;16.3819414000000;17.3555531000000;18.3344425000000;19.3175540000000;20.3040432000000;21.2932346000000;22.2845876000000;23.2776701000000;24.2721361000000;25.2677089000000;26.2641671000000;27.2613337000000;28.2590669000000;29.2572536000000;30.2558028000000;31.2546423000000;32.2537138000000;33.2529711000000;34.2523768000000;35.2519015000000;36.2515212000000;37.2512169000000;38.2509736000000;39.2507788000000;40.2506231000000;41.2504985000000;42.2503988000000;43.2503190000000;44.2502552000000;45];
+disp_exp=time_exp; 
+disp_exp(time_exp<=t_load)=-displacementMagnitude.*(time_exp(time_exp<=t_load)./t_load);
+disp_exp(time_exp>t_load)=-displacementMagnitude;
+
+loadCurveData = [0 0; 5 1; 45 1]; 
+
+%%
+
+cFigure; 
+subplot(1,2,1); hold on;
+plot(time_exp,force_exp,'r.-','MarkerSize',25);
+axis tight; box on; grid on;
+
+subplot(1,2,2); hold on;
+plot(time_exp,disp_exp,'b.-','MarkerSize',25);
+axis tight; box on; grid on;
+drawnow; 
+
+%% CREATING MESHED BOX
+
+%Create box 1
+boxDim=[sampleWidth sampleThickness sampleHeight]; %Dimensions
+boxEl=[numElementsWidth numElementsThickness numElementsHeight]; %Number of elements
+[box1]=hexMeshBox(boxDim,boxEl);
+E=box1.E;
+V=box1.V;
+Fb=box1.Fb;
+faceBoundaryMarker=box1.faceBoundaryMarker;
+
+X=V(:,1); Y=V(:,2); Z=V(:,3);
+VE=[mean(X(E),2) mean(Y(E),2) mean(Z(E),2)];
+
+elementMaterialIndices=ones(size(E,1),1); 
+
+%%
+
+% Plotting boundary surfaces
+
+cFigure; hold on;
+title('Model surfaces','FontSize',fontSize);
+gpatch(Fb,V,faceBoundaryMarker,'k',0.5);
+colormap(gjet(6)); icolorbar; 
+axisGeom(gca,fontSize);
+drawnow; 
+
+%% DEFINE BC's
+
+%Define supported node sets
+logicFace=faceBoundaryMarker==1;
+Fr=Fb(logicFace,:);
+bcSupportList_X=unique(Fr(:));
+
+logicFace=faceBoundaryMarker==3;
+Fr=Fb(logicFace,:);
+bcSupportList_Y=unique(Fr(:));
+
+logicFace=faceBoundaryMarker==5;
+Fr=Fb(logicFace,:);
+bcSupportList_Z=unique(Fr(:));
+
+%Prescribed displacement nodes
+logicPrescribe=faceBoundaryMarker==6;
+Fr=Fb(logicPrescribe,:);
+bcPrescribeList=unique(Fr(:));
+
+%%
+% Visualize BC's
+cFigure; hold on;
+title('Complete model','FontSize',fontSize);
+
+gpatch(Fb,V,'kw','k',0.5);
+plotV(V(bcSupportList_X,:),'r.','MarkerSize',markerSize);
+plotV(V(bcSupportList_Y,:),'g.','MarkerSize',markerSize);
+plotV(V(bcSupportList_Z,:),'b.','MarkerSize',markerSize);
+plotV(V(bcPrescribeList,:),'k.','MarkerSize',markerSize);
+
+axisGeom(gca,fontSize);
+drawnow; 
+
+%% Defining the FEBio input structure
+% See also |febioStructTemplate| and |febioStruct2xml| and the FEBio user
+% manual.
+
+%Get a template with default settings 
+[febio_spec]=febioStructTemplate;
+
+%febio_spec version 
+febio_spec.ATTR.version='4.0'; 
+
+%Module section
+febio_spec.Module.ATTR.type='solid'; 
+
+%Control sections for each step
+febio_spec.Step.step{1}.Control=febio_spec.Control; %Copy from template
+febio_spec.Step.step{1}.ATTR.id=1;
+febio_spec.Step.step{1}.Control.analysis=analysisType;
+febio_spec.Step.step{1}.Control.time_steps=numTimeSteps1;
+febio_spec.Step.step{1}.Control.step_size=t_step1;
+febio_spec.Step.step{1}.Control.solver.max_refs=max_refs;
+febio_spec.Step.step{1}.Control.time_stepper.dtmin=dtmin1;
+febio_spec.Step.step{1}.Control.time_stepper.dtmax=dtmax1; 
+febio_spec.Step.step{1}.Control.time_stepper.max_retries=max_retries;
+febio_spec.Step.step{1}.Control.time_stepper.opt_iter=opt_iter;
+
+febio_spec.Step.step{2}.Control=febio_spec.Control; %Copy from template
+febio_spec.Step.step{2}.ATTR.id=2;
+febio_spec.Step.step{2}.Control.analysis=analysisType;
+febio_spec.Step.step{2}.Control.time_steps=numTimeSteps2;
+febio_spec.Step.step{2}.Control.step_size=t_step2;
+febio_spec.Step.step{2}.Control.solver.max_refs=max_refs;
+febio_spec.Step.step{2}.Control.time_stepper.dtmin=dtmin2;
+febio_spec.Step.step{2}.Control.time_stepper.dtmax=dtmax2; 
+febio_spec.Step.step{2}.Control.time_stepper.max_retries=max_retries;
+febio_spec.Step.step{2}.Control.time_stepper.opt_iter=opt_iter;
+
+%Remove control field (part of template) since step specific control sections are used
+febio_spec=rmfield(febio_spec,'Control'); 
+
+%Material section
+materialName1='Material1';
+febio_spec.Material.material{1}.ATTR.name=materialName1;
+
+%Viscoelastic part
+febio_spec.Material.material{1}.ATTR.type='uncoupled viscoelastic';
+febio_spec.Material.material{1}.ATTR.id=1;
+febio_spec.Material.material{1}.g1=g1_ini;
+febio_spec.Material.material{1}.t1=t1_ini;
+febio_spec.Material.material{1}.k=k_ini;
+febio_spec.Material.material{1}.density=d;
+
+%Elastic part
+febio_spec.Material.material{1}.elastic{1}.ATTR.type='Ogden';
+febio_spec.Material.material{1}.elastic{1}.c1=c1_ini;
+febio_spec.Material.material{1}.elastic{1}.m1=m1_ini;
+febio_spec.Material.material{1}.elastic{1}.c2=c1_ini;
+febio_spec.Material.material{1}.elastic{1}.m2=-m1_ini;
+febio_spec.Material.material{1}.elastic{1}.density=d;
+
+% Mesh section
+% -> Nodes
+febio_spec.Mesh.Nodes{1}.ATTR.name='Object1'; %The node set name
+febio_spec.Mesh.Nodes{1}.node.ATTR.id=(1:size(V,1))'; %The node id's
+febio_spec.Mesh.Nodes{1}.node.VAL=V; %The nodel coordinates
+
+% -> Elements
+partName1='Part1';
+febio_spec.Mesh.Elements{1}.ATTR.name=partName1; %Name of this part
+febio_spec.Mesh.Elements{1}.ATTR.type='hex8'; %Element type
+febio_spec.Mesh.Elements{1}.elem.ATTR.id=(1:1:size(E,1))'; %Element id's
+febio_spec.Mesh.Elements{1}.elem.VAL=E; %The element matrix
+ 
+% -> NodeSets
+nodeSetName1='bcSupportList_X';
+nodeSetName2='bcSupportList_Y';
+nodeSetName3='bcSupportList_Z';
+nodeSetName4='bcPrescribeList';
+
+febio_spec.Mesh.NodeSet{1}.ATTR.name=nodeSetName1;
+febio_spec.Mesh.NodeSet{1}.VAL=mrow(bcSupportList_X);
+
+febio_spec.Mesh.NodeSet{2}.ATTR.name=nodeSetName2;
+febio_spec.Mesh.NodeSet{2}.VAL=mrow(bcSupportList_Y);
+
+febio_spec.Mesh.NodeSet{3}.ATTR.name=nodeSetName3;
+febio_spec.Mesh.NodeSet{3}.VAL=mrow(bcSupportList_Z);
+
+febio_spec.Mesh.NodeSet{4}.ATTR.name=nodeSetName4;
+febio_spec.Mesh.NodeSet{4}.VAL=mrow(bcPrescribeList);
+
+%MeshDomains section
+febio_spec.MeshDomains.SolidDomain.ATTR.name=partName1;
+febio_spec.MeshDomains.SolidDomain.ATTR.mat=materialName1;
+
+%Boundary condition section 
+% -> Fix boundary conditions
+febio_spec.Boundary.bc{1}.ATTR.name='zero_displacement_x';
+febio_spec.Boundary.bc{1}.ATTR.type='zero displacement';
+febio_spec.Boundary.bc{1}.ATTR.node_set=nodeSetName1;
+febio_spec.Boundary.bc{1}.x_dof=1;
+febio_spec.Boundary.bc{1}.y_dof=0;
+febio_spec.Boundary.bc{1}.z_dof=0;
+
+febio_spec.Boundary.bc{2}.ATTR.name='zero_displacement_y';
+febio_spec.Boundary.bc{2}.ATTR.type='zero displacement';
+febio_spec.Boundary.bc{2}.ATTR.node_set=nodeSetName2;
+febio_spec.Boundary.bc{2}.x_dof=0;
+febio_spec.Boundary.bc{2}.y_dof=1;
+febio_spec.Boundary.bc{2}.z_dof=0;
+
+febio_spec.Boundary.bc{3}.ATTR.name='zero_displacement_z';
+febio_spec.Boundary.bc{3}.ATTR.type='zero displacement';
+febio_spec.Boundary.bc{3}.ATTR.node_set=nodeSetName3;
+febio_spec.Boundary.bc{3}.x_dof=0;
+febio_spec.Boundary.bc{3}.y_dof=0;
+febio_spec.Boundary.bc{3}.z_dof=1;
+
+febio_spec.Boundary.bc{4}.ATTR.name='prescibed_displacement_z';
+febio_spec.Boundary.bc{4}.ATTR.type='prescribed displacement';
+febio_spec.Boundary.bc{4}.ATTR.node_set=nodeSetName4;
+febio_spec.Boundary.bc{4}.dof='z';
+febio_spec.Boundary.bc{4}.value.ATTR.lc=1;
+febio_spec.Boundary.bc{4}.value.VAL=displacementMagnitude;
+febio_spec.Boundary.bc{4}.relative=0;
+
+%LoadData section
+% -> load_controller
+febio_spec.LoadData.load_controller{1}.ATTR.name='LC1';
+febio_spec.LoadData.load_controller{1}.ATTR.id=1;
+febio_spec.LoadData.load_controller{1}.ATTR.type='loadcurve';
+febio_spec.LoadData.load_controller{1}.interpolate='LINEAR';
+febio_spec.LoadData.load_controller{1}.extend='CONSTANT';
+febio_spec.LoadData.load_controller{1}.points.pt.VAL=loadCurveData;
+
+%Output section 
+% -> log file
+febio_spec.Output.logfile.ATTR.file=febioLogFileName;
+febio_spec.Output.logfile.node_data{1}.ATTR.file=febioLogFileName_disp;
+febio_spec.Output.logfile.node_data{1}.ATTR.data='ux;uy;uz';
+febio_spec.Output.logfile.node_data{1}.ATTR.delim=',';
+
+febio_spec.Output.logfile.node_data{2}.ATTR.file=febioLogFileName_force;
+febio_spec.Output.logfile.node_data{2}.ATTR.data='Rx;Ry;Rz';
+febio_spec.Output.logfile.node_data{2}.ATTR.delim=',';
+
+febio_spec.Output.logfile.element_data{1}.ATTR.file=febioLogFileName_stress;
+febio_spec.Output.logfile.element_data{1}.ATTR.data='sz';
+febio_spec.Output.logfile.element_data{1}.ATTR.delim=',';
+
+febio_spec.Output.logfile.element_data{2}.ATTR.file=febioLogFileName_stretch;
+febio_spec.Output.logfile.element_data{2}.ATTR.data='Uz';
+febio_spec.Output.logfile.element_data{2}.ATTR.delim=',';
+
+% Plotfile section
+febio_spec.Output.plotfile.compression=0;
+
+%% Quick viewing of the FEBio input file structure
+% The |febView| function can be used to view the xml structure in a MATLAB
+% figure window. 
+
+%%
+% |febView(febio_spec); %Viewing the febio file|
+
+%% Exporting the FEBio input file
+% Exporting the febio_spec structure to an FEBio input file is done using
+% the |febioStruct2xml| function. 
+
+febioStruct2xml(febio_spec,febioFebFileName); %Exporting to file and domNode
+%system(['gedit ',febioFebFileName,' &']);
+
+%% Running the FEBio analysis
+% To run the analysis defined by the created FEBio input file the
+% |runMonitorFEBio| function is used. The input for this function is a
+% structure defining job settings e.g. the FEBio input file name. The
+% optional output runFlag informs the user if the analysis was run
+% succesfully. 
+
+febioAnalysis.run_filename=febioFebFileName; %The input file name
+febioAnalysis.run_logname=febioLogFileName; %The name for the log file
+febioAnalysis.disp_on=1; %Display information on the command window
+febioAnalysis.runMode=runMode;
+febioAnalysis.maxLogCheckTime=10; %Max log file checking time
+
+[runFlag]=runMonitorFEBio(febioAnalysis);%START FEBio NOW!!!!!!!!
+
+%% Import FEBio results 
+
+if runFlag==1 %i.e. a succesful run
+    
+    %% 
+    
+    % Importing nodal displacements from a log file
+    dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_disp),0,1);
+    
+    %Access data
+    N_disp_mat=dataStruct.data; %Displacement
+    timeVec=dataStruct.time; %Time
+    
+    %Create deformed coordinate set
+    V_DEF=N_disp_mat+repmat(V,[1 1 size(N_disp_mat,3)]);
+               
+    %% 
+    % Plotting the simulated results using |anim8| to visualize and animate
+    % deformations 
+    
+    DN_magnitude=sqrt(sum(N_disp_mat(:,:,end).^2,2)); %Current displacement magnitude
+        
+    % Create basic view and store graphics handle to initiate animation
+    hf=cFigure; %Open figure  
+    gtitle([febioFebFileNamePart,': Press play to animate']);
+    title('Displacement magnitude [mm]','Interpreter','Latex')
+    hp=gpatch(Fb,V_DEF(:,:,end),DN_magnitude,'k',1,2); %Add graphics object to animate
+    hp.Marker='.';
+    hp.MarkerSize=markerSize2;
+    hp.FaceColor='interp';
+    gpatch(Fb,V,0.5*ones(1,3),'none',0.25); %A static graphics object
+    
+    axisGeom(gca,fontSize); 
+    colormap(cMap); colorbar;
+    caxis([0 max(DN_magnitude)]); caxis manual;   
+    axis(axisLim(V_DEF)); %Set axis limits statically    
+    view(140,30);
+    camlight headlight;        
+        
+    % Set up animation features
+    animStruct.Time=timeVec; %The time vector    
+    for qt=1:1:size(N_disp_mat,3) %Loop over time increments        
+        DN_magnitude=sqrt(sum(N_disp_mat(:,:,qt).^2,2)); %Current displacement magnitude
+                
+        %Set entries in animation structure
+        animStruct.Handles{qt}=[hp hp]; %Handles of objects to animate
+        animStruct.Props{qt}={'Vertices','CData'}; %Properties of objects to animate
+        animStruct.Set{qt}={V_DEF(:,:,qt),DN_magnitude}; %Property values for to set in order to animate
+    end        
+    anim8(hf,animStruct); %Initiate animation feature    
+    drawnow;
+            
+    %%
+    % Importing element stress from a log file
+    dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_stress),0,1);
+    
+    %Access data
+    E_stress_mat=dataStruct.data;
+
+    %%
+    % Importing element stretch from a log file
+    dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_stretch),0,1);
+    
+    %Access data
+    E_stretch_mat=dataStruct.data;
+
+    %% 
+    % Plotting the simulated results using |anim8| to visualize and animate
+    % deformations 
+    
+    [CV]=faceToVertexMeasure(E,V,E_stress_mat(:,:,end));
+    
+    % Create basic view and store graphics handle to initiate animation
+    hf=cFigure; %Open figure  /usr/local/MATLAB/R2020a/bin/glnxa64/jcef_helper: symbol lookup error: /lib/x86_64-linux-gnu/libpango-1.0.so.0: undefined symbol: g_ptr_array_copy
+
+    gtitle([febioFebFileNamePart,': Press play to animate']);
+    title('$\sigma_{zz}$ [MPa]','Interpreter','Latex')
+    hp=gpatch(Fb,V_DEF(:,:,end),CV,'k',1,2); %Add graphics object to animate
+    hp.Marker='.';
+    hp.MarkerSize=markerSize2;
+    hp.FaceColor='interp';
+    gpatch(Fb,V,0.5*ones(1,3),'none',0.25); %A static graphics object
+    
+    axisGeom(gca,fontSize); 
+    colormap(cMap); colorbar;
+    caxis([min(E_stress_mat(:)) max(E_stress_mat(:))]);    
+    axis(axisLim(V_DEF)); %Set axis limits statically    
+    view(140,30);
+    camlight headlight;        
+        
+    % Set up animation features
+    animStruct.Time=timeVec; %The time vector    
+    for qt=1:1:size(N_disp_mat,3) %Loop over time increments        
+        
+        [CV]=faceToVertexMeasure(E,V,E_stress_mat(:,:,qt));
+        
+        %Set entries in animation structure
+        animStruct.Handles{qt}=[hp hp]; %Handles of objects to animate
+        animStruct.Props{qt}={'Vertices','CData'}; %Properties of objects to animate
+        animStruct.Set{qt}={V_DEF(:,:,qt),CV}; %Property values for to set in order to animate
+    end        
+    anim8(hf,animStruct); %Initiate animation feature    
+    drawnow;
+
+    %%
+    % Importing element stress from a log file
+    dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_force),0,1);
+    
+    %Access data
+    N_force_mat=dataStruct.data;
+    
+    time_sim=timeVec;
+    force_sim=-squeeze(sum(N_force_mat(:,3,:),1));
+
+    %% 
+    % Visualize stretch-stress curve
+    
+    stretch_sim=squeeze(mean(E_stretch_mat,1)); % Stretch U_z
+    stress_cauchy_sim=squeeze(mean(E_stress_mat,1)); %Cauchy stress sigma_z
+
+    %%    
+    % Visualize stress-stretch curve
+    
+    cFigure; hold on;
+    title('Force curve optimisation','FontSize',fontSize);
+    xlabel('t [s]','FontSize',fontSize); ylabel('$F_z$ [N]','FontSize',fontSize,'Interpreter','Latex'); zlabel('Z','FontSize',fontSize); hold on;
+    
+    Hn(1)=plot(time_sim,force_sim,'r.-','lineWidth',lineWidth2,'markerSize',markerSize2);
+    Hn(2)=plot(time_exp,force_exp,'k-','lineWidth',lineWidth);        
+
+    legend(Hn,{'Simulation','Experiment'},'Location','northeastoutside');
+    view(2); axis tight;  grid on; axis square; axis manual; 
+    set(gca,'FontSize',fontSize);
+    drawnow;
+    
+end
+
+%% Create structures for optimization 
+
+% Material structure
+mat_struct.id=1; %Material id
+mat_struct.par_names={'g1','t1'}; %Parameter names
+mat_struct.par_values={g1_ini t1_ini}; %Parameter values
+
+febioAnalysis.disp_on=0; 
+febioAnalysis.disp_log_on=0; 
+
+%What should be known to the objective function:
+objectiveStruct.h=Hn(1);
+objectiveStruct.time_exp=time_exp;
+objectiveStruct.force_exp=force_exp;
+objectiveStruct.febioAnalysis=febioAnalysis;
+objectiveStruct.febio_spec=febio_spec;
+objectiveStruct.febioFebFileName=febioFebFileName;
+objectiveStruct.mat_struct=mat_struct;
+objectiveStruct.parNormFactors=P; %This will normalize the parameters to ones(size(P))
+objectiveStruct.Pb_struct.xx_c=P; %Parameter constraining centre
+objectiveStruct.Pb_struct.xxlim=[P(1)/1000 100;...
+                                 P(2)/1000 100]; %Parameter bounds
+
+%Optimisation settings
+maxNumberIterations=100; %Maximum number of optimization iterations
+maxNumberFunctionEvaluations=maxNumberIterations*10; %Maximum number of function evaluations, N.B. multiple evaluations are used per iteration
+functionTolerance=1e-6; %Tolerance on objective function value
+parameterTolerance=1e-6; %Tolerance on parameter variation
+displayTypeIterations='iter';
+
+objectiveStruct.method=2; 
+
+%File names of output files
+output_names.force=fullfile(savePath,febioLogFileName_force);
+objectiveStruct.run_output_names=output_names;
+
+%% start optimization
+
+Pn=P./objectiveStruct.parNormFactors;
+
+switch objectiveStruct.method
+    case 1 %fminsearch and Nelder-Mead
+        OPT_options=optimset('fminsearch'); % 'Nelder-Mead simplex direct search'
+        OPT_options = optimset(OPT_options,'MaxFunEvals',maxNumberFunctionEvaluations,...
+            'MaxIter',maxNumberIterations,...
+            'TolFun',functionTolerance,...
+            'TolX',parameterTolerance,...
+            'Display',displayTypeIterations,...
+            'FinDiffRelStep',1e-2,...
+            'DiffMaxChange',0.5);
+        [Pn_opt,OPT_out.fval,OPT_out.exitflag,OPT_out.output]= fminsearch(@(Pn) objectiveFunctionIFEA(Pn,objectiveStruct),Pn,OPT_options);
+    case 2 %lsqnonlin and Levenberg-Marquardt
+        OPT_options = optimoptions(@lsqnonlin,'Algorithm','levenberg-marquardt');
+        OPT_options = optimoptions(OPT_options,'MaxFunEvals',maxNumberFunctionEvaluations,...
+            'MaxIter',maxNumberIterations,...
+            'TolFun',functionTolerance,...
+            'TolX',parameterTolerance,...
+            'Display',displayTypeIterations,...
+            'FinDiffRelStep',1e-2,...
+            'DiffMaxChange',0.5);
+        [Pn_opt,OPT_out.resnorm,OPT_out.residual]= lsqnonlin(@(Pn) objectiveFunctionIFEA(Pn,objectiveStruct),Pn,[],[],OPT_options);    
+end
+
+%%
+[Fopt,OPT_stats_out]=objectiveFunctionIFEA(Pn_opt,objectiveStruct);
+
+%% Unnormalize and constrain parameters
+
+P_opt=Pn_opt.*objectiveStruct.parNormFactors; %Scale back, undo normalization
+
+%Constraining parameters
+for q=1:1:numel(P)
+    [P(q)]=boxconstrain(P(q),objectiveStruct.Pb_struct.xxlim(q,1),objectiveStruct.Pb_struct.xxlim(q,2),objectiveStruct.Pb_struct.xx_c(q));    
+end
+
+disp_text=sprintf('%6.16e,',P_opt); disp_text=disp_text(1:end-1);
+disp(['P_opt=',disp_text]);
+
+%%
+
+cFigure; hold on;
+title('Force curve optimisation','FontSize',fontSize);
+xlabel('t [s]','FontSize',fontSize); ylabel('$F_z$ [N]','FontSize',fontSize,'Interpreter','Latex'); zlabel('Z','FontSize',fontSize); hold on;
+
+Hn(1)=plot(OPT_stats_out.time_sim,OPT_stats_out.force_sim,'r.-','lineWidth',lineWidth2,'markerSize',markerSize2);
+Hn(2)=plot(time_exp,force_exp,'k-','lineWidth',lineWidth);
+
+legend(Hn,{'Simulation','Experiment'},'Location','northeastoutside');
+view(2); axis tight;  grid on; axis square; axis manual;
+set(gca,'FontSize',fontSize);
+drawnow;
+
+%%
+
+function [Fopt,OPT_stats_out]=objectiveFunctionIFEA(Pn,objectiveStruct)
+
+%%
+
+febioFebFileName=objectiveStruct.febioFebFileName; 
+febio_spec=objectiveStruct.febio_spec; 
+
+%% Unnormalize and constrain parameters
+
+P=Pn.*objectiveStruct.parNormFactors; %Scale back, undo normalization
+P_in=P; %Proposed P
+
+%Constraining parameters
+for q=1:1:numel(P)
+    [P(q)]=boxconstrain(P(q),objectiveStruct.Pb_struct.xxlim(q,1),objectiveStruct.Pb_struct.xxlim(q,2),objectiveStruct.Pb_struct.xx_c(q));    
+end
+
+%% Setting material parameters
+
+%Acces material parameters
+mat_struct=objectiveStruct.mat_struct;
+mat_struct.par_values={P(1) P(2)}; 
+
+disp('SETTING MATERIAL PARAMETERS...');
+disp(['Proposed (norm.): ',sprintf(repmat('%6.16e ',[1,numel(Pn)]),Pn)]);
+disp(['Proposed        : ',sprintf(repmat('%6.16e ',[1,numel(P_in)]),P_in)]);
+disp(['Set (constr.)   : ',sprintf(repmat('%6.16e ',[1,numel(P)]),P)]);
+
+%Assign material parameters
+matId=mat_struct.id;
+for q=1:1:numel(mat_struct.par_names)
+    parNameNow=mat_struct.par_names{q};
+    parValuesNow=mat_struct.par_values{q};    
+    febio_spec.Material.material{matId}.(parNameNow)=mat2strIntDouble(parValuesNow);
+end
+febioStruct2xml(febio_spec,febioFebFileName); %Exporting to file and domNode
+
+disp('Done')
+
+%% START FEBio
+
+[runFlag]=runMonitorFEBio(objectiveStruct.febioAnalysis);
+
+%pause(0.1); 
+
+time_exp=objectiveStruct.time_exp;
+force_exp=objectiveStruct.force_exp;
+
+if runFlag==1    
+
+    % Importing element stress from a log file
+    dataStruct=importFEBio_logfile(objectiveStruct.run_output_names.force,0,1);
+    N_force_mat=dataStruct.data;    
+
+    force_sim=-squeeze(sum(N_force_mat(:,3,:),1));
+    time_sim=dataStruct.time;
+
+    if ~isempty(objectiveStruct.h)
+        objectiveStruct.h.XData=time_sim;
+        objectiveStruct.h.YData=force_sim;
+        drawnow;        
+    end
+    
+    %Interpolate experiment onto simulated points
+    force_sim_exp = interp1(time_sim,force_sim,time_exp,'pchip');
+    
+    %Derive Fopt
+    forceDev=force_exp-force_sim_exp;  
+       
+    switch objectiveStruct.method
+        case 1
+            Fopt=sum((forceDev).^2); %Sum of squared differences
+        case 2
+            Fopt=forceDev(:);%(stressDev).^2; %Squared differences
+    end
+    
+    OPT_stats_out.force_sim=force_sim;
+    OPT_stats_out.time_sim=time_sim;
+    OPT_stats_out.stressDev=forceDev;
+    OPT_stats_out.Fopt=Fopt;
+    
+else %Output NaN
+    switch objectiveStruct.method
+        case 1
+            Fopt=NaN; 
+        case 2
+            Fopt=NaN(size(time_exp)); %Squared differences
+    end
+    OPT_stats_out=[];
+end
+
+end
+
+%% 
+%
+% <<gibbVerySmall.gif>>
+% 
+% _*GIBBON*_ 
+% <www.gibboncode.org>
+% 
+% _Kevin Mattheus Moerman_, <gibbon.toolbox@gmail.com>
+ 
+%% 
+% _*GIBBON footer text*_ 
+% 
+% License: <https://github.com/gibbonCode/GIBBON/blob/master/LICENSE>
+% 
+% GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for
+% image segmentation, image-based modeling, meshing, and finite element
+% analysis.
+% 
+% Copyright (C) 2006-2023 Kevin Mattheus Moerman and the GIBBON contributors
+% 
+% This program is free software: you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation, either version 3 of the License, or
+% (at your option) any later version.
+% 
+% This program is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+% 
+% You should have received a copy of the GNU General Public License
+% along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+##### SOURCE END #####
+--></body></html>

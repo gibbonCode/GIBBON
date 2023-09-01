@@ -10,7 +10,8 @@ clear; close all; clc;
 %% Description 
 % UNDOCUMENTED 
 
-[GB]=gaborFilter(Vr,S,f,tagShift,d,siz,p)
+%%
+% |[GB]=gaborFilter(Vr,S,f,tagShift,d,siz,p)|
 
 
 %% Examples 

@@ -1,5 +1,15 @@
 function cVoigt=voigtMap(c)
 
+% function cVoigt=voigtMap(c)
+% ------------------------------------------------------------------------
+% This function converts the fourth order tensor c (a 3x3x3x3 array) into a
+% 6x6 Voigt mapped array. 
+%
+% Change log: 
+% 2023/09/01 KMM: Updated description
+% ------------------------------------------------------------------------
+%%
+
 siz2=3*ones(1,2);
 siz4=3*ones(1,4);
 

@@ -234,8 +234,14 @@ abaqus_spec.Step.El_print.VAL='S';
 % * NODE SET, set=yoursetname, frequency = 1
 % U
 
-%% 
+%% Using field names with spaces in them
+% To code for field names with spaces use an underscore i.e. _ instead of a
+% space. For instance to code for: 
+%   * some stuff with spaces 
+%   5 
+% One needs:
 
+abaqus_spec.some_stuff_with_spaces=5; % a fieldname containing spaces
 
 %% Creating the INP file
 % You can use |abaqusStruct2inp| to write the structure data to a file. 

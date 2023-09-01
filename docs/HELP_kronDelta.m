@@ -8,9 +8,16 @@ clear; close all; clc;
 % |kd=kronDelta(i,j);|
 
 %% Description 
-% UNDOCUMENTED 
+% Computes the Kronecker delta for the indices i,j. 
+
 %% Examples 
 % 
+
+kd=kronDelta(1,1)
+kd=kronDelta(0,0)
+kd=kronDelta(1,0)
+kd=kronDelta(0,1)
+
 %%
 % 
 % <<gibbVerySmall.gif>>

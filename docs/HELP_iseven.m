@@ -8,9 +8,21 @@ clear; close all; clc;
 % |L=iseven(A);|
 
 %% Description 
-% UNDOCUMENTED 
+% This function returns a logical for wether the input entries are even
+% numbers.
+
 %% Examples 
 % 
+
+A = 1;
+L1 = iseven(A)
+
+A = 2;
+L2 = iseven(A)
+
+A = [1 2 20 pi; 57.3 -12 0 inf; NaN 77 1e6 6];
+L3 = iseven(A)
+
 %%
 % 
 % <<gibbVerySmall.gif>>

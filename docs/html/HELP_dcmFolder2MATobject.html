@@ -6,8 +6,8 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>dcmFolder2MATobject</title><meta name="generator" content="MATLAB 9.7"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2020-03-12"><meta name="DC.source" content="HELP_dcmFolder2MATobject.m"><style type="text/css">
-html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+      --><title>dcmFolder2MATobject</title><meta name="generator" content="MATLAB 9.14"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2023-09-01"><meta name="DC.source" content="HELP_dcmFolder2MATobject.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
 html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
@@ -23,7 +23,7 @@ a:visited { color:#004aa0; text-decoration:none; }
 
 p { padding:0px; margin:0px 0px 20px; }
 img { padding:0px; margin:0px 0px 20px; border:none; }
-p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; }
 
 ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
 ul li { padding:0px; margin:0px 0px 7px 0px; }
@@ -52,6 +52,7 @@ span.comment { color:#228B22 }
 span.string { color:#A020F0 }
 span.untermstring { color:#B20000 }
 span.syscmd { color:#B28C00 }
+span.typesection { color:#A0522D }
 
 .footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
 .footer p { margin:0px; }
@@ -101,17 +102,7 @@ fileExtension=<span class="string">'.dcm'</span>; <span class="comment">%File ex
 <span class="comment">%Additional options are provided in an option structure</span>
 optionStruct.nDownSample=[3 3 3]; <span class="comment">%Under sample the image by these factors in row, column, slice directions</span>
 optionStruct.skipInfo=1; <span class="comment">%If 1 loading all DICOM info is skipped. Only the information from the first slice is used</span>
-
-dcmFolder2MATobject(pathName,MaxVarSize,reOrderOpt,dicomDictFactory,fileExtension,optionStruct);<span class="comment">%Get DICOM data</span>
-</pre><pre class="codeoutput">Detected Philips Healthcare files
-DICOM dictionary set to: gibbon_dict.txt
-</pre><p>Loading in the entire data structure</p><pre class="codeinput">loadName=fullfile(pathName,<span class="string">'IMDAT'</span>,<span class="string">'IMDAT.mat'</span>);
-IMDAT_struct=load(loadName);
-
-M=IMDAT_struct.type_1; <span class="comment">%The image data (note: may not be of the double class)</span>
-v=IMDAT_struct.G.v; <span class="comment">%The voxel size</span>
-</pre><img width="100%" height="auto" vspace="5" hspace="5" src="HELP_dcmFolder2MATobject_02.jpg" alt=""> <p>Viewing the image data</p><pre class="codeinput">sv3(M,v);
-</pre><img width="100%" height="auto" vspace="5" hspace="5" src="HELP_dcmFolder2MATobject_03.jpg" alt=""> <img width="100%" height="auto" vspace="5" hspace="5" src="HELP_dcmFolder2MATobject_04.jpg" alt=""> <p>Viewing the image data using <tt>ind2patch</tt> Alternatively the image data can be viewed using the <tt>ind2patch</tt> function. See the associated help for more information.</p><p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2019  Kevin Mattheus Moerman</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2019b</a><br></p></div><!--
+</pre><p>|dcmFolder2MATobject(pathName,MaxVarSize,reOrderOpt,dicomDictFactory,fileExtension,optionStruct);%Get DICOM data |</p><p>Viewing the image data using <tt>ind2patch</tt> Alternatively the image data can be viewed using the <tt>ind2patch</tt> function. See the associated help for more information.</p><p><img vspace="5" hspace="5" src="gibbVerySmall.gif" alt=""> </p><p><i><b>GIBBON</b></i> <a href="www.gibboncode.org">www.gibboncode.org</a></p><p><i>Kevin Mattheus Moerman</i>, <a href="gibbon.toolbox@gmail.com">gibbon.toolbox@gmail.com</a></p><p><i><b>GIBBON footer text</b></i></p><p>License: <a href="https://github.com/gibbonCode/GIBBON/blob/master/LICENSE">https://github.com/gibbonCode/GIBBON/blob/master/LICENSE</a></p><p>GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for image segmentation, image-based modeling, meshing, and finite element analysis.</p><p>Copyright (C) 2006-2023 Kevin Mattheus Moerman and the GIBBON contributors</p><p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p><p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2023a</a><br></p></div><!--
 ##### SOURCE BEGIN #####
 %% dcmFolder2MATobject
 % Below is a demonstration of the features of the |dcmFolder2MATobject| function
@@ -233,19 +224,8 @@ fileExtension='.dcm'; %File extension for DICOM files, can also be empty
 optionStruct.nDownSample=[3 3 3]; %Under sample the image by these factors in row, column, slice directions
 optionStruct.skipInfo=1; %If 1 loading all DICOM info is skipped. Only the information from the first slice is used
 
-dcmFolder2MATobject(pathName,MaxVarSize,reOrderOpt,dicomDictFactory,fileExtension,optionStruct);%Get DICOM data
-
 %%
-% Loading in the entire data structure
-loadName=fullfile(pathName,'IMDAT','IMDAT.mat');
-IMDAT_struct=load(loadName);
-
-M=IMDAT_struct.type_1; %The image data (note: may not be of the double class)
-v=IMDAT_struct.G.v; %The voxel size
-
-%% 
-% Viewing the image data
-sv3(M,v);
+% |dcmFolder2MATobject(pathName,MaxVarSize,reOrderOpt,dicomDictFactory,fileExtension,optionStruct);%Get DICOM data |
 
 %% 
 % Viewing the image data using |ind2patch|
@@ -270,7 +250,7 @@ sv3(M,v);
 % image segmentation, image-based modeling, meshing, and finite element
 % analysis.
 % 
-% Copyright (C) 2019  Kevin Mattheus Moerman
+% Copyright (C) 2006-2023 Kevin Mattheus Moerman and the GIBBON contributors
 % 
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by

@@ -1,6 +1,6 @@
 function L=iseven(A)
 
-L=rem(A,2)==0;
+L = A~=0 & rem(abs(A),2)==0;
  
 %% 
 % _*GIBBON footer text*_ 

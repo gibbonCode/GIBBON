@@ -8,7 +8,12 @@ clear; close all; clc;
 % |[L]=isGlobalSurfDirOutward(F,V);|
 
 %% Description 
-% UNDOCUMENTED 
+% This function returns a boolean denoting wether surface normals are
+% pointing outward (1) (which would result in a positive volume being computed)
+% or inward (2) (which would result in a negative volume being computed). 
+% The method assumes that the normal directions are coherent across the
+% surface. 
+
 %% Examples 
 % 
 
@@ -16,8 +21,17 @@ clear; close all; clc;
 % Example surface
 [F,V]=stanford_bunny;
 
+%% 
+% Computing a logic denoting whether the normals point outward or inwards.
+% For the example surface the normals point outward, so the logical should
+% return a true
+
 % This one should be true
 [L]=isGlobalSurfDirOutward(F,V)
+
+%%
+% However inverting the surface causes the normal directions to point
+% inward, hence a false is returned. 
 
 % Reversed should be false
 [L]=isGlobalSurfDirOutward(fliplr(F),V)

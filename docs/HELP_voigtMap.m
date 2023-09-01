@@ -8,9 +8,55 @@ clear; close all; clc;
 % |cVoigt=voigtMap(c);|
 
 %% Description 
-% UNDOCUMENTED 
+% This function converts the fourth order tensor c (a 3x3x3x3 array) into a
+% 6x6 Voigt mapped array. 
+
 %% Examples 
-% 
+
+%% Example 1: The Voigt mapping of the elasticity tensor for Hooke's law with Lame parameters
+
+%%
+
+%Constructing 4th order base tensor set
+I=eye(3,3); %The 2nd order identity tensor
+II1=dyadicProduct(I,I,1); %4th order base tensor 1                                                                
+II3=dyadicProduct(I,I,3); %4th order base tensor 3
+
+%Lame parameters for Hooke's law
+mu=2; %The shear modulus
+lambda=3; %The lambda lame parameter
+
+%Construct 4th order stiffness tensor
+C=lambda.*II1+2.*mu.*II3; 
+
+%%
+% Derive Voigt mapped tensor
+Cv=voigtMap(C) 
+
+%%
+% Using symbolic variables
+
+try
+    %Lame parameters for Hooke's law
+    syms mu lambda; %Create symbolic parameters
+    
+    %Construct 4th order stiffness tensor
+    C=lambda.*II1+2.*mu.*II3; 
+    
+    %%
+    % Derive Voigt mapped tensor
+    
+    Cv=voigtMap(C)
+
+end
+
+%%
+
+s=rand(3,3);
+S=s*s'
+
+Sv=voigtMap(S)
+
 %%
 % 
 % <<gibbVerySmall.gif>>

@@ -1,7 +1,16 @@
-function c=ivoigtMap(cVoigt)
+function [c]=ivoigtMap(cVoigt)
 
-if ~isvector(cVoigt) %assume that c shall be a 4d array e.g. 4th order tensor
+% function [c]=ivoigtMap(cVoigt)
+% ------------------------------------------------------------------------
+%
+%
+% ------------------------------------------------------------------------
+
+%%
+if ~isvector(cVoigt) %assume that c is a 4d array e.g. 4th order tensor
     siz=3*ones(1,4);
+    secondOrder=0;
+    c=zeros(3,3,3,3);
 elseif isvector(cVoigt) %c shall be a 2D array
     siz=3*ones(1,2); 
     cVoigt(4:end)=cVoigt(4:end)./2;

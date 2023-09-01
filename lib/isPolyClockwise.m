@@ -1,5 +1,18 @@
 function [L]=isPolyClockwise(V)
 
+% function [L]=isPolyClockwise(V)
+% ------------------------------------------------------------------------
+% This function uses the "signed area" of the polygon to return if its
+% orientation is clockwise L=1 or anti-clockwise L=0. 
+% 
+% Kevin Mattheus Moerman
+%
+% Change log:
+% 2023/08/31 KMM: Updated description/documentation
+% ------------------------------------------------------------------------
+
+%%
+
 A=polyarea_signed(V); %Calculate signed area
 L=A<0; %If negative curve is clockwise
  

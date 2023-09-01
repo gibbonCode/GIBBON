@@ -5,12 +5,38 @@
 clear; close all; clc;
 
 %% Syntax
-% |[L]=isapprox(varargin);|
+% |[L]=isapprox(A,B,tolLevel);|
 
 %% Description 
-% UNDOCUMENTED 
+% This function returns if A is approximately equal to B (to within
+% tolLevel) in the form of the logical L. 
+% In other words the function simply evaluates: L=abs(A-B)<tolLevel;
+
 %% Examples 
 % 
+
+tolLevel=1e-4; % The tolerance level to use
+
+A = - pi; %Example number
+B = A + tolLevel/100; % Small difference
+C = A + tolLevel*100; % Big difference 
+D = A + tolLevel; % Difference equal to the tolerance level
+
+%%
+% Using isapprox here should return a true since the difference is smaller
+% than the tolerance.
+L1 = isapprox(A,B,tolLevel)
+
+%%
+% Using isapprox here should return a false since the difference is larger
+% than the tolerance.
+L2 = isapprox(A,C,tolLevel)
+
+%%
+% Using isapprox here should return a false since the difference is equal
+% not smaller than the tolerance.
+L3 = isapprox(A,D,tolLevel)
+
 %%
 % 
 % <<gibbVerySmall.gif>>

@@ -1,8 +1,12 @@
 function [L]=isapprox(varargin)
+
 % function [L]=isapprox(A,B,tolLevel)
 % ------------------------------------------------------------------------
-% Check if A is approximately equal to B (to within tolLevel). 
+% This function returns if A is approximately equal to B (to within
+% tolLevel) in the form of the logical L. 
 %
+% Change log 
+% 2023/08/31 KMM: Updated description/documentation 
 % ------------------------------------------------------------------------
 %%
 

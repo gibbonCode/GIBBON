@@ -2,6 +2,23 @@ function [L]=isGlobalSurfDirOutward(F,V)
 
 % function [L]=isGlobalSurfDirOutward(F,V)
 %-------------------------------------------------------------------------
+% This function returns a boolean denoting wether surface normals are
+% pointing outward (1) (which would result in a positive volume being computed)
+% or inward (2) (which would result in a negative volume being computed). 
+% The method assumes that the normal directions are coherent across the
+% surface. 
+%
+% Kevin Mattheus Moerman
+%
+% Change log:
+% 2023/08/31 KMM: Updated to use patchVolume
+%-------------------------------------------------------------------------
+%%
+
+volFV = patchVolume(F,V,0);
+L = volFV>0; %Check for positive volume
+
+%% OLD (bad-ish) approach
 % Not the best implementation at present. Vertices are offset allong the
 % local normal direction by 1/10th of the smalles edge length. Then the
 % volume before and after this operation is calculated. If the volume
@@ -9,8 +26,6 @@ function [L]=isGlobalSurfDirOutward(F,V)
 % flipped for smoothening. Contraction/inflation allong normal directions
 % in this way does not always yield valid surfaces and hence volume
 % computation may be inappropriate.
-%-------------------------------------------------------------------------
-%%
 
 % %Compute edge lengths
 % [edgeLengths]=patchEdgeLengths(F,V);
@@ -25,9 +40,6 @@ function [L]=isGlobalSurfDirOutward(F,V)
 % [volFV2]=patchVolume(F,V+(growSize/10.*N)); %"contracted/inflated" volume
 % 
 % L=volFV2>volFV1; %if the volume increased the global direction is outward
-
-volFV = patchVolume(F,V,0);
-L = volFV>0; %Check for positive volume
 
 end
  
