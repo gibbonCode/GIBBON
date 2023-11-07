@@ -2,10 +2,18 @@ function [t]=mat2strIntDouble(varargin)
 
 % function [t]=mat2strIntDouble(A,optionStruct)
 %-------------------------------------------------------------------------
+% This function converts an array (scalar, 1D, 2D, or 3D) into a formatted
+% string. The following defaults are used. 
+%
+% defaultOptionStruct.formatDouble='%6.7e';
+% defaultOptionStruct.formatInteger='%d';
+% defaultOptionStruct.dlmChar=',';
+% defaultOptionStruct.rowWrapLength=[];
 %
 % Change log; 
-% 2018/09/06 Altered behavior so column vectors are not forced to row
+% 2018/09/06 KMM: Altered behavior so column vectors are not forced to row
 % vector text output. 
+% 2023/09/01 KMM: Updated description/documentation
 %-------------------------------------------------------------------------
 
 %% Parse input

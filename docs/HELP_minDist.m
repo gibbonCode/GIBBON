@@ -4,6 +4,17 @@
 %%
 clear; close all; clc;
 
+%% Syntax
+% |[D1]=minDist(V1,V2)|
+% |[D1,minIND]=minDist(V1,V2,maxVarSize,selfAvoid,numFreeBytes)|
+
+%% Description 
+% This function computes "minimal distances", i.e. for each point in V1 the
+% distance to the neartest point in V2 is returned. 
+% Additional inputs allow for control of memory use. 
+% The optional output minIND contains the indices of the neartest points in
+% V2 for all points in V1. 
+
 %%
 % PLOT SETTINGS
 fontSize=10;
@@ -61,7 +72,7 @@ hold on;
 patch('faces',F2,'vertices',V2,'FaceColor','flat','CData',CF);
 patch('faces',F1,'vertices',V1,'FaceColor',0.5.*ones(1,3),'FaceAlpha',faceAlpha1,'EdgeColor','None');
 
-colormap jet; colorbar;
+colormap turbo; colorbar;
 axis equal; view(3); axis tight; axis off; 
 set(gca,'FontSize',fontSize); 
 camlight headlight; 
@@ -106,7 +117,7 @@ xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize);zlabel('Z','Font
 hold on; 
 patch('faces',F1,'vertices',V1,'FaceColor','flat','CData',CF1,'FaceAlpha',faceAlpha2,'EdgeColor','k');
 
-colormap jet; colorbar;
+colormap turbo; colorbar;
 axis equal; view(3); axis tight; axis off; 
 set(gca,'FontSize',fontSize); 
 camlight headlight; 
@@ -117,7 +128,7 @@ xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize);zlabel('Z','Font
 hold on; 
 patch('faces',F2,'vertices',V2,'FaceColor','flat','CData',CF2,'FaceAlpha',faceAlpha2,'EdgeColor','k');
 
-colormap jet; colorbar;
+colormap turbo; colorbar;
 axis equal; view(3); axis tight; axis off; 
 set(gca,'FontSize',fontSize); 
 camlight headlight; 
@@ -128,7 +139,7 @@ xlabel('X','FontSize',fontSize);ylabel('Y','FontSize',fontSize);zlabel('Z','Font
 hold on; 
 patch('faces',F2,'vertices',V2,'FaceColor','flat','CData',CF2_true,'FaceAlpha',faceAlpha2,'EdgeColor','none');
 
-colormap jet; colorbar;
+colormap turbo; colorbar;
 axis equal; view(3); axis tight; axis off; 
 set(gca,'FontSize',fontSize); 
 camlight headlight; 

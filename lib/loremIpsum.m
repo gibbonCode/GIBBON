@@ -1,4 +1,17 @@
-function S=loremIpsum(varargin)
+function [S]=loremIpsum(varargin)
+
+% function [S]=loremIpsum(numWords,outputOpt)
+% ------------------------------------------------------------------------
+% This function creates the "lorem ipsum" test word set. It can be used as
+% a simple text character set. The inputs include the number of words
+% (numWords) requested and the output type (outputOpt) denoting wether the
+% user requests a string or a cell. 
+% 
+% Change log: 
+% 2023/09/01 KMM: Updated description/documentations
+% ------------------------------------------------------------------------
+
+%%
 
 switch nargin
     case 0 
@@ -25,6 +38,7 @@ switch outputOpt
     case 'cell'
         
 end
+
 %% 
 % _*GIBBON footer text*_ 
 % 

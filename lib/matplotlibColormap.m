@@ -7,7 +7,7 @@ function [cMap]=matplotlibColormap(varargin)
 % Eric Firing. 
 % 
 % The input c controls the type of colormap: 'magma' (or 1), 'inferno' (or
-% 2), 'plasma' (or 3) and 'viridis' (or 4).  
+% 2), 'plasma' (or 3), 'viridis' (or 4), and 'turbo (or 5).  
 % The input n controls the number of color levels used. 
 %
 % Kevin Mattheus Moerman

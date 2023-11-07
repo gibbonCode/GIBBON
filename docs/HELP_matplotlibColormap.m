@@ -5,12 +5,54 @@
 clear; close all; clc;
 
 %% Syntax
-% |[cMap]=matplotlibColormap(varargin);|
+% |[cMap]=matplotlibColormap(c,n);|
 
 %% Description 
-% UNDOCUMENTED 
+% This function is a MATLAB implementation of the matplotlib colormaps by
+% Nathaniel J. Smith, Stefan van der Walt, and (in the case of viridis)
+% Eric Firing. 
+% 
+% The input c controls the type of colormap: 'magma' (or 1), 'inferno' (or
+% 2), 'plasma' (or 3), 'viridis' (or 4), and 'turbo (or 5).  
+% The input n controls the number of color levels used. 
+
 %% Examples 
 % 
+%%
+%Plot settings
+fontSize=15;
+
+%%
+% Create example data for visualizations
+n=250;
+s=1;
+[X,Y]=ndgrid(linspace(-3*s,3*s,n));
+Z=exp( -0.5.*((X./s).^2+(Y./s).^2));
+Z=Z./max(Z(:));
+Z(X<0)=-Z(X<0);
+colorLim=[-1 1];
+
+%%
+n = 100;
+nameSet = {'magma','inferno','plasma','viridis','turbo'};
+
+cFigure;
+for q=1:1:5
+
+    cMap = matplotlibColormap(nameSet{q},n);
+
+    hs=subplot(2,3,q); hold on;
+    title([nameSet{q},' colormap'],'FontSize',fontSize);
+    imagesc(Z);
+    colormap(hs,cMap); colorbar;
+    axis tight; axis equal; axis xy; box on;
+    axis off;
+    set(gca,'FontSize',fontSize);
+    clim(colorLim);
+
+end
+drawnow;
+
 %%
 % 
 % <<gibbVerySmall.gif>>

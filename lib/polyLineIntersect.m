@@ -1,6 +1,16 @@
 function [Vn]=polyLineIntersect(varargin)
 
 % function [Vn]=polyLineIntersect(V,n_cut,cutLevel,isClosed)
+% ------------------------------------------------------------------------
+% Computes the intersection points between a polygon defined by the vertex
+% array V and a line defined the the normal vector n_cut and the cutLevel.
+% If isClosed==1 (True) then the curve is assumed to be closed (additional
+% line element from start to end is included. 
+%
+% 
+% ------------------------------------------------------------------------
+
+%%
 
 switch nargin
     case 2

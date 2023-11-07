@@ -5,12 +5,26 @@
 clear; close all; clc;
 
 %% Syntax
-% |y=logit(x);|
+% |[y]=logit(x);|
 
 %% Description 
-% UNDOCUMENTED 
+% Inverse of the sigmoidal logistic function
+
 %% Examples 
 % 
+
+n = 500; % Number of points
+x = linspace(0,1,n);  % x range
+y = logit(x); % Evaluate inverse of the signoidal logistic function
+
+%%
+% Visualize example graph
+
+cFigure; 
+plot(x,y,'b-','LineWidth',3);
+axis tight; axis square; grid on; box on; 
+drawnow; 
+
 %%
 % 
 % <<gibbVerySmall.gif>>

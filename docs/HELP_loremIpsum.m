@@ -8,9 +8,26 @@ clear; close all; clc;
 % |S=loremIpsum(varargin);|
 
 %% Description 
-% UNDOCUMENTED 
+% This function creates the "lorem ipsum" test word set. It can be used as
+% a simple text character set. The inputs include the number of words
+% (numWords) requested and the output type (outputOpt) denoting wether the
+% user requests a string or a cell.  
 %% Examples 
 % 
+
+%% Example 1: Requesting string output
+numWords = 10
+outputOpt = 'string'
+[S]=loremIpsum(numWords,outputOpt)
+
+%% Example 2: Requesting cell output
+% 
+numWords = 10
+outputOpt = 'cell'
+[S]=loremIpsum(numWords,outputOpt)
+
+%%
+
 %%
 % 
 % <<gibbVerySmall.gif>>

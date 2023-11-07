@@ -2,13 +2,18 @@ function varargout=minDist(varargin)
 
 % function [D1,minIND]=minDist(V1,V2,maxVarSize,selfAvoid,numFreeBytes)
 % -----------------------------------------------------------------------
-%
+% This function computes "minimal distances", i.e. for each point in V1 the
+% distance to the neartest point in V2 is returned. 
+% Additional inputs allow for control of memory use. 
+% The optional output minIND contains the indices of the neartest points in
+% V2 for all points in V1. 
 %
 %
 % Change log: 
-% ~2014 Created
-% 2021/01/13 Moved evaluation of freeMemory into if statement so it is
+% ~2014  KMM: Created
+% 2021/01/13 KMM: Moved evaluation of freeMemory into if statement so it is
 % skipped if maxVarSize is provided as NaN. 
+% 2023/09/01 KMM: Updated description and documentation 
 % -----------------------------------------------------------------------
 
 %% Parse input

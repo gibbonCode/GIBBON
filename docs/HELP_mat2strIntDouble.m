@@ -8,9 +8,43 @@ clear; close all; clc;
 % |[t]=mat2strIntDouble(varargin);|
 
 %% Description 
-% UNDOCUMENTED 
+% This function converts an array (scalar, 1D, 2D, or 3D) into a formatted
+% string. The following defaults are used. 
+%
+% defaultOptionStruct.formatDouble='%6.7e';
+% defaultOptionStruct.formatInteger='%d';
+% defaultOptionStruct.dlmChar=',';
+% defaultOptionStruct.rowWrapLength=[];
+
 %% Examples 
 % 
+
+%% Example 1: Using default settings
+
+[t]=mat2strIntDouble(pi)
+
+[t]=mat2strIntDouble([pi pi/2])
+
+[t]=mat2strIntDouble([pi pi/2 3; 0 -13.5 1])
+
+[t]=mat2strIntDouble([1 2 3])
+
+%% Example 2: Making custom settings
+
+optionStruct.formatDouble='%6.2f';
+optionStruct.formatInteger='%d';
+optionStruct.dlmChar='/';
+optionStruct.rowWrapLength=[];
+
+[t]=mat2strIntDouble(pi,optionStruct)
+
+[t]=mat2strIntDouble([pi pi/2],optionStruct)
+
+[t]=mat2strIntDouble([pi pi/2 3; 0 -13.5 1],optionStruct)
+
+[t]=mat2strIntDouble([1 2 3],optionStruct)
+
+
 %%
 % 
 % <<gibbVerySmall.gif>>
