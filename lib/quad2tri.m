@@ -11,6 +11,7 @@ function [varargout]=quad2tri(varargin)
 % 
 % 2014/11/03
 % 2018/08/21 Added tolerances for edge and angle based slashing
+% 2023/10/09 Added that if Cq is empty it defaults to face indices
 %------------------------------------------------------------------------
 
 
@@ -33,6 +34,10 @@ switch nargin
         Cq=varargin{4};        
     otherwise
         error('False number of input arguments');
+end
+
+if isempty(Cq)
+    Cq = (1:1:size(Fq,1))';
 end
 
 if isempty(triType)
