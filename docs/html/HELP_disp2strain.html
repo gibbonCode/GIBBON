@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>disp2strain</title><meta name="generator" content="MATLAB 9.14"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2023-05-31"><meta name="DC.source" content="HELP_disp2strain.m"><style type="text/css">
+      --><title>disp2strain</title><meta name="generator" content="MATLAB 9.14"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2023-11-07"><meta name="DC.source" content="HELP_disp2strain.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -68,922 +68,142 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
   </style></head><body><div class="content"><h1>disp2strain</h1><!--introduction--><p>Below is a demonstration of the features of the <tt>disp2strain</tt> function</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#2">Syntax</a></li><li><a href="#3">Description</a></li><li><a href="#4">Examples</a></li></ul></div><pre class="codeinput">clear; close <span class="string">all</span>; clc;
-</pre><h2 id="2">Syntax</h2><p><tt>[D_out]=disp2strain(Ux, Uy, Uz, v, strain_type);</tt></p><h2 id="3">Description</h2><p>Computes deformation metrics (including strains) for the meshgrid formatted displacement arrays Ux, Uy, and Uz, based on the point spacing v and strain_type requested.</p><h2 id="4">Examples</h2><pre class="codeinput">n=5;
-r=linspace(0,1,n);
-v=mean(diff(r))*ones(1,3);
-[X1,Y1,Z1]=meshgrid(r);
+</pre><h2 id="2">Syntax</h2><p><tt>[D_out]=disp2strain(Ux, Uy, Uz, v, strain_type);</tt></p><h2 id="3">Description</h2><p>Computes deformation metrics (including strains) for the meshgrid formatted displacement arrays Ux, Uy, and Uz, based on the point spacing v and strain_type requested.</p><h2 id="4">Examples</h2><pre class="codeinput">n=5; <span class="comment">%Number of points defined in range</span>
+r=linspace(0,1,n); <span class="comment">%The range used here</span>
+v=mean(diff(r))*ones(1,3); <span class="comment">%The "voxel" or step size</span>
+[X1,Y1,Z1]=meshgrid(r); <span class="comment">%Meshgrid formatted coordinate set</span>
 
-<span class="comment">%Stretches</span>
-l1=1.1; l2=0.7; l3=1.5;
+testCase=1;
+<span class="keyword">switch</span> testCase
+    <span class="keyword">case</span> 1 <span class="comment">% This uses a specified left stretch tensor</span>
+        <span class="comment">% Stretches (non-ordered)</span>
+        l1=1.1; l2=0.7; l3=1.5;
 
-<span class="comment">%Scale/stretch coordinates</span>
-X2=X1.*l1; Y2=Y1.*l2; Z2=Z1.*l3;
+        <span class="comment">%Build left stretch tensor</span>
+        V=[l1 0  0;<span class="keyword">...</span>
+            0  l2 0;<span class="keyword">...</span>
+            0  0  l3];
 
-<span class="comment">%Get displacements</span>
+        <span class="comment">%Define rotation</span>
+        R=euler2DCM([0.25*pi 0.25*pi 0]);
+
+        <span class="comment">%Create deformation gradient tensor</span>
+        F=V*R;
+
+        U=R'*F; <span class="comment">%Right stretch tensor</span>
+
+        <span class="comment">%Define translation</span>
+        t=[1 pi -0.5];
+    <span class="keyword">case</span> 2 <span class="comment">% This uses a specified right stretch tensor</span>
+        <span class="comment">%Stretches (non-ordered)</span>
+        l1=1.1; l2=0.7; l3=1.5;
+
+        <span class="comment">%Build right stretch tensor</span>
+        U=[l1 0  0;<span class="keyword">...</span>
+            0  l2 0;<span class="keyword">...</span>
+            0  0  l3];
+
+        <span class="comment">%Define rotation</span>
+        R=euler2DCM([0.25*pi 0.25*pi 0]);
+
+        <span class="comment">%Create deformation gradient tensor</span>
+        F=R*U;
+
+        V=F*R';<span class="comment">% Left stretch tensor</span>
+
+        <span class="comment">%Define translation</span>
+        t=[1 pi -0.5];
+<span class="keyword">end</span>
+
+<span class="comment">%Define initial coordinate vector</span>
+V1=[X1(:) Y1(:) Z1(:)];
+
+<span class="comment">%Create deformed coordinate vector</span>
+V2=(F*V1')'; <span class="comment">%Rotate/stretch using deformation gradient tensor</span>
+V2=V2+t(ones(size(V2,1),1),:); <span class="comment">%Apply translation</span>
+
+<span class="comment">%</span>
+X2=reshape(V2(:,1),size(X1));
+Y2=reshape(V2(:,2),size(X1));
+Z2=reshape(V2(:,3),size(X1));
+
+<span class="comment">%Compute displacements</span>
+Uxyz=V2-V1;
+
 Ux=X2-X1; Uy=Y2-Y1; Uz=Z2-Z1;
 </pre><p>Compute deformation data from displacements</p><pre class="codeinput"><span class="comment">% 1 = Biot (linear) strain tensor</span>
 <span class="comment">% 2 = Hencky (logarithmic/natural) strain tensor</span>
 <span class="comment">% 3 = Green-Lagrange strain tensor</span>
 strain_type=1;
-[D_out]=disp2strain(Ux, Uy, Uz, v, strain_type)
+[outputStructure]=disp2strain(Ux, Uy, Uz, v, strain_type);
+
+<span class="comment">%Check output against input</span>
+F
+F_check=outputStructure.F{1}
+
+R
+R_check=outputStructure.R{1}
+
+U
+U_check=outputStructure.U{1}
+
+V
+V_check=outputStructure.V{1}
 </pre><pre class="codeoutput">
-ans =
+F =
 
-    0.1000         0         0
-         0   -0.3000         0
-         0         0    0.5000
+    0.7778         0    0.7778
+    0.3500    0.4950   -0.3500
+   -0.7500    1.0607    0.7500
 
 
-ans =
+F_check =
 
-    0.1000         0         0
-         0   -0.3000         0
-         0         0    0.5000
+    0.7778         0    0.7778
+    0.3500    0.4950   -0.3500
+   -0.7500    1.0607    0.7500
 
 
-ans =
+R =
 
-    0.1000         0         0
-         0   -0.3000         0
-         0         0    0.5000
+    0.7071         0    0.7071
+    0.5000    0.7071   -0.5000
+   -0.5000    0.7071    0.5000
 
 
-ans =
+R_check =
 
-    0.1000         0         0
-         0   -0.3000         0
-         0         0    0.5000
+    0.7071    0.0000    0.7071
+    0.5000    0.7071   -0.5000
+   -0.5000    0.7071    0.5000
 
 
-ans =
+U =
 
-    0.1000         0         0
-         0   -0.3000         0
-         0         0    0.5000
+    1.1000   -0.2828         0
+   -0.2828    1.1000    0.2828
+         0    0.2828    1.1000
 
 
-ans =
+U_check =
 
-    0.1000         0         0
-         0   -0.3000         0
-         0         0    0.5000
+    1.1000   -0.2828    0.0000
+   -0.2828    1.1000    0.2828
+    0.0000    0.2828    1.1000
 
 
-ans =
+V =
 
-    0.1000         0         0
-         0   -0.3000         0
-         0         0    0.5000
+    1.1000         0         0
+         0    0.7000         0
+         0         0    1.5000
 
 
-ans =
+V_check =
 
-    0.1000         0         0
-         0   -0.3000         0
-         0         0    0.5000
-
-
-ans =
-
-    0.1000         0         0
-         0   -0.3000         0
-         0         0    0.5000
-
-
-ans =
-
-    0.1000         0         0
-         0   -0.3000         0
-         0         0    0.5000
-
-
-ans =
-
-    0.1000         0         0
-         0   -0.3000         0
-         0         0    0.5000
-
-
-ans =
-
-    0.1000         0         0
-         0   -0.3000         0
-         0         0    0.5000
-
-
-ans =
-
-    0.1000         0         0
-         0   -0.3000         0
-         0         0    0.5000
-
-
-ans =
-
-    0.1000         0         0
-         0   -0.3000         0
-         0         0    0.5000
-
-
-ans =
-
-    0.1000         0         0
-         0   -0.3000         0
-         0         0    0.5000
-
-
-ans =
-
-    0.1000         0         0
-         0   -0.3000         0
-         0         0    0.5000
-
-
-ans =
-
-    0.1000         0         0
-         0   -0.3000         0
-         0         0    0.5000
-
-
-ans =
-
-    0.1000         0         0
-         0   -0.3000         0
-         0         0    0.5000
-
-
-ans =
-
-    0.1000         0         0
-         0   -0.3000         0
-         0         0    0.5000
-
-
-ans =
-
-    0.1000         0         0
-         0   -0.3000         0
-         0         0    0.5000
-
-
-ans =
-
-    0.1000         0         0
-         0   -0.3000         0
-         0         0    0.5000
-
-
-ans =
-
-    0.1000         0         0
-         0   -0.3000         0
-         0         0    0.5000
-
-
-ans =
-
-    0.1000         0         0
-         0   -0.3000         0
-         0         0    0.5000
-
-
-ans =
-
-    0.1000         0         0
-         0   -0.3000         0
-         0         0    0.5000
-
-
-ans =
-
-    0.1000         0         0
-         0   -0.3000         0
-         0         0    0.5000
-
-
-ans =
-
-    0.1000         0         0
-         0   -0.3000         0
-         0         0    0.5000
-
-
-ans =
-
-    0.1000         0         0
-         0   -0.3000         0
-         0         0    0.5000
-
-
-ans =
-
-    0.1000         0         0
-         0   -0.3000         0
-         0         0    0.5000
-
-
-ans =
-
-    0.1000         0         0
-         0   -0.3000         0
-         0         0    0.5000
-
-
-ans =
-
-    0.1000         0         0
-         0   -0.3000         0
-         0         0    0.5000
-
-
-ans =
-
-    0.1000         0         0
-         0   -0.3000         0
-         0         0    0.5000
-
-
-ans =
-
-    0.1000         0         0
-         0   -0.3000         0
-         0         0    0.5000
-
-
-ans =
-
-    0.1000         0         0
-         0   -0.3000         0
-         0         0    0.5000
-
-
-ans =
-
-    0.1000         0         0
-         0   -0.3000         0
-         0         0    0.5000
-
-
-ans =
-
-    0.1000         0         0
-         0   -0.3000         0
-         0         0    0.5000
-
-
-ans =
-
-    0.1000         0         0
-         0   -0.3000         0
-         0         0    0.5000
-
-
-ans =
-
-    0.1000         0         0
-         0   -0.3000         0
-         0         0    0.5000
-
-
-ans =
-
-    0.1000         0         0
-         0   -0.3000         0
-         0         0    0.5000
-
-
-ans =
-
-    0.1000         0         0
-         0   -0.3000         0
-         0         0    0.5000
-
-
-ans =
-
-    0.1000         0         0
-         0   -0.3000         0
-         0         0    0.5000
-
-
-ans =
-
-    0.1000         0         0
-         0   -0.3000         0
-         0         0    0.5000
-
-
-ans =
-
-    0.1000         0         0
-         0   -0.3000         0
-         0         0    0.5000
-
-
-ans =
-
-    0.1000         0         0
-         0   -0.3000         0
-         0         0    0.5000
-
-
-ans =
-
-    0.1000         0         0
-         0   -0.3000         0
-         0         0    0.5000
-
-
-ans =
-
-    0.1000         0         0
-         0   -0.3000         0
-         0         0    0.5000
-
-
-ans =
-
-    0.1000         0         0
-         0   -0.3000         0
-         0         0    0.5000
-
-
-ans =
-
-    0.1000         0         0
-         0   -0.3000         0
-         0         0    0.5000
-
-
-ans =
-
-    0.1000         0         0
-         0   -0.3000         0
-         0         0    0.5000
-
-
-ans =
-
-    0.1000         0         0
-         0   -0.3000         0
-         0         0    0.5000
-
-
-ans =
-
-    0.1000         0         0
-         0   -0.3000         0
-         0         0    0.5000
-
-
-ans =
-
-    0.1000         0         0
-         0   -0.3000         0
-         0         0    0.5000
-
-
-ans =
-
-    0.1000         0         0
-         0   -0.3000         0
-         0         0    0.5000
-
-
-ans =
-
-    0.1000         0         0
-         0   -0.3000         0
-         0         0    0.5000
-
-
-ans =
-
-    0.1000         0         0
-         0   -0.3000         0
-         0         0    0.5000
-
-
-ans =
-
-    0.1000         0         0
-         0   -0.3000         0
-         0         0    0.5000
-
-
-ans =
-
-    0.1000         0         0
-         0   -0.3000         0
-         0         0    0.5000
-
-
-ans =
-
-    0.1000         0         0
-         0   -0.3000         0
-         0         0    0.5000
-
-
-ans =
-
-    0.1000         0         0
-         0   -0.3000         0
-         0         0    0.5000
-
-
-ans =
-
-    0.1000         0         0
-         0   -0.3000         0
-         0         0    0.5000
-
-
-ans =
-
-    0.1000         0         0
-         0   -0.3000         0
-         0         0    0.5000
-
-
-ans =
-
-    0.1000         0         0
-         0   -0.3000         0
-         0         0    0.5000
-
-
-ans =
-
-    0.1000         0         0
-         0   -0.3000         0
-         0         0    0.5000
-
-
-ans =
-
-    0.1000         0         0
-         0   -0.3000         0
-         0         0    0.5000
-
-
-ans =
-
-    0.1000         0         0
-         0   -0.3000         0
-         0         0    0.5000
-
-
-ans =
-
-    0.1000         0         0
-         0   -0.3000         0
-         0         0    0.5000
-
-
-ans =
-
-    0.1000         0         0
-         0   -0.3000         0
-         0         0    0.5000
-
-
-ans =
-
-    0.1000         0         0
-         0   -0.3000         0
-         0         0    0.5000
-
-
-ans =
-
-    0.1000         0         0
-         0   -0.3000         0
-         0         0    0.5000
-
-
-ans =
-
-    0.1000         0         0
-         0   -0.3000         0
-         0         0    0.5000
-
-
-ans =
-
-    0.1000         0         0
-         0   -0.3000         0
-         0         0    0.5000
-
-
-ans =
-
-    0.1000         0         0
-         0   -0.3000         0
-         0         0    0.5000
-
-
-ans =
-
-    0.1000         0         0
-         0   -0.3000         0
-         0         0    0.5000
-
-
-ans =
-
-    0.1000         0         0
-         0   -0.3000         0
-         0         0    0.5000
-
-
-ans =
-
-    0.1000         0         0
-         0   -0.3000         0
-         0         0    0.5000
-
-
-ans =
-
-    0.1000         0         0
-         0   -0.3000         0
-         0         0    0.5000
-
-
-ans =
-
-    0.1000         0         0
-         0   -0.3000         0
-         0         0    0.5000
-
-
-ans =
-
-    0.1000         0         0
-         0   -0.3000         0
-         0         0    0.5000
-
-
-ans =
-
-    0.1000         0         0
-         0   -0.3000         0
-         0         0    0.5000
-
-
-ans =
-
-    0.1000         0         0
-         0   -0.3000         0
-         0         0    0.5000
-
-
-ans =
-
-    0.1000         0         0
-         0   -0.3000         0
-         0         0    0.5000
-
-
-ans =
-
-    0.1000         0         0
-         0   -0.3000         0
-         0         0    0.5000
-
-
-ans =
-
-    0.1000         0         0
-         0   -0.3000         0
-         0         0    0.5000
-
-
-ans =
-
-    0.1000         0         0
-         0   -0.3000         0
-         0         0    0.5000
-
-
-ans =
-
-    0.1000         0         0
-         0   -0.3000         0
-         0         0    0.5000
-
-
-ans =
-
-    0.1000         0         0
-         0   -0.3000         0
-         0         0    0.5000
-
-
-ans =
-
-    0.1000         0         0
-         0   -0.3000         0
-         0         0    0.5000
-
-
-ans =
-
-    0.1000         0         0
-         0   -0.3000         0
-         0         0    0.5000
-
-
-ans =
-
-    0.1000         0         0
-         0   -0.3000         0
-         0         0    0.5000
-
-
-ans =
-
-    0.1000         0         0
-         0   -0.3000         0
-         0         0    0.5000
-
-
-ans =
-
-    0.1000         0         0
-         0   -0.3000         0
-         0         0    0.5000
-
-
-ans =
-
-    0.1000         0         0
-         0   -0.3000         0
-         0         0    0.5000
-
-
-ans =
-
-    0.1000         0         0
-         0   -0.3000         0
-         0         0    0.5000
-
-
-ans =
-
-    0.1000         0         0
-         0   -0.3000         0
-         0         0    0.5000
-
-
-ans =
-
-    0.1000         0         0
-         0   -0.3000         0
-         0         0    0.5000
-
-
-ans =
-
-    0.1000         0         0
-         0   -0.3000         0
-         0         0    0.5000
-
-
-ans =
-
-    0.1000         0         0
-         0   -0.3000         0
-         0         0    0.5000
-
-
-ans =
-
-    0.1000         0         0
-         0   -0.3000         0
-         0         0    0.5000
-
-
-ans =
-
-    0.1000         0         0
-         0   -0.3000         0
-         0         0    0.5000
-
-
-ans =
-
-    0.1000         0         0
-         0   -0.3000         0
-         0         0    0.5000
-
-
-ans =
-
-    0.1000         0         0
-         0   -0.3000         0
-         0         0    0.5000
-
-
-ans =
-
-    0.1000         0         0
-         0   -0.3000         0
-         0         0    0.5000
-
-
-ans =
-
-    0.1000         0         0
-         0   -0.3000         0
-         0         0    0.5000
-
-
-ans =
-
-    0.1000         0         0
-         0   -0.3000         0
-         0         0    0.5000
-
-
-ans =
-
-    0.1000         0         0
-         0   -0.3000         0
-         0         0    0.5000
-
-
-ans =
-
-    0.1000         0         0
-         0   -0.3000         0
-         0         0    0.5000
-
-
-ans =
-
-    0.1000         0         0
-         0   -0.3000         0
-         0         0    0.5000
-
-
-ans =
-
-    0.1000         0         0
-         0   -0.3000         0
-         0         0    0.5000
-
-
-ans =
-
-    0.1000         0         0
-         0   -0.3000         0
-         0         0    0.5000
-
-
-ans =
-
-    0.1000         0         0
-         0   -0.3000         0
-         0         0    0.5000
-
-
-ans =
-
-    0.1000         0         0
-         0   -0.3000         0
-         0         0    0.5000
-
-
-ans =
-
-    0.1000         0         0
-         0   -0.3000         0
-         0         0    0.5000
-
-
-ans =
-
-    0.1000         0         0
-         0   -0.3000         0
-         0         0    0.5000
-
-
-ans =
-
-    0.1000         0         0
-         0   -0.3000         0
-         0         0    0.5000
-
-
-ans =
-
-    0.1000         0         0
-         0   -0.3000         0
-         0         0    0.5000
-
-
-ans =
-
-    0.1000         0         0
-         0   -0.3000         0
-         0         0    0.5000
-
-
-ans =
-
-    0.1000         0         0
-         0   -0.3000         0
-         0         0    0.5000
-
-
-ans =
-
-    0.1000         0         0
-         0   -0.3000         0
-         0         0    0.5000
-
-
-ans =
-
-    0.1000         0         0
-         0   -0.3000         0
-         0         0    0.5000
-
-
-ans =
-
-    0.1000         0         0
-         0   -0.3000         0
-         0         0    0.5000
-
-
-ans =
-
-    0.1000         0         0
-         0   -0.3000         0
-         0         0    0.5000
-
-
-ans =
-
-    0.1000         0         0
-         0   -0.3000         0
-         0         0    0.5000
-
-
-ans =
-
-    0.1000         0         0
-         0   -0.3000         0
-         0         0    0.5000
-
-
-ans =
-
-    0.1000         0         0
-         0   -0.3000         0
-         0         0    0.5000
-
-
-ans =
-
-    0.1000         0         0
-         0   -0.3000         0
-         0         0    0.5000
-
-
-ans =
-
-    0.1000         0         0
-         0   -0.3000         0
-         0         0    0.5000
-
-
-D_out = 
-
-  struct with fields:
-
-        F: {5&times;5&times;5 cell}
-        C: {5&times;5&times;5 cell}
-       Cp: {5&times;5&times;5 cell}
-        U: {5&times;5&times;5 cell}
-        E: {5&times;5&times;5 cell}
-    Emaxp: [5&times;5&times;5 double]
-    Emidp: [5&times;5&times;5 double]
-    Eminp: [5&times;5&times;5 double]
-     Eoct: [5&times;5&times;5 double]
-      Exx: [5&times;5&times;5 double]
-      Exy: [5&times;5&times;5 double]
-      Exz: [5&times;5&times;5 double]
-      Eyx: [5&times;5&times;5 double]
-      Eyy: [5&times;5&times;5 double]
-      Eyz: [5&times;5&times;5 double]
-      Ezx: [5&times;5&times;5 double]
-      Ezy: [5&times;5&times;5 double]
-      Ezz: [5&times;5&times;5 double]
+    1.1000    0.0000    0.0000
+    0.0000    0.7000    0.0000
+    0.0000    0.0000    1.5000
 
 </pre><pre class="codeinput">cFigure;
 subplot(1,2,1); hold <span class="string">on</span>;
@@ -1013,18 +233,68 @@ clear; close all; clc;
 
 %% Examples 
 
-n=5;
-r=linspace(0,1,n); 
-v=mean(diff(r))*ones(1,3);
-[X1,Y1,Z1]=meshgrid(r);
+n=5; %Number of points defined in range
+r=linspace(0,1,n); %The range used here
+v=mean(diff(r))*ones(1,3); %The "voxel" or step size
+[X1,Y1,Z1]=meshgrid(r); %Meshgrid formatted coordinate set 
 
-%Stretches
-l1=1.1; l2=0.7; l3=1.5; 
+testCase=1;
+switch testCase
+    case 1 % This uses a specified left stretch tensor
+        % Stretches (non-ordered)
+        l1=1.1; l2=0.7; l3=1.5;
 
-%Scale/stretch coordinates
-X2=X1.*l1; Y2=Y1.*l2; Z2=Z1.*l3;
+        %Build left stretch tensor
+        V=[l1 0  0;...
+            0  l2 0;...
+            0  0  l3];
 
-%Get displacements 
+        %Define rotation
+        R=euler2DCM([0.25*pi 0.25*pi 0]);
+        
+        %Create deformation gradient tensor
+        F=V*R;
+        
+        U=R'*F; %Right stretch tensor
+
+        %Define translation
+        t=[1 pi -0.5]; 
+    case 2 % This uses a specified right stretch tensor
+        %Stretches (non-ordered)
+        l1=1.1; l2=0.7; l3=1.5;
+
+        %Build right stretch tensor
+        U=[l1 0  0;...
+            0  l2 0;...
+            0  0  l3];
+
+        %Define rotation
+        R=euler2DCM([0.25*pi 0.25*pi 0]);
+        
+        %Create deformation gradient tensor
+        F=R*U;
+
+        V=F*R';% Left stretch tensor
+
+        %Define translation
+        t=[1 pi -0.5];    
+end
+
+%Define initial coordinate vector
+V1=[X1(:) Y1(:) Z1(:)]; 
+
+%Create deformed coordinate vector
+V2=(F*V1')'; %Rotate/stretch using deformation gradient tensor
+V2=V2+t(ones(size(V2,1),1),:); %Apply translation
+
+%
+X2=reshape(V2(:,1),size(X1));
+Y2=reshape(V2(:,2),size(X1));
+Z2=reshape(V2(:,3),size(X1));
+
+%Compute displacements
+Uxyz=V2-V1; 
+
 Ux=X2-X1; Uy=Y2-Y1; Uz=Z2-Z1;
 
 %%
@@ -1034,7 +304,20 @@ Ux=X2-X1; Uy=Y2-Y1; Uz=Z2-Z1;
 % 2 = Hencky (logarithmic/natural) strain tensor
 % 3 = Green-Lagrange strain tensor
 strain_type=1; 
-[D_out]=disp2strain(Ux, Uy, Uz, v, strain_type)
+[outputStructure]=disp2strain(Ux, Uy, Uz, v, strain_type);
+
+%Check output against input
+F
+F_check=outputStructure.F{1}
+
+R
+R_check=outputStructure.R{1}
+
+U
+U_check=outputStructure.U{1}
+
+V
+V_check=outputStructure.V{1}
 
 %%
 

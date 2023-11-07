@@ -1,5 +1,14 @@
 function [D_out]=disp2strain(Ux, Uy, Uz, v, strain_type)
 
+% function [D_out]=disp2strain(Ux, Uy, Uz, v, strain_type)
+% ------------------------------------------------------------------------
+% Computes deformation metrics for the gridded displacement data contained
+% in Ux, Uy, Uz. 
+%
+% Notes:
+% 2023/07/18: Fixed convention of the gradient computations such that x=F*X
+% rather than F'*X. 
+% ------------------------------------------------------------------------
 
 %% GETTING DISPLACEMENT GRADIENT MATRIX
 %See help gradient; "The first output FX is always the gradient along the
@@ -37,15 +46,16 @@ Ezx=Emaxp; Ezy=Emaxp; Ezz=Emaxp;
 for i=1:1:size(UG,1)
     for j=1:1:size(UG,2)
         for k=1:1:size(UG,3)
-            Fijk=UG{i,j,k}+I_unity; %Deformation gradient tensor            
+            Fijk=UG{i,j,k}+I_unity; %Deformation gradient tensor   
+
             Cijk=Fijk'*Fijk; %The right Cauchy Green tensor            
             if any(isnan(Cijk))
                 Qijk=NaN(size(Cijk));
                 Up_ijk=NaN(size(Cijk));
                 Ep_ijk=NaN(size(Cijk));
             else
-                [Qijk,Lpsq_ijk] = eig(Cijk); %The rotation (and translation) tensor and the squared principal stretches
-                Up_ijk=sqrt(Lpsq_ijk); %Right stretch tensor in principal space                
+                [Qijk,Cp_ijk] = eig(Cijk); %The rotation tensor and the squared principal stretches
+                Up_ijk=sqrt(Cp_ijk); %Right stretch tensor in principal space                
                 
                 switch strain_type
                     case 1 %Principal Biot strain tensor
@@ -66,7 +76,7 @@ for i=1:1:size(UG,1)
 
             % Fill cells
             C(i,j,k)={Cijk};
-            Cp(i,j,k)={Lpsq_ijk};
+            Cp(i,j,k)={Cp_ijk};
             F(i,j,k)={Fijk};            
             U(i,j,k)={Uijk};            
             Q(i,j,k)={Qijk};
@@ -76,12 +86,10 @@ for i=1:1:size(UG,1)
 
             %Principal strains
             E_diag=diag(Ep_ijk);
-            [Emaxp(i,j,k),ind_max]=max(E_diag); %Maximum principal strain
-            [Eminp(i,j,k),ind_min]=min(E_diag); %Minimum principal strain
-            Emidp(i,j,k)=E_diag(find(~ismember([1 2 3],[ind_max ind_min]),1)); %Mid principal strain 
-            %N.B. The mid principal strain is now defined as "the other
-            %one". However if the min/max values are not unique these
-            %functions just pick one hence mid may be equal to say min
+            E_diag_sort=sort(E_diag); % [E_diag_sort,indSort]=sort(E_diag);
+            Eminp(i,j,k)=E_diag_sort(1);
+            Emidp(i,j,k)=E_diag_sort(2);
+            Emaxp(i,j,k)=E_diag_sort(3);
             
             %Octahedral strain
             Eoct(i,j,k)=1/3.*sqrt(((Ep_ijk(1,1)-Ep_ijk(2,2)).^2)+((Ep_ijk(2,2)-Ep_ijk(3,3)).^2)+((Ep_ijk(3,3)-Ep_ijk(1,1)).^2)); 
