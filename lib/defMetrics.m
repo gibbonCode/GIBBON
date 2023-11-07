@@ -78,12 +78,10 @@ for q=1:1:numel(F_cell)
     
     %Principal strains
     E_diag=diag(Ep_ijk);
-    [Emaxp(q),ind_max]=max(E_diag); %Maximum principal strain
-    [Eminp(q),ind_min]=min(E_diag); %Minimum principal strain
-    Emidp(q)=E_diag(find(~ismember([1 2 3],[ind_max ind_min]),1)); %Mid principal strain
-    %N.B. The mid principal strain is now defined as "the other
-    %one". However if the min/max values are not unique these
-    %functions just pick one hence mid may be equal to say min
+    E_diag_sort=sort(E_diag); % [E_diag_sort,indSort]=sort(E_diag);
+    Eminp(q)=E_diag_sort(1);
+    Emidp(q)=E_diag_sort(2);
+    Emaxp(q)=E_diag_sort(3);
     
     %Principal stretches
     L_diag=diag(Up_ijk);
