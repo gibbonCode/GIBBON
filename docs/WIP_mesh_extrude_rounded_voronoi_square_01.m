@@ -5,7 +5,9 @@ clear; close all; clc;
 fontSize=25;
 edgeWidth=3;
 markerSize=35;
+lineWidth1=2;
 lineWidthVec=2;
+cMap=spectral(250);
 
 %% Control parameters
 
@@ -31,6 +33,8 @@ randomOpt=1;
 uniNoiseWidth=cellSpacing/3; 
 stdNoise=cellSpacing/3; 
 
+fiberDirectionOption=1; % 1= All z-direction, 2= z-direction for muscle cells and tangential for connective
+
 % Path names
 defaultFolder = fileparts(fileparts(mfilename('fullpath'))); 
 savePath=fullfile(defaultFolder,'data','temp');
@@ -40,11 +44,14 @@ febioFebFileNamePart='tempModel';
 febioFebFileName=fullfile(savePath,[febioFebFileNamePart,'.feb']); %FEB file name
 febioLogFileName=[febioFebFileNamePart,'.txt']; %FEBio log file name
 febioLogFileName_disp=[febioFebFileNamePart,'_disp_out.txt']; %Log file name for exporting displacement
-febioLogFileName_stress=[febioFebFileNamePart,'_stress_out.txt']; %Log file name for exporting stress sigma_z
+febioLogFileName_stress_prin=[febioFebFileNamePart,'_stress_prin_out.txt']; %Log file name for exporting principal stress
+febioLogFileName_force=[febioFebFileNamePart,'_force_out.txt']; %Log file name for exporting force
 
 %Material parameter set
 E_youngs1=0.1; %Material Young's modulus
 nu1=0.4; %Material Poisson's ratio
+
+displacementMagnitude = 0.1;
 
 % FEA control settings
 numTimeSteps=10; %Number of time steps desired
@@ -361,71 +368,105 @@ end
 
 %% Using multiRegionTriMesh2D to create the triangulated mesh
 
-[F,V,regionLabelSurface]=multiRegionTriMesh2D(regionSpec,pointSpacing,0,0);
+[F,V,regionLabelFaces]=multiRegionTriMesh2D(regionSpec,pointSpacing,0,0);
 V(:,3)=0; %Add z coordinate
 
+materialLabelFaces = double(regionLabelFaces==1)+1;
+logicConnectiveFaces = regionLabelFaces==1; 
+logicCellFaces = regionLabelFaces~=1;
 Eb=patchBoundary(F); %The outer boundary edges
-Ebb=patchBoundary(F(regionLabelSurface==1,:)); %The connective tissue boundary edges
+Ebb=patchBoundary(F(logicConnectiveFaces,:)); %The connective tissue boundary edges
 
 %%
 
-cMap=[0.5 0.5 0.5; gjet(max(regionLabelSurface)-1)]; %A custom colormap that starts grey so connective tissue stands out
-
 cFigure; hold on;
-gpatch(F,V,regionLabelSurface,'k',1,0.5);
+gpatch(F,V,regionLabelFaces,'k',1,0.5);
 % gpatch(E_raw,V_raw,'none','k',1,4);
 gpatch(Eb,V,'none','k',1,4);
 gpatch(Ebb,V,'none','k',1,3);
-axis tight; axis equal; colormap(cMap);
-% icolorbar;
+axis tight; axis equal; colormap(cMap); icolorbar;
 set(gca,'FontSize',fontSize);
 axis off;
 drawnow;
 
 %% Define fibre directions for the mesh
 
-F_con=F(regionLabelSurface==1,:);
-V_F_con=patchCentre(F_con,V);
+switch fiberDirectionOption
+    case 1 % All z-direction
+        nz=[0 0 1];
 
-logicCon=~all(ismember(Ebb,Eb),2);
-V_Ebb=patchCentre(Ebb(logicCon,:),V);
-N_Ebb=vecnormalize(V(Ebb(logicCon,1),:)-V(Ebb(logicCon,2),:));
+        F_con = F(logicConnectiveFaces,:);
+        V_F_con=patchCentre(F_con,V);        
+        N3_con=nz(ones(nnz(logicConnectiveFaces),1),:);
 
-[~,indMin]=minDist(V_F_con,V_Ebb);
-N_con1=N_Ebb(indMin,:);
+        F_cell = F(logicCellFaces,:);
+        V_F_cell=patchCentre(F_cell,V);        
+        N3_cell=nz(ones(nnz(logicCellFaces),1),:);
+    case 2 % z-direction for muscle cells and tangential for connective
+        F_con = F(logicConnectiveFaces,:);
+        V_F_con = patchCentre(F_con,V);
 
-% nz=[0 0 1];
-% N_con2=cross(N_con1,nz(ones(size(N_con1,1),1),:),2);
+        logicCon=~all(ismember(Ebb,Eb),2);
+        V_Ebb=patchCentre(Ebb(logicCon,:),V);
+        N1_Ebb=vecnormalize(V(Ebb(logicCon,1),:)-V(Ebb(logicCon,2),:));
+
+        [~,indMin]=minDist(V_F_con,V_Ebb);
+        N3_con=N1_Ebb(indMin,:);
+
+        F_cell = F(logicCellFaces,:);
+        V_F_cell=patchCentre(F_cell,V);
+        n1_cell=[0 0 1];
+        N3_cell=n1_cell(ones(nnz(logicCellFaces),1),:);
+end
+
+%Get orthogonal vector pair such that 3rd direction is cross product with
+%these
+[N1_con,N2_con]=vectorOrthogonalPair(N3_con);
+[N1_cell,N2_cell]=vectorOrthogonalPair(N3_cell);
 
 %%
 
 cFigure; hold on;
-gpatch(F,V,regionLabelSurface,'none',0.5);
+gpatch(F,V,materialLabelFaces,'none',0.5);
 % gpatch(Eb,V,'none','k',1,4);
 gpatch(Ebb,V,'none','k',1,3);
-quiverLine(V_F_con,N_con1,pointSpacing,'b',lineWidthVec); % plotV(V_F_con,'k.');
-% quiverLine(V_F_con,N_con2,pointSpacing,'r',lineWidthVec); % plotV(V_F_con,'k.');
-axis tight; axis equal; colormap(cMap);
+
+hp11=quiverLine(V_F_con,N1_con,pointSpacing/3,'r',lineWidthVec);
+hp12=quiverLine(V_F_con,N2_con,pointSpacing/3,'g',lineWidthVec);
+hp13=quiverLine(V_F_con,N3_con,pointSpacing,'b',lineWidthVec);
+
+hp21=quiverLine(V_F_cell,N1_cell,pointSpacing/3,'r',lineWidthVec); 
+hp21=quiverLine(V_F_cell,N2_cell,pointSpacing/3,'g',lineWidthVec); 
+hp21=quiverLine(V_F_cell,N3_cell,pointSpacing,'b',lineWidthVec); 
+
+axisGeom; colormap gray; icolorbar;
+legend([hp11 hp12 hp13],{'e1','e2','e3'});
 set(gca,'FontSize',fontSize);
-drawnow;
+gdrawnow;
 
 %% Thicken the mesh to 3D volumetric elements
 [Ep,Vp,Fp1,Fp2]=patchThick(F,V,1,layerThickness,numThickness);
 
 %Copy region label so it holds for solid mesh
-regionLabelElements=repmat(regionLabelSurface,numThickness,1);
+regionLabelElements = repmat(regionLabelFaces,numThickness,1);
+materialLabelElements = repmat(materialLabelFaces,numThickness,1);
 
 %Get faces for the elements for visualization
-[Fp,CFp]=element2patch(Ep,regionLabelElements,'penta6');
+[Fp,CFp]=element2patch(Ep,materialLabelElements,'penta6');
 
 Ep_con  = Ep(regionLabelElements==1,:); %Connective tissue
 Ep_cell = Ep(regionLabelElements~=1,:); %Cells
 
+Ep = [Ep_cell; Ep_con];
+
+%Get boundary faces (two sets due to pentahedra)
+indBoundaryFaces = tesBoundary(Fp); %Cell containing boundary face indices
+Fpb = {Fp{1}(indBoundaryFaces{1},:),Fp{2}(indBoundaryFaces{2},:)}; %Cell containing boundary faces
+CFpb = {CFp{1}(indBoundaryFaces{1},:),CFp{2}(indBoundaryFaces{2},:)}; 
 %%
 
 cFigure; hold on;
-gpatch(Fp,Vp,CFp,'k',0.5);
-
+gpatch(Fpb,Vp,CFpb,'k',1);
 axisGeom; set(gca,'FontSize',fontSize);
 colormap(cMap); icolorbar;
 drawnow;
@@ -433,23 +474,50 @@ drawnow;
 %% Define fibre directions for the solid mesh
 
 V_Ep_con=patchCentre(Ep(regionLabelElements==1,:),Vp);
-Np_con1=repmat(N_con1,numThickness,1);
+N1p_con=repmat(N1_con,numThickness,1);
+N2p_con=repmat(N2_con,numThickness,1);
+N3p_con=repmat(N3_con,numThickness,1);
 
 V_Ep_cell=patchCentre(Ep(regionLabelElements~=1,:),Vp);
-Np_cell=repmat([0 0 1],size(V_Ep_cell,1),1);
+N1p_cell=repmat(N1_cell,numThickness,1);
+N2p_cell=repmat(N2_cell,numThickness,1);
+N3p_cell=repmat(N3_cell,numThickness,1);
+
+%%
+
+% cFigure; hold on;
+% gpatch(Fp,Vp,CFp,'none',0.05);
+% quiverLine(V_Ep_con,N3p_con,pointSpacing,'b',lineWidthVec,3,1);
+% quiverLine(V_Ep_cell,N3p_cell,pointSpacing,'b',lineWidthVec,3,1);
+% axisGeom; set(gca,'FontSize',fontSize);
+% colormap(cMap); icolorbar;
+% drawnow;
+
+%% Define boundary conditions
+
+Fq = Fpb{2}; %The boundary quads
+Nq = patchNormal(Fq,Vp);
+V_Fq = patchCentre(Fq,Vp);
+ny = [0 1 0];
+Dq = dot(Nq,ny(ones(size(Nq,1),1),:),2);
+
+logicTop_Fq = Dq > 0.5; 
+logicBottom_Fq = Dq < -0.5; 
+
+bcSupportList=unique(Fq(logicBottom_Fq,:));
+bcPrescribeList=unique(Fq(logicTop_Fq,:));
 
 %%
 
 cFigure; hold on;
-gpatch(Fp,Vp,CFp,'none',0.05);
-quiverLine(V_Ep_con,Np_con1,pointSpacing,'b',lineWidthVec,3,1);
-quiverLine(V_Ep_cell,Np_cell,pointSpacing,'r',lineWidthVec,3,1);
-colormap(cMap); %icolorbar;
-axisGeom; set(gca,'FontSize',fontSize);
-colormap(cMap); icolorbar;
-drawnow;
-
-%% CREATE FEBio FILE
+gpatch(Fpb,Vp,'w','none',0.5);
+gpatch(Fq(logicTop_Fq,:),Vp,'rw','r',1);
+gpatch(Fq(logicBottom_Fq,:),Vp,'kw','r',1);
+% quiverVec(V_Fq,Nq)
+plotV(Vp(bcPrescribeList,:),'r.','MarkerSize',markerSize);
+plotV(Vp(bcSupportList,:),'k.','MarkerSize',markerSize);
+axisGeom; camlight headlight; set(gca,'FontSize',fontSize);
+gdrawnow;
 
 %% Defining the FEBio input structure
 % See also |febioStructTemplate| and |febioStruct2xml| and the FEBio user
@@ -476,14 +544,14 @@ febio_spec.Control.time_stepper.max_retries=max_retries;
 febio_spec.Control.time_stepper.opt_iter=opt_iter;
 
 %Material section
-materialName1='Material1';
+materialName1='Material1_cells';
 febio_spec.Material.material{1}.ATTR.name=materialName1;
 febio_spec.Material.material{1}.ATTR.type='neo-Hookean';
 febio_spec.Material.material{1}.ATTR.id=1;
 febio_spec.Material.material{1}.E=E_youngs1;
 febio_spec.Material.material{1}.v=nu1;
 
-materialName2='Material2';
+materialName2='Material2_connective';
 febio_spec.Material.material{2}.ATTR.name=materialName2;
 febio_spec.Material.material{2}.ATTR.type='neo-Hookean';
 febio_spec.Material.material{2}.ATTR.id=2;
@@ -509,23 +577,15 @@ febio_spec.Mesh.Elements{2}.ATTR.type='penta6'; %Element type
 febio_spec.Mesh.Elements{2}.elem.ATTR.id=(1:1:size(Ep_con,1))'; %Element id's
 febio_spec.Mesh.Elements{2}.elem.VAL=Ep_con; %The element matrix
 
-% % -> NodeSets
-% nodeSetName1='bcSupportList_X';
-% nodeSetName2='bcSupportList_Y';
-% nodeSetName3='bcSupportList_Z';
-% nodeSetName4='bcPrescribeList';
-% 
-% febio_spec.Mesh.NodeSet{1}.ATTR.name=nodeSetName1;
-% febio_spec.Mesh.NodeSet{1}.VAL=mrow(bcSupportList_X);
-% 
-% febio_spec.Mesh.NodeSet{2}.ATTR.name=nodeSetName2;
-% febio_spec.Mesh.NodeSet{2}.VAL=mrow(bcSupportList_Y);
-% 
-% febio_spec.Mesh.NodeSet{3}.ATTR.name=nodeSetName3;
-% febio_spec.Mesh.NodeSet{3}.VAL=mrow(bcSupportList_Z);
-% 
-% febio_spec.Mesh.NodeSet{4}.ATTR.name=nodeSetName4;
-% febio_spec.Mesh.NodeSet{4}.VAL=mrow(bcPrescribeList);
+% -> NodeSets
+nodeSetName1='bcSupportList';
+nodeSetName2='bcPrescribeList';
+
+febio_spec.Mesh.NodeSet{1}.ATTR.name=nodeSetName1;
+febio_spec.Mesh.NodeSet{1}.VAL=mrow(bcSupportList);
+
+febio_spec.Mesh.NodeSet{2}.ATTR.name=nodeSetName2;
+febio_spec.Mesh.NodeSet{2}.VAL=mrow(bcPrescribeList);
 
 %MeshDomains section
 febio_spec.MeshDomains.SolidDomain{1}.ATTR.name=partName1;
@@ -534,36 +594,51 @@ febio_spec.MeshDomains.SolidDomain{1}.ATTR.mat=materialName1;
 febio_spec.MeshDomains.SolidDomain{2}.ATTR.name=partName2;
 febio_spec.MeshDomains.SolidDomain{2}.ATTR.mat=materialName2;
 
-%Boundary condition section 
+%MeshData section
+% -> ElementData
+% Material directions of cells
+febio_spec.MeshData.ElementData{1}.ATTR.elem_set=partName1;
+febio_spec.MeshData.ElementData{1}.ATTR.type='mat_axis';
+
+for q=1:1:size(Ep_cell,1)
+    febio_spec.MeshData.ElementData{1}.elem{q}.ATTR.lid=q;
+    febio_spec.MeshData.ElementData{1}.elem{q}.a=N1p_cell(q,:);
+    febio_spec.MeshData.ElementData{1}.elem{q}.d=N2p_cell(q,:);
+end
+
+% Material directions of connective tissue
+febio_spec.MeshData.ElementData{2}.ATTR.elem_set=partName2;
+febio_spec.MeshData.ElementData{2}.ATTR.type='mat_axis';
+
+for q=1:1:size(Ep_con,1)
+    febio_spec.MeshData.ElementData{2}.elem{q}.ATTR.lid=q;
+    febio_spec.MeshData.ElementData{2}.elem{q}.a=N1p_con(q,:);
+    febio_spec.MeshData.ElementData{2}.elem{q}.d=N2p_con(q,:);
+end
+
+% Boundary condition section 
 % -> Fix boundary conditions
-% febio_spec.Boundary.bc{1}.ATTR.name='zero_displacement_x';
-% febio_spec.Boundary.bc{1}.ATTR.type='zero displacement';
-% febio_spec.Boundary.bc{1}.ATTR.node_set=nodeSetName1;
-% febio_spec.Boundary.bc{1}.x_dof=1;
-% febio_spec.Boundary.bc{1}.y_dof=0;
-% febio_spec.Boundary.bc{1}.z_dof=0;
-% 
-% febio_spec.Boundary.bc{2}.ATTR.name='zero_displacement_y';
-% febio_spec.Boundary.bc{2}.ATTR.type='zero displacement';
-% febio_spec.Boundary.bc{2}.ATTR.node_set=nodeSetName2;
-% febio_spec.Boundary.bc{2}.x_dof=0;
-% febio_spec.Boundary.bc{2}.y_dof=1;
-% febio_spec.Boundary.bc{2}.z_dof=0;
-% 
-% febio_spec.Boundary.bc{3}.ATTR.name='zero_displacement_z';
-% febio_spec.Boundary.bc{3}.ATTR.type='zero displacement';
-% febio_spec.Boundary.bc{3}.ATTR.node_set=nodeSetName3;
-% febio_spec.Boundary.bc{3}.x_dof=0;
-% febio_spec.Boundary.bc{3}.y_dof=0;
-% febio_spec.Boundary.bc{3}.z_dof=1;
-% 
-% febio_spec.Boundary.bc{4}.ATTR.name='prescibed_displacement_z';
-% febio_spec.Boundary.bc{4}.ATTR.type='prescribed displacement';
-% febio_spec.Boundary.bc{4}.ATTR.node_set=nodeSetName4;
-% febio_spec.Boundary.bc{4}.dof='z';
-% febio_spec.Boundary.bc{4}.value.ATTR.lc=1;
-% febio_spec.Boundary.bc{4}.value.VAL=displacementMagnitude;
-% febio_spec.Boundary.bc{4}.relative=0;
+febio_spec.Boundary.bc{1}.ATTR.name='zero_displacement_full';
+febio_spec.Boundary.bc{1}.ATTR.type='zero displacement';
+febio_spec.Boundary.bc{1}.ATTR.node_set=nodeSetName1;
+febio_spec.Boundary.bc{1}.x_dof=1;
+febio_spec.Boundary.bc{1}.y_dof=1;
+febio_spec.Boundary.bc{1}.z_dof=1;
+
+febio_spec.Boundary.bc{2}.ATTR.name='zero_displacement_YZ';
+febio_spec.Boundary.bc{2}.ATTR.type='zero displacement';
+febio_spec.Boundary.bc{2}.ATTR.node_set=nodeSetName2;
+febio_spec.Boundary.bc{2}.x_dof=0;
+febio_spec.Boundary.bc{2}.y_dof=1;
+febio_spec.Boundary.bc{2}.z_dof=1;
+
+febio_spec.Boundary.bc{3}.ATTR.name='prescibed_displacement_z';
+febio_spec.Boundary.bc{3}.ATTR.type='prescribed displacement';
+febio_spec.Boundary.bc{3}.ATTR.node_set=nodeSetName2;
+febio_spec.Boundary.bc{3}.dof='x';
+febio_spec.Boundary.bc{3}.value.ATTR.lc=1;
+febio_spec.Boundary.bc{3}.value.VAL=displacementMagnitude;
+febio_spec.Boundary.bc{3}.relative=0;
 
 %LoadData section
 % -> load_controller
@@ -571,7 +646,6 @@ febio_spec.LoadData.load_controller{1}.ATTR.name='LC_1';
 febio_spec.LoadData.load_controller{1}.ATTR.id=1;
 febio_spec.LoadData.load_controller{1}.ATTR.type='loadcurve';
 febio_spec.LoadData.load_controller{1}.interpolate='LINEAR';
-%febio_spec.LoadData.load_controller{1}.extend='CONSTANT';
 febio_spec.LoadData.load_controller{1}.points.pt.VAL=[0 0; 1 1];
 
 %Output section 
@@ -581,8 +655,12 @@ febio_spec.Output.logfile.node_data{1}.ATTR.file=febioLogFileName_disp;
 febio_spec.Output.logfile.node_data{1}.ATTR.data='ux;uy;uz';
 febio_spec.Output.logfile.node_data{1}.ATTR.delim=',';
 
-febio_spec.Output.logfile.element_data{1}.ATTR.file=febioLogFileName_stress;
-febio_spec.Output.logfile.element_data{1}.ATTR.data='sz';
+febio_spec.Output.logfile.node_data{2}.ATTR.file=febioLogFileName_force;
+febio_spec.Output.logfile.node_data{2}.ATTR.data='Rx;Ry;Rz';
+febio_spec.Output.logfile.node_data{2}.ATTR.delim=',';
+
+febio_spec.Output.logfile.element_data{1}.ATTR.file=febioLogFileName_stress_prin;
+febio_spec.Output.logfile.element_data{1}.ATTR.data='s1;s2;s3';
 febio_spec.Output.logfile.element_data{1}.ATTR.delim=',';
 
 % Plotfile section
@@ -590,19 +668,100 @@ febio_spec.Output.plotfile.compression=0;
 
 %% Quick viewing of the FEBio input file structure
 % The |febView| function can be used to view the xml structure in a MATLAB
-% figure window. 
+% figure window.
 
 %%
-% |febView(febio_spec); %Viewing the febio file|
+%%|febView(febio_spec); %Viewing the febio file|
 
 %% Exporting the FEBio input file
 % Exporting the febio_spec structure to an FEBio input file is done using
-% the |febioStruct2xml| function. 
+% the |febioStruct2xml| function.
 
 febioStruct2xml(febio_spec,febioFebFileName); %Exporting to file and domNode
 %system(['gedit ',febioFebFileName,' &']);
 
+%% Running the FEBio analysis
+% To run the analysis defined by the created FEBio input file the
+% |runMonitorFEBio| function is used. The input for this function is a
+% structure defining job settings e.g. the FEBio input file name. The
+% optional output runFlag informs the user if the analysis was run
+% succesfully.
 
+febioAnalysis.run_filename=febioFebFileName; %The input file name
+febioAnalysis.run_logname=febioLogFileName; %The name for the log file
+febioAnalysis.disp_on=1; %Display information on the command window
+febioAnalysis.runMode=runMode;
+febioAnalysis.maxLogCheckTime=10; %Max log file checking time
+
+[runFlag]=runMonitorFEBio(febioAnalysis);%START FEBio NOW!!!!!!!!
+
+%% Import FEBio results
+
+if runFlag==1 %i.e. a succesful run
+
+    %%
+
+    % Importing nodal displacements from a log file
+    dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_disp),0,1);
+
+    %Access data
+    N_disp_mat=dataStruct.data; %Displacement
+    timeVec=dataStruct.time; %Time
+
+    %Create deformed coordinate set
+    Vp_DEF=N_disp_mat+repmat(Vp,[1 1 size(N_disp_mat,3)]); 
+
+    %%
+    % Importing element stress from a log file
+    dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_stress_prin),0,1);
+
+    %Access data
+    E_stress_mat=dataStruct.data;    
+
+    E_stress_mat_VM=sqrt(( (E_stress_mat(:,1,:)-E_stress_mat(:,2,:)).^2 + ...
+                           (E_stress_mat(:,2,:)-E_stress_mat(:,3,:)).^2 + ...
+                           (E_stress_mat(:,1,:)-E_stress_mat(:,3,:)).^2  )/2); %Von Mises stress
+
+    %%
+    % Plotting the simulated results using |anim8| to visualize and animate
+    % deformations
+
+    [CV]=faceToVertexMeasure(Ep,Vp,E_stress_mat_VM(:,:,end));
+
+    % Create basic view and store graphics handle to initiate animation
+    hf=cFigure; %Open figure  /usr/local/MATLAB/R2020a/bin/glnxa64/jcef_helper: symbol lookup error: /lib/x86_64-linux-gnu/libpango-1.0.so.0: undefined symbol: g_ptr_array_copy
+
+    gtitle([febioFebFileNamePart,': Press play to animate']);
+    title('$\sigma_{vm}$ [MPa]','Interpreter','Latex')
+    hp=gpatch(Fpb,Vp_DEF(:,:,end),CV,'k',1,lineWidth1); %Add graphics object to animate
+
+    for qp=1:1:numel(hp) %For all graphics objects e.g. triangles/quads
+%         hp(qp).Marker=".";
+%         hp(qp).MarkerSize=markerSize2;
+        hp(qp).FaceColor='interp';
+    end
+
+    axisGeom(gca,fontSize);
+    colormap(cMap); colorbar;
+    caxis([min(E_stress_mat_VM(:)) max(E_stress_mat_VM(:))/2]);
+    axis(axisLim(Vp_DEF)); %Set axis limits statically    
+    camlight headlight;
+
+    % Set up animation features
+    animStruct.Time=timeVec; %The time vector
+    for qt=1:1:size(N_disp_mat,3) %Loop over time increments
+
+        [CV]=faceToVertexMeasure(Ep,Vp,E_stress_mat_VM(:,:,qt));
+
+        %Set entries in animation structure
+        animStruct.Handles{qt}=[hp(1) hp(1) hp(2) hp(2)]; %Handles of objects to animate
+        animStruct.Props{qt}={'Vertices','CData','Vertices','CData'}; %Properties of objects to animate
+        animStruct.Set{qt}={Vp_DEF(:,:,qt),CV,Vp_DEF(:,:,qt),CV}; %Property values for to set in order to animate
+    end
+    anim8(hf,animStruct); %Initiate animation feature
+    drawnow;
+
+end
 %%
 
 

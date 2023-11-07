@@ -1,7 +1,17 @@
 function F_cell=triLinearTri_F2D(VX,Vx,TRI)
+% function F_cell=triLinearTri_F2D(VX,Vx,TRI)
+% ------------------------------------------------------------------------
+%  Based on: 
+% Nonlinear Continuum Mechanics for Finite Element Analysis, Javier Boner,
+% Richard D. Wood.  
+% In particular chapter 7 and example 7.1
+%
+%
+% ------------------------------------------------------------------------
 
+%%
 F_cell=cell(size(TRI,1),1);
-for qc=1:1:numel(F_cell);
+for qc=1:1:numel(F_cell)
     indNow=TRI(qc,:);
     X=VX(indNow,:); %Initial coordinates
     x=Vx(indNow,:); %Current coordinates
@@ -15,24 +25,26 @@ function F=triLinearTri_subF2D(X,x)
 
 % Define shape function set N=[1-r-s; r; s;];
 
-%Hardcoded derivative
+% Hardcoded derivative (see example 7.1)
 dN_dRST =[-1 -1;...
            1  0;...
            0  1];
 
-% Compute derivatives of initial position vectors with respect to shape functions
+% Compute derivatives of initial position vectors with respect to shape
+% functions (see equation 7.6a,b)
 dX_dRST=zeros(2,2);
-for q=1:1:size(dN_dRST,1);
+for q=1:1:size(dN_dRST,1)
     dX_dRST=dX_dRST+(X(q,:)'*dN_dRST(q,:));
 end
 
-% Compute derivatives of shape functions with respect to initial position vectors
+% Compute derivatives of shape functions with respect to initial position
+% vectors (see equation 7.11a,b)
 dN_dX=zeros(2,2);
-for q=1:1:size(dN_dRST,1);
+for q=1:1:size(dN_dRST,1)
     dN_dX(q,:)=(dX_dRST'\dN_dRST(q,:)')';
 end
 
-%% DERIVE THE DEFORMATION GRADIENT TENSOR
+% Derive deformation gradient tensor (see equation 7.7a,b)
 F_2D=zeros(2,2);
 for q=1:1:size(x,1)
     F_2D=F_2D+(x(q,:)'*dN_dX(q,:));

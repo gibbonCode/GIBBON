@@ -15,12 +15,13 @@ function [varargout]=febioStruct2xml(varargin)
 % file exporting providing a significant computational time reduction over
 % full XML based parsing. 
 % 2018/05/15 Create temp directory if it is does not exist
-% To do:
-% Gracefully handle empty fields e.g. 0x8 element array
 % 2020/11/26 Fixed bug in relation to undefined attributeStruct in
 % febioStruct2xmlStep 
-% For febio_spec 4.0 perhaps we can remove 'point' from the arrayLoopKeywords
-% Check for for febio_spec 4.0
+% 2023/09/01 Added "ElementSet" to arrayRowWrapKeywords
+% 
+% To do:
+% Gracefully handle empty fields e.g. 0x8 element array
+% 
 %------------------------------------------------------------------------
 
 %% Parse input
@@ -28,7 +29,7 @@ function [varargout]=febioStruct2xml(varargin)
 defaultOptionStruct.attributeKeyword='ATTR';
 defaultOptionStruct.valueKeyword='VAL';
 defaultOptionStruct.arrayLoopKeywords={'node','elem','face','delem','quad4','quad8','tri3','tri6','tri7','line2','line3','point','pt'};
-defaultOptionStruct.arrayRowWrapKeywords={'NodeSet','node_data','element_data'};
+defaultOptionStruct.arrayRowWrapKeywords={'NodeSet','node_data','element_data','ElementSet'};
 defaultOptionStruct.rowWrapLength=8;
 
 %Create number to string conversion option structure (used for mat2strIntDouble)
