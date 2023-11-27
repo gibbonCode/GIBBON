@@ -331,12 +331,13 @@ V3(:,1)=V3(:,1)+40;
 
 %%
 % Find interior points
-
 [V_region1]=getInnerPoint({F1,F1,F1},{V1,V2,V3}); 
 [V_region2]=getInnerPoint(F1,V2); 
 [V_region3]=getInnerPoint(F1,V3); 
-
 V_regions=[V_region1; V_region2; V_region3];
+
+%Define hole points
+V_holes=[]; 
 
 % Volume parameters
 [vol1]=tetVolMeanEst(F1,V1);
@@ -458,7 +459,8 @@ subplot(1,2,1); hold on;
 title('Input boundaries','FontSize',fontSize);
 hp(1)=gpatch(Fb,V,Cb,'k',faceAlpha1);
 hp(2)=plotV(V_regions,'r.','MarkerSize',markerSize);
-legend(hp,{'Input mesh','Interior point(s)'},'Location','NorthWestOutside');
+hp(3)=plotV(V_holes,'g.','MarkerSize',markerSize);
+legend(hp,{'Input mesh','Interior point(s)','Hole point(s)'},'Location','NorthWestOutside');
 axisGeom(gca,fontSize); camlight headlight;
 colormap(cMap); icolorbar;
 
@@ -626,10 +628,9 @@ Fs1=Fs1(~logicCropFaces,:);
 Fs2=Fs2(~logicCropFaces,:); 
 Fs3=Fs3(~logicCropFaces,:);
 
-Eb=patchBoundary(Fs1,Vs1);
+Eb=patchBoundary(Fs1);
 indB=edgeListToCurve(Eb);
 indB=indB(1:end-1);
-
 
 cPar.closeLoopOpt=1; 
 cPar.patchType='tri_slash';
