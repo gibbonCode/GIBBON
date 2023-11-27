@@ -103,8 +103,11 @@ for q_field=1:1:numel(fieldNameSet) %Loop for all field names
     %Initialize field line
     fieldLine=['* ',currentFieldName];
     
-    %Replace _ with a space
-    fieldLine=strrep(fieldLine,'_',' ');
+    %Replace __ with a hyphen
+    fieldLine=regexprep(fieldLine,'__','-');
+
+    %Replace _ with a space    
+    fieldLine=strrep(fieldLine,'_',' ');    
     
     if ~isempty(currentFieldValue)
         if ~isstruct(currentFieldValue) %Assume it is value data
@@ -155,9 +158,13 @@ for q_field=1:1:numel(fieldNameSet) %Loop for all field names
                 for q_attr=1:1:numel(attributeNameSet)
                     attributeNameNow=attributeNameSet{q_attr};
                     attributeValueNow=vec2strIntDouble(attributeStruct.(attributeNameNow),'%6.7e');
-                    
+
+                    %Replace __ with a hyphen
+                    attributeNameNow=regexprep(attributeNameNow,'__','-');
+
                     %Replace _ with a space
                     attributeNameNow=strrep(attributeNameNow,'_',' ');
+
                     if ~isempty(attributeValueNow)
                         fieldLine=[fieldLine,', ',attributeNameNow,'=',attributeValueNow];
                     else %empty attribute field does not use equals sign

@@ -16,6 +16,12 @@ clear; close all; clc;
 %% About Abaqus INP input files
 % Abaqus input files (.inp) are plain text files. 
 
+% Using a _ in a structure field name results in a space in the INP file,
+% e.g. Solid_section becomes Solid Section. 
+% Similarly, using __ (two underscores) in a structure field name results
+% in a phyphen (-) in the INP file, e.g. Solid__section becomes
+% Solid-Section.
+
 %% Coding INP files in MATLAB
 
 %% 
