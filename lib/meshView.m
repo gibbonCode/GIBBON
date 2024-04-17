@@ -4,14 +4,14 @@ function [varargout]=meshView(varargin)
 % ------------------------------------------------------------------------
 % 2018/01/23 Updated to allow for subfigure plotting
 % 2018/04/16 Added control of direction of cutting (X,Y, or Z) and also
-% what side is viewed/cut away. 
+% what side is viewed/cut away.
 % 2019/09/07 Fixed bug in relation to single element/face input
 % 2019/09/07 Updated handling of cutting direction
 % ------------------------------------------------------------------------
 %% Parse input
 
 switch nargin
-    case 1        
+    case 1
         meshStruct=varargin{1};
         optionStruct=[];
     case 2
@@ -50,8 +50,8 @@ end
 
 numSliceSteps=optionStruct.numSliceSteps;
 cMap=optionStruct.cMap;
-cutDir=optionStruct.cutDir; 
-cutSide=optionStruct.cutSide; 
+cutDir=optionStruct.cutDir;
+cutSide=optionStruct.cutSide;
 faceAlpha1=optionStruct.faceAlpha1;
 faceAlpha2=optionStruct.faceAlpha2;
 lightWeightPlot=optionStruct.lightWeightPlot;
@@ -107,24 +107,24 @@ end
 
 figure(hFig);
 if ~isempty(hSub)
-    subplot(hSub); 
+    subplot(hSub);
 end
 hold on;
 
 if ~isempty(Fb)
-    gpatch(Fb,V,0.5*ones(1,3),'none',faceAlpha1);
+%    gpatch(Fb,V,0.5*ones(1,3),'none',faceAlpha1);
 end
 
 hp=gpatch(Fb,V,Cb,edgeColor,faceAlpha2,edgeWidth); %Graphics object to vary property of during animation
 
-camlight headlight;
-axisGeom(gca,fontSize); 
+%camlight headlight;
+axisGeom(gca,fontSize); axis manual;
 
 if abs(max(CE(:))-min(CE(:)))>eps(1)
     caxis([min(CE(:)) max(CE(:))]);
 end
 
-colormap(gca,cMap); 
+colormap(gca,cMap);
 if ~isfield(meshStruct,'elementData')
     icolorbar;
 else
@@ -139,23 +139,23 @@ XE=VE(:,cutDir);
 animStruct.Time=linspace(0,1,numSliceSteps); %Time vector
 cutLevel=linspace(min(XE)-max(eps(XE)),max(XE)+max(eps(XE)),numSliceSteps); %Property to set
 
-for q=1:1:numSliceSteps %Step through time       
-    cutLevelNow=cutLevel(q); %The current cut level    
-    
+for q=1:1:numSliceSteps %Step through time
+    cutLevelNow=cutLevel(q); %The current cut level
+
     if cutSide==1
         logicCutView=XE>=cutLevelNow;
     elseif cutSide==-1
         logicCutView=XE<=cutLevelNow;
     end
-    
+
     [Fs,Cs]=element2patch(E(logicCutView,:),CE(logicCutView));
-    
+
     if lightWeightPlot==1
         [indBoundary]=tesBoundary(Fs);
         Fs=Fs(indBoundary,:);
         Cs=Cs(indBoundary,:);
     end
-    
+
     %Set entries in animation structure
     animStruct.Handles{q}=[hp hp]; %Handles of objects to animate
     animStruct.Props{q}={'Faces','CData'}; %Properties of objects to animate
@@ -164,7 +164,10 @@ end
 
 %Add animation layer
 anim8(hFig,animStruct);
-set(hFig.UserData.anim8.sliderHandles{1},'Value',round(numSliceSteps/2)); %Set to middle
+
+UserData = get(hFig,'UserData');
+set(UserData.anim8.sliderHandles{1},'Value',round(numSliceSteps/2)); %Set to middle
+%set(hFig,'UserData',UserData);
 gdrawnow;
 
 %% Collect output
@@ -177,26 +180,26 @@ switch nargout
         varargout{2}=hp;
 end
 
-%% 
-% _*GIBBON footer text*_ 
-% 
+%%
+% _*GIBBON footer text*_
+%
 % License: <https://github.com/gibbonCode/GIBBON/blob/master/LICENSE>
-% 
+%
 % GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for
 % image segmentation, image-based modeling, meshing, and finite element
 % analysis.
-% 
+%
 % Copyright (C) 2006-2023 Kevin Mattheus Moerman and the GIBBON contributors
-% 
+%
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
 % the Free Software Foundation, either version 3 of the License, or
 % (at your option) any later version.
-% 
+%
 % This program is distributed in the hope that it will be useful,
 % but WITHOUT ANY WARRANTY; without even the implied warranty of
 % MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 % GNU General Public License for more details.
-% 
+%
 % You should have received a copy of the GNU General Public License
 % along with this program.  If not, see <http://www.gnu.org/licenses/>.

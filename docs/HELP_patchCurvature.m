@@ -6,7 +6,7 @@
 
 %% Description
 % Computes curvature metrics for the patch data defined by the faces F and
-% the vertices V. 
+% the vertices V.
 
 %% Examples
 
@@ -36,22 +36,22 @@ VN=patchCentre(F,V); %Element centres used for vector origins
 vecPlotSize=mean(patchEdgeLengths(F,V)); %Vector plotting size
 
 % Visualize
-cFigure; 
+cFigure;
 subplot(1,2,1); hold on;
 title('C_{min}');
 hp=gpatch(F,V,C_min_V,'none',0.9);
-hp.FaceColor='interp';
+set(hp,'FaceColor','interp');
 colormap(gca,cMap); colorbar;
 quiverVec(VN,U_min,vecPlotSize,'k');
-axisGeom; 
+axisGeom;
 c=max(abs(C_min(:)));
 caxis(0.25*[-c c]);
 camlight headlight;
-  
+
 subplot(1,2,2); hold on;
 title('C_{max}');
 hp=gpatch(F,V,C_max_V,'none',0.9);
-hp.FaceColor='interp';
+set(hp,'FaceColor','interp');
 quiverVec(VN,U_max,vecPlotSize,'k');
 colormap(gca,cMap); colorbar;
 axisGeom;
@@ -70,26 +70,26 @@ drawnow;
 %
 % _Kevin Mattheus Moerman_, <gibbon.toolbox@gmail.com>
 
-%% 
-% _*GIBBON footer text*_ 
-% 
+%%
+% _*GIBBON footer text*_
+%
 % License: <https://github.com/gibbonCode/GIBBON/blob/master/LICENSE>
-% 
+%
 % GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for
 % image segmentation, image-based modeling, meshing, and finite element
 % analysis.
-% 
+%
 % Copyright (C) 2006-2023 Kevin Mattheus Moerman and the GIBBON contributors
-% 
+%
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
 % the Free Software Foundation, either version 3 of the License, or
 % (at your option) any later version.
-% 
+%
 % This program is distributed in the hope that it will be useful,
 % but WITHOUT ANY WARRANTY; without even the implied warranty of
 % MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 % GNU General Public License for more details.
-% 
+%
 % You should have received a copy of the GNU General Public License
 % along with this program.  If not, see <http://www.gnu.org/licenses/>.

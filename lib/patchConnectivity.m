@@ -9,24 +9,24 @@ function [C]=patchConnectivity(varargin)
 % C.vertex.vertex
 % C.vertex.face
 % C.vertex.edge
-% 
+%
 % C.edge.face
 % C.edge.vertex
 % C.edge.edge
-% 
+%
 % C.face.vertex
 % C.face.face
 % C.face.edge
-% 
-% Change log: 
-% 2018/08/22 
+%
+% Change log:
+% 2018/08/22
 % 2019/04/22 Changed variable names to be more descriptive
 % 2019/04/22 Improved function performance by creating optional output
 % requests for output structure. Can be controlled through input conTypes
 % 2020/05/13 Fixed bug in edgeFaceConnectivity when edges connect to more
 % than 2 faces
 %
-% To do: 
+% To do:
 % Check efficiency and compare to tesIND
 % -----------------------------------------------------------------------
 
@@ -34,7 +34,7 @@ function [C]=patchConnectivity(varargin)
 switch nargin
     case 1
         F=varargin{1};
-        V=[]; 
+        V=[];
         conTypes='all';
     case 2
         F=varargin{1};
@@ -62,11 +62,11 @@ conTypeSet={'vv','vf','ve','ev','ef','ee','fv','ff','fe'};
 if strcmp(conTypes,'all')
     logicCompute=true(size(conTypeSet));
 else
-    logicCompute=contains(conTypeSet,conTypes);
+    logicCompute=gcontains(conTypeSet,conTypes);
 end
 
 %% Edge-vertex connectivity
-if any(contains(conTypeSet(logicCompute),{'ev','ef','ve','vv','ee','ff','fe'}))
+if any(gcontains(conTypeSet(logicCompute),{'ev','ef','ve','vv','ee','ff','fe'}))
     E=patchEdges(F,0); %The non-unique edge set
     E_sort=sort(E,2); %Sorted in column dir so 1 2 looks the same as 2 1
     indEdges=sub2indn(numVertices*ones(1,2),E_sort); %Create "virtual" indices
@@ -78,7 +78,7 @@ if any(contains(conTypeSet(logicCompute),{'ev','ef','ve','vv','ee','ff','fe'}))
 end
 
 %% Edge-face connectivity
-if any(contains(conTypeSet(logicCompute),{'ef','ff'}))
+if any(gcontains(conTypeSet(logicCompute),{'ef','ff'}))
     ind=(1:1:numFaces)'; %Indices for all faces
     ind=ind(:,ones(1,numFaceVertices)); %Indices copied over so it is the size of F
     ind=ind(:); %Force as column
@@ -100,7 +100,7 @@ if any(strcmp(conTypeSet(logicCompute),'vf'))
 end
 
 %% Vertex-edge connectivity
-if any(contains(conTypeSet(logicCompute),{'ve','ee'}))
+if any(gcontains(conTypeSet(logicCompute),{'ve','ee'}))
     ind=(1:1:numEdges)';
     ind=ind(:,ones(1,numEdgeVertices));
     ind=ind(:);
@@ -119,7 +119,7 @@ if any(strcmp(conTypeSet(logicCompute),'vv'))
     vertexVertexConnectivity=full(vertexVertexConnectivity(:,1:max(J)));
 end
 
-%% Face-face connectivity 
+%% Face-face connectivity
 if any(strcmp(conTypeSet(logicCompute),'ff'))
     A=edgeFaceConnectivity(faceEdgeConnectivity(:),:);
     faceFaceConnectivity=reshape(A,numFaces,numel(A)/numFaces);
@@ -167,30 +167,30 @@ if strcmp(conTypes,'all')
     % Face connectivity
     C.face.vertex  = F;
     C.face.face    = faceFaceConnectivity;
-    C.face.edge    = faceEdgeConnectivity;    
+    C.face.edge    = faceEdgeConnectivity;
 else
     % Vertex connectivity
     if any(strcmp(conTypeSet(logicCompute),{'vv'}))
         C.vertex.vertex= vertexVertexConnectivity;
-    end    
+    end
     if any(strcmp(conTypeSet(logicCompute),{'vf'}))
         C.vertex.face  = vertexFaceConnectivity;
-    end    
+    end
     if any(strcmp(conTypeSet(logicCompute),{'ve'}))
         C.vertex.edge  = vertexEdgeConnectivity;
     end
-    
+
     % Edge connectivity
     if any(strcmp(conTypeSet(logicCompute),{'ev'}))
         C.edge.vertex  = edgeVertexConnectivity;
-    end    
+    end
     if any(strcmp(conTypeSet(logicCompute),{'ef'}))
         C.edge.face    = edgeFaceConnectivity;
     end
     if any(strcmp(conTypeSet(logicCompute),{'ee'}))
         C.edge.edge    = edgeEdgeConnectivity;
     end
-    
+
     % Face connectivity
     if any(strcmp(conTypeSet(logicCompute),{'fv'}))
         C.face.vertex  = F;
@@ -203,26 +203,26 @@ else
     end
 end
 
-%% 
-% _*GIBBON footer text*_ 
-% 
+%%
+% _*GIBBON footer text*_
+%
 % License: <https://github.com/gibbonCode/GIBBON/blob/master/LICENSE>
-% 
+%
 % GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for
 % image segmentation, image-based modeling, meshing, and finite element
 % analysis.
-% 
+%
 % Copyright (C) 2006-2023 Kevin Mattheus Moerman and the GIBBON contributors
-% 
+%
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
 % the Free Software Foundation, either version 3 of the License, or
 % (at your option) any later version.
-% 
+%
 % This program is distributed in the hope that it will be useful,
 % but WITHOUT ANY WARRANTY; without even the implied warranty of
 % MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 % GNU General Public License for more details.
-% 
+%
 % You should have received a copy of the GNU General Public License
 % along with this program.  If not, see <http://www.gnu.org/licenses/>.

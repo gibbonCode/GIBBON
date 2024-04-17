@@ -9,13 +9,18 @@ function [varargout]=grid2patch(varargin)
 
 %% parse input
 
-switch nargin 
+switch nargin
+	case 1
+		Z = varargin{1};
+        [X,Y] = meshgrid(1:1:size(Z,1),1:1:size(Z,2));
+		C = [];
+		perdiocOpt = false(1,2);
     case 2
-        X=varargin{1};
-        Y=varargin{2};
-        Z=zeros(size(X));
-        C=[];
-        perdiocOpt=false(1,2);
+        X = varargin{1};
+        Y = varargin{2};
+        Z = zeros(size(X));
+        C = [];
+        perdiocOpt = false(1,2);
     case 3
         X=varargin{1};
         Y=varargin{2};
@@ -26,7 +31,7 @@ switch nargin
         X=varargin{1};
         Y=varargin{2};
         Z=varargin{3};
-        C=varargin{4};        
+        C=varargin{4};
         perdiocOpt=false(1,2);
     case 5
         X=varargin{1};
@@ -46,7 +51,7 @@ siz=size(X);
 V=[X(:) Y(:) Z(:)]; %Vertex set
 
 %Create row of faces
-f=[1 1+siz(1) 2+siz(1) 2]; %First element 
+f=[1 1+siz(1) 2+siz(1) 2]; %First element
 q=(0:1:siz(1)-2)';
 qq=q(:,ones(4,1));
 ff=f(ones(siz(1)-1,1),:)+qq; %Row of faces by copying first
@@ -85,8 +90,8 @@ end
 
 %% Collect output
 
-varargout{1}=F; 
-varargout{2}=V; 
+varargout{1}=F;
+varargout{2}=V;
 if nargout==3
     varargout{3}=vertexToFaceMeasure(F,C(:));
 end
@@ -96,26 +101,26 @@ if nargout==4
 end
 
 end
-%% 
-% _*GIBBON footer text*_ 
-% 
+%%
+% _*GIBBON footer text*_
+%
 % License: <https://github.com/gibbonCode/GIBBON/blob/master/LICENSE>
-% 
+%
 % GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for
 % image segmentation, image-based modeling, meshing, and finite element
 % analysis.
-% 
+%
 % Copyright (C) 2006-2023 Kevin Mattheus Moerman and the GIBBON contributors
-% 
+%
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
 % the Free Software Foundation, either version 3 of the License, or
 % (at your option) any later version.
-% 
+%
 % This program is distributed in the hope that it will be useful,
 % but WITHOUT ANY WARRANTY; without even the implied warranty of
 % MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 % GNU General Public License for more details.
-% 
+%
 % You should have received a copy of the GNU General Public License
 % along with this program.  If not, see <http://www.gnu.org/licenses/>.

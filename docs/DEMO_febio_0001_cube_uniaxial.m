@@ -1,8 +1,8 @@
 %% DEMO_febio_0001_cube_uniaxial
 % Below is a demonstration for:
-% 
+%
 % * Building geometry for a cube with hexahedral elements
-% * Defining the boundary conditions 
+% * Defining the boundary conditions
 % * Coding the febio structure
 % * Running the model
 % * Importing and visualizing the displacement and stress results
@@ -31,12 +31,12 @@ faceAlpha1=0.8;
 markerSize=40;
 markerSize2=35;
 lineWidth=3;
-cMap=viridis(20); %colormap 
+cMap=viridis(20); %colormap
 
 %% Control parameters
 
 % Path names
-defaultFolder = fileparts(fileparts(mfilename('fullpath'))); 
+defaultFolder = fileparts(fileparts(mfilename('fullpath')));
 savePath=fullfile(defaultFolder,'data','temp');
 
 % Defining file names
@@ -51,16 +51,16 @@ febioLogFileName_stretch_prin=[febioFebFileNamePart,'_stretch_prin_out.txt']; %L
 febioLogFileName_force=[febioFebFileNamePart,'_force_out.txt']; %Log file name for exporting force
 
 %Specifying dimensions and number of elements
-cubeSize=10; 
-sampleWidth=cubeSize; %Width 
-sampleThickness=cubeSize; %Thickness 
+cubeSize=10;
+sampleWidth=cubeSize; %Width
+sampleThickness=cubeSize; %Thickness
 sampleHeight=cubeSize; %Height
 pointSpacings=2*ones(1,3); %Desired point spacing between nodes
 numElementsWidth=round(sampleWidth/pointSpacings(1)); %Number of elements in dir 1
 numElementsThickness=round(sampleThickness/pointSpacings(2)); %Number of elements in dir 2
 numElementsHeight=round(sampleHeight/pointSpacings(3)); %Number of elements in dir 3
 
-%Define applied displacement 
+%Define applied displacement
 appliedStrain=0.3; %Linear strain (Only used to compute applied stretch)
 loadingOption='compression'; % or 'tension'
 switch loadingOption
@@ -90,7 +90,7 @@ runMode='external';% 'internal' or 'external'
 % A box is created with tri-linear hexahedral (hex8) elements using the
 % |hexMeshBox| function. The function offers the boundary faces with
 % seperate labels for the top, bottom, left, right, front, and back sides.
-% As such these can be used to define boundary conditions on the exterior. 
+% As such these can be used to define boundary conditions on the exterior.
 
 % Create a box with hexahedral elements
 cubeDimensions=[sampleWidth sampleThickness sampleHeight]; %Dimensions
@@ -99,24 +99,24 @@ outputStructType=2; %A structure compatible with mesh view
 [meshStruct]=hexMeshBox(cubeDimensions,cubeElementNumbers,outputStructType);
 
 %Access elements, nodes, and faces from the structure
-E=meshStruct.elements; %The elements 
+E=meshStruct.elements; %The elements
 V=meshStruct.nodes; %The nodes (vertices)
 Fb=meshStruct.facesBoundary; %The boundary faces
 Cb=meshStruct.boundaryMarker; %The "colors" or labels for the boundary faces
 elementMaterialIndices=ones(size(E,1),1); %Element material indices
 
-%% 
+%%
 % Plotting model boundary surfaces and a cut view
 
-hFig=cFigure; 
+hFig=cFigure;
 
-subplot(1,2,1); hold on; 
+subplot(1,2,1); hold on;
 title('Model boundary surfaces and labels','FontSize',fontSize);
-gpatch(Fb,V,Cb,'k',faceAlpha1); 
+gpatch(Fb,V,Cb,'k',faceAlpha1);
 colormap(gjet(6)); icolorbar;
 axisGeom(gca,fontSize);
 
-hs=subplot(1,2,2); hold on; 
+hs=subplot(1,2,2); hold on;
 title('Cut view of solid mesh','FontSize',fontSize);
 optionStruct.hFig=[hFig hs];
 meshView(meshStruct,optionStruct);
@@ -126,7 +126,7 @@ drawnow;
 
 %% Defining the boundary conditions
 % The visualization of the model boundary shows colors for each side of the
-% cube. These labels can be used to define boundary conditions. 
+% cube. These labels can be used to define boundary conditions.
 
 %Define supported node sets
 logicFace=Cb==1; %Logic for current face set
@@ -146,9 +146,9 @@ logicPrescribe=Cb==6; %Logic for current face set
 Fr=Fb(logicPrescribe,:); %The current face set
 bcPrescribeList=unique(Fr(:)); %Node set part of selected face
 
-%% 
+%%
 % Visualizing boundary conditions. Markers plotted on the semi-transparent
-% model denote the nodes in the various boundary condition lists. 
+% model denote the nodes in the various boundary condition lists.
 
 hf=cFigure;
 title('Boundary conditions','FontSize',fontSize);
@@ -165,21 +165,21 @@ hl(4)=plotV(V(bcPrescribeList,:),'k.','MarkerSize',markerSize);
 legend(hl,{'BC x support','BC y support','BC z support','BC z prescribe'});
 
 axisGeom(gca,fontSize);
-camlight headlight; 
-drawnow; 
+camlight headlight;
+drawnow;
 
 %% Defining the FEBio input structure
 % See also |febioStructTemplate| and |febioStruct2xml| and the FEBio user
 % manual.
 
-%Get a template with default settings 
+%Get a template with default settings
 [febio_spec]=febioStructTemplate;
 
-%febio_spec version 
-febio_spec.ATTR.version='4.0'; 
+%febio_spec version
+febio_spec.ATTR.version='4.0';
 
 %Module section
-febio_spec.Module.ATTR.type='solid'; 
+febio_spec.Module.ATTR.type='solid';
 
 %Control section
 febio_spec.Control.analysis='STATIC';
@@ -188,7 +188,7 @@ febio_spec.Control.step_size=1/numTimeSteps;
 febio_spec.Control.solver.max_refs=max_refs;
 febio_spec.Control.solver.qn_method.max_ups=max_ups;
 febio_spec.Control.time_stepper.dtmin=dtmin;
-febio_spec.Control.time_stepper.dtmax=dtmax; 
+febio_spec.Control.time_stepper.dtmax=dtmax;
 febio_spec.Control.time_stepper.max_retries=max_retries;
 febio_spec.Control.time_stepper.opt_iter=opt_iter;
 
@@ -212,7 +212,7 @@ febio_spec.Mesh.Elements{1}.ATTR.name=partName1; %Name of this part
 febio_spec.Mesh.Elements{1}.ATTR.type='hex8'; %Element type
 febio_spec.Mesh.Elements{1}.elem.ATTR.id=(1:1:size(E,1))'; %Element id's
 febio_spec.Mesh.Elements{1}.elem.VAL=E; %The element matrix
- 
+
 % -> NodeSets
 nodeSetName1='bcSupportList_X';
 nodeSetName2='bcSupportList_Y';
@@ -235,7 +235,7 @@ febio_spec.Mesh.NodeSet{4}.VAL=mrow(bcPrescribeList);
 febio_spec.MeshDomains.SolidDomain.ATTR.name=partName1;
 febio_spec.MeshDomains.SolidDomain.ATTR.mat=materialName1;
 
-%Boundary condition section 
+%Boundary condition section
 % -> Fix boundary conditions
 febio_spec.Boundary.bc{1}.ATTR.name='zero_displacement_x';
 febio_spec.Boundary.bc{1}.ATTR.type='zero displacement';
@@ -275,7 +275,7 @@ febio_spec.LoadData.load_controller{1}.interpolate='LINEAR';
 %febio_spec.LoadData.load_controller{1}.extend='CONSTANT';
 febio_spec.LoadData.load_controller{1}.points.pt.VAL=[0 0; 1 1];
 
-%Output section 
+%Output section
 % -> log file
 febio_spec.Output.logfile.ATTR.file=febioLogFileName;
 febio_spec.Output.logfile.node_data{1}.ATTR.file=febioLogFileName_disp;
@@ -307,14 +307,14 @@ febio_spec.Output.plotfile.compression=0;
 
 %% Quick viewing of the FEBio input file structure
 % The |febView| function can be used to view the xml structure in a MATLAB
-% figure window. 
+% figure window.
 
 %%
 % |febView(febio_spec); %Viewing the febio file|
 
 %% Exporting the FEBio input file
 % Exporting the febio_spec structure to an FEBio input file is done using
-% the |febioStruct2xml| function. 
+% the |febioStruct2xml| function.
 
 febioStruct2xml(febio_spec,febioFebFileName); %Exporting to file and domNode
 %system(['gedit ',febioFebFileName,' &']);
@@ -324,7 +324,7 @@ febioStruct2xml(febio_spec,febioFebFileName); %Exporting to file and domNode
 % |runMonitorFEBio| function is used. The input for this function is a
 % structure defining job settings e.g. the FEBio input file name. The
 % optional output runFlag informs the user if the analysis was run
-% succesfully. 
+% succesfully.
 
 febioAnalysis.run_filename=febioFebFileName; %The input file name
 febioAnalysis.run_logname=febioLogFileName; %The name for the log file
@@ -334,29 +334,29 @@ febioAnalysis.maxLogCheckTime=10; %Max log file checking time
 
 [runFlag]=runMonitorFEBio(febioAnalysis);%START FEBio NOW!!!!!!!!
 
-%% Import FEBio results 
+%% Import FEBio results
 
 if runFlag==1 %i.e. a succesful run
-    
-    %%     
+
+    %%
     % Importing nodal displacements from a log file
     dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_disp),0,1);
-    
+
     %Access data
     N_disp_mat=dataStruct.data; %Displacement
     timeVec=dataStruct.time; %Time
-    
+
     %Create deformed coordinate set
     V_DEF=N_disp_mat+repmat(V,[1 1 size(N_disp_mat,3)]);
-               
-    %% 
+
+    %%
     % Plotting the simulated results using |anim8| to visualize and animate
-    % deformations 
-    
+    % deformations
+
     DN_magnitude=sqrt(sum(N_disp_mat(:,:,end).^2,2)); %Current displacement magnitude
-        
+
     % Create basic view and store graphics handle to initiate animation
-    hf=cFigure; %Open figure  
+    hf=cFigure; %Open figure
     gtitle([febioFebFileNamePart,': Press play to animate']);
     title('Displacement magnitude [mm]','Interpreter','Latex')
     hp=gpatch(Fb,V_DEF(:,:,end),DN_magnitude,'k',1,2); %Add graphics object to animate
@@ -364,47 +364,47 @@ if runFlag==1 %i.e. a succesful run
     hp.MarkerSize=markerSize2;
     hp.FaceColor='interp';
     gpatch(Fb,V,0.5*ones(1,3),'none',0.25); %A static graphics object
-    
-    axisGeom(gca,fontSize); 
+
+    axisGeom(gca,fontSize);
     colormap(cMap); colorbar;
-    caxis([0 max(DN_magnitude)]); caxis manual;   
-    axis(axisLim(V_DEF)); %Set axis limits statically    
+    caxis([0 max(DN_magnitude)]); caxis manual;
+    axis(axisLim(V_DEF)); %Set axis limits statically
     view(140,30);
-    camlight headlight;        
-        
+    camlight headlight;
+
     % Set up animation features
-    animStruct.Time=timeVec; %The time vector    
-    for qt=1:1:size(N_disp_mat,3) %Loop over time increments        
+    animStruct.Time=timeVec; %The time vector
+    for qt=1:1:size(N_disp_mat,3) %Loop over time increments
         DN_magnitude=sqrt(sum(N_disp_mat(:,:,qt).^2,2)); %Current displacement magnitude
-                
+
         %Set entries in animation structure
         animStruct.Handles{qt}=[hp hp]; %Handles of objects to animate
         animStruct.Props{qt}={'Vertices','CData'}; %Properties of objects to animate
         animStruct.Set{qt}={V_DEF(:,:,qt),DN_magnitude}; %Property values for to set in order to animate
-    end        
-    anim8(hf,animStruct); %Initiate animation feature    
+    end
+    anim8(hf,animStruct); %Initiate animation feature
     drawnow;
-            
+
     %%
     % Importing element stress from a log file
     dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_stress),0,1);
-    
+
     %Access data
     E_stress_mat=dataStruct.data;
 
     %%
     % Importing element stretch from a log file
     dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_stretch),0,1);
-    
+
     %Access data
     E_stretch_mat=dataStruct.data;
 
-    %% 
+    %%
     % Plotting the simulated results using |anim8| to visualize and animate
-    % deformations 
-    
+    % deformations
+
     [CV]=faceToVertexMeasure(E,V,E_stress_mat(:,:,end));
-    
+
     % Create basic view and store graphics handle to initiate animation
     hf=cFigure; %Open figure  /usr/local/MATLAB/R2020a/bin/glnxa64/jcef_helper: symbol lookup error: /lib/x86_64-linux-gnu/libpango-1.0.so.0: undefined symbol: g_ptr_array_copy
 
@@ -415,65 +415,65 @@ if runFlag==1 %i.e. a succesful run
     hp.MarkerSize=markerSize2;
     hp.FaceColor='interp';
     gpatch(Fb,V,0.5*ones(1,3),'none',0.25); %A static graphics object
-    
-    axisGeom(gca,fontSize); 
+
+    axisGeom(gca,fontSize);
     colormap(cMap); colorbar;
-    caxis([min(E_stress_mat(:)) max(E_stress_mat(:))]);    
-    axis(axisLim(V_DEF)); %Set axis limits statically    
+    caxis([min(E_stress_mat(:)) max(E_stress_mat(:))]);
+    axis(axisLim(V_DEF)); %Set axis limits statically
     view(140,30);
-    camlight headlight;        
-        
+    camlight headlight;
+
     % Set up animation features
-    animStruct.Time=timeVec; %The time vector    
-    for qt=1:1:size(N_disp_mat,3) %Loop over time increments        
-        
+    animStruct.Time=timeVec; %The time vector
+    for qt=1:1:size(N_disp_mat,3) %Loop over time increments
+
         [CV]=faceToVertexMeasure(E,V,E_stress_mat(:,:,qt));
-        
+
         %Set entries in animation structure
         animStruct.Handles{qt}=[hp hp]; %Handles of objects to animate
         animStruct.Props{qt}={'Vertices','CData'}; %Properties of objects to animate
         animStruct.Set{qt}={V_DEF(:,:,qt),CV}; %Property values for to set in order to animate
-    end        
-    anim8(hf,animStruct); %Initiate animation feature    
+    end
+    anim8(hf,animStruct); %Initiate animation feature
     drawnow;
 
-    %% 
+    %%
     % Visualize stretch-stress curve
-    
+
     stretch_sim=squeeze(mean(E_stretch_mat,1)); % Stretch U_z
     stress_cauchy_sim=squeeze(mean(E_stress_mat,1)); %Cauchy stress sigma_z
-    
-    cFigure; hold on;    
+
+    cFigure; hold on;
     title('Uniaxial stress-stretch curve','FontSize',fontSize);
-    xlabel('$\lambda$ [.]','FontSize',fontSize,'Interpreter','Latex'); 
-    ylabel('$\sigma_{zz}$ [MPa]','FontSize',fontSize,'Interpreter','Latex'); 
-    
+    xlabel('$\lambda$ [.]','FontSize',fontSize,'Interpreter','Latex');
+    ylabel('$\sigma_{zz}$ [MPa]','FontSize',fontSize,'Interpreter','Latex');
+
     plot(stretch_sim(:),stress_cauchy_sim(:),'r-','lineWidth',lineWidth);
-    
-    view(2); axis tight;  grid on; axis square; box on; 
+
+    view(2); axis tight;  grid on; axis square; box on;
     set(gca,'FontSize',fontSize);
     drawnow;
-    
+
     %%
     % Importing element principal stresses from a log file
     dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_stress_prin),0,1);
-    
+
     %Access data
     E_stress_prin_mat=dataStruct.data;
-    
+
     %Compute pressure
     P = squeeze(-1/3*mean(sum(E_stress_prin_mat,2),1));
-    
+
     %%
     % Visualize pressure-stretch curve
-    
+
     cFigure; hold on;
     title('Pressure-stretch curve','FontSize',fontSize);
     xlabel('$\lambda$ [.]','FontSize',fontSize,'Interpreter','Latex');
     ylabel('$p$ [MPa]','FontSize',fontSize,'Interpreter','Latex');
-    
+
     plot(stretch_sim(:),P(:),'r-','lineWidth',lineWidth);
-    
+
     view(2); axis tight;  grid on; axis square; box on;
     set(gca,'FontSize',fontSize);
     drawnow;
@@ -483,7 +483,7 @@ if runFlag==1 %i.e. a succesful run
 
     [dataStruct]=importFEBio_logfile(fullfile(savePath,febioLogFileName_force),0,1); %Nodal forces
 
-    %Access data    
+    %Access data
     timeVec=dataStruct.time;
     f_sum_x=squeeze(sum(dataStruct.data(bcPrescribeList,1,:),1));
     f_sum_y=squeeze(sum(dataStruct.data(bcPrescribeList,2,:),1));
@@ -501,39 +501,39 @@ if runFlag==1 %i.e. a succesful run
     hp=plot(displacementApplied(:),f_sum_z(:),'b-','LineWidth',3);
     grid on; box on; axis square; axis tight;
     set(gca,'FontSize',fontSize);
-    drawnow;         
-    
+    drawnow;
+
 end
 
-%% 
+%%
 %
 % <<gibbVerySmall.gif>>
-% 
-% _*GIBBON*_ 
+%
+% _*GIBBON*_
 % <www.gibboncode.org>
-% 
+%
 % _Kevin Mattheus Moerman_, <gibbon.toolbox@gmail.com>
- 
-%% 
-% _*GIBBON footer text*_ 
-% 
+
+%%
+% _*GIBBON footer text*_
+%
 % License: <https://github.com/gibbonCode/GIBBON/blob/master/LICENSE>
-% 
+%
 % GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for
 % image segmentation, image-based modeling, meshing, and finite element
 % analysis.
-% 
+%
 % Copyright (C) 2006-2023 Kevin Mattheus Moerman and the GIBBON contributors
-% 
+%
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
 % the Free Software Foundation, either version 3 of the License, or
 % (at your option) any later version.
-% 
+%
 % This program is distributed in the hope that it will be useful,
 % but WITHOUT ANY WARRANTY; without even the implied warranty of
 % MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 % GNU General Public License for more details.
-% 
+%
 % You should have received a copy of the GNU General Public License
 % along with this program.  If not, see <http://www.gnu.org/licenses/>.

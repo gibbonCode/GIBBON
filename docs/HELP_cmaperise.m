@@ -7,15 +7,15 @@ clear; close all; clc;
 %% Syntax
 % |Cmapped=cmaperise(C,cmap,clim);|
 
-%% Description 
+%% Description
 % This function creates RGB colors for the data C using the colormap cmap
-% and the limits clim. 
+% and the limits clim.
 
-%% Examples 
-% 
+%% Examples
+%
 
 [X,Y,Z]=peaks(50);
-[F,V,C]=surf2patch(X,Y,Z,Z);
+[F,V,C]=grid2patch(X,Y,Z,Z);
 
 clim=[min(C(:)) max(C(:))];
 
@@ -56,38 +56,38 @@ hp2=gpatch(F,V2,C_rgb_2,'none');
 hp3=gpatch(F,V3,C_rgb_3,'none');
 legend([hp1 hp2 hp3],{'RGB colored with map 1','RGB colored with map 2','RGB colored with map 3'});
 axisGeom;
-camlight headlight; 
+camlight headlight;
 
-drawnow; 
+drawnow;
 
 %%
-% 
+%
 % <<gibbVerySmall.gif>>
-% 
-% _*GIBBON*_ 
+%
+% _*GIBBON*_
 % <www.gibboncode.org>
-% 
+%
 % _Kevin Mattheus Moerman_, <gibbon.toolbox@gmail.com>
-%% 
-% _*GIBBON footer text*_ 
-% 
+%%
+% _*GIBBON footer text*_
+%
 % License: <https://github.com/gibbonCode/GIBBON/blob/master/LICENSE>
-% 
+%
 % GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for
 % image segmentation, image-based modeling, meshing, and finite element
 % analysis.
-% 
+%
 % Copyright (C) 2006-2023 Kevin Mattheus Moerman and the GIBBON contributors
-% 
+%
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
 % the Free Software Foundation, either version 3 of the License, or
 % (at your option) any later version.
-% 
+%
 % This program is distributed in the hope that it will be useful,
 % but WITHOUT ANY WARRANTY; without even the implied warranty of
 % MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 % GNU General Public License for more details.
-% 
+%
 % You should have received a copy of the GNU General Public License
 % along with this program.  If not, see <http://www.gnu.org/licenses/>.

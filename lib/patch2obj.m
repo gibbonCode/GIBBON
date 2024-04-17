@@ -122,7 +122,7 @@ if isempty(C)
     colorTextureOutput=false;
 else
     colorTextureOutput=true;
-    
+
     %Check if colors are vertex colors
     if size(C,1)==size(F,1) %if face colors are provided
         C=faceToVertexMeasure(F,V,C); %Convert to vertex data
@@ -144,21 +144,21 @@ fprintf(fid,'%s\n',['# Created using GIBBON, ',datestr(now)]);
 
 %%
 if colorTextureOutput
-    
+
     %% Set up folder and file name variables
     % Get path names
     [pathName,fileName,~]=fileparts(objFileName);
-    
+
     %Create mtl file names
     mtlName=[fileName,'.mtl'];
     mtlFileName=fullfile(pathName,mtlName);
-    
+
     %Create jpg file name
     jpgName=[fileName,'.png'];
     jpgFileName=fullfile(pathName,jpgName);
-    
+
     %% Save mtl file
-    
+
     T={'newmtl material0'};
     fieldNames=fieldnames(mtlStruct);
     for q=1:1:numel(fieldNames)
@@ -173,11 +173,11 @@ if colorTextureOutput
         T{q+1,1}=[fieldNames{q},' ',t];
     end
     T{end+1,1}=['map_Kd ',jpgName];
-    
+
     cell2txtfile(mtlFileName,T);
-    
+
     %% Save texture image
-    
+
     m=1; %required pixel replication factor (should be uneven)
     if size(C,2)==1
         [~,cmapIndex]=cmaperise(C,cMap,cLim); %texture linear indices
@@ -197,61 +197,65 @@ if colorTextureOutput
     else
         error('Color data should be nx1 or nx3, where n is either the number of faces or the number of vertices');
     end
-    
-    imwrite(cmapImage,jpgFileName,'png','BitDepth',16);
-    
+
+	if is_octave
+		imwrite(cmapImage,jpgFileName,'png');
+    else
+		imwrite(cmapImage,jpgFileName,'png','BitDepth',16);
+	end
+
     %% Create texture coordinates and indices
     pixelSize=1/size(cmapImage,1);
     T=[0.5*ones(size(cmapImage,1),1) linspace(1-pixelSize/2,pixelSize/2,size(cmapImage,1))'];
     CF_ind=cmapIndex(F); %Texture indices for all face vertices
-    
+
     %% Add object line
     % fprintf(fid,'%s\n','o patchObject');
-    
+
     %% Add mtl file description
     fprintf(fid,'%s\n','# ---------------------------------------------------');
     fprintf(fid,'%s\n','# Specify MTL file to use');
     fprintf(fid,'%s\n',['mtllib ',mtlName]);
-    
+
     %% Add vertices
     [fid]=addVertices(fid,V,formatDouble);
-    
+
     %% Add normals
     [fid]=addNormals(fid,F,V,formatDouble);
-    
+
     %% Add texture coordinates
-    
+
     %Create text
     t_form=repmat([formatDouble,' '],1,size(T,2));
     t_form=t_form(1:end-1); %Crop trailing delimiter
     t_form=['vt ',t_form,'\n']; %Append end of line character
     t=sprintf(t_form,T');      %Convert to string
     t=t(1:end-1); %Take away last end of line character
-    
+
     %Write text to file
     fprintf(fid,'%s\n','# ---------------------------------------------------');
     fprintf(fid,'%s\n','# Texture coordinates');
     fprintf(fid,'%s\r\n',t);
-    
+
     %% Add material description for face set
     fprintf(fid,'%s\n','# ---------------------------------------------------');
     fprintf(fid,'%s\n','# Specify material from MTL file for face set below');
     fprintf(fid,'%s\n','usemtl material0');
-    
+
     %% Add faces
     [fid]=addFaces(fid,F,formatInteger,CF_ind);
-    
+
 else %Simple minimal OBJ file for geometry only
-    
+
     %% Add vertices
     [fid]=addVertices(fid,V,formatDouble);
-    
+
     %% Add normals
     %     [fid]=addNormals(fid,F,V,formatDouble);
-    
+
     %% Add faces
     [fid]=addFaces(fid,F,formatInteger,[]);
-    
+
 end
 
 %% Close file
@@ -301,7 +305,7 @@ if isempty(CF_ind)
     FF=F;
     t_form=repmat([formatInteger,' '],1,size(F,2));
     t_form=t_form(1:end-1); %Crop trailing delimiter
-    
+
     %     else %Normal direction indices
     %         nRep=2;
     %         d='//';
@@ -319,25 +323,25 @@ if isempty(CF_ind)
     %
     %         t_form=repmat([t_form_p,' '],1,size(F,2));
     %         t_form=t_form(1:end-1); %Crop trailing delimiter
-    
+
 else
     nRep=3;
     d='/';
-    
+
     FF=zeros(size(F,1),nRep*size(F,2));
-    
+
     columnIndFaces=1:3:size(FF,2);
     FF(:,columnIndFaces)=F;
-    
+
     columnIndTexture=2:3:size(FF,2);
     FF(:,columnIndTexture)=CF_ind;
-    
+
     columnIndNormal=3:3:size(FF,2);
     FF(:,columnIndNormal)=F;
-    
+
     t_form_p=repmat([formatInteger,d],1,nRep);
     t_form_p=t_form_p(1:end-numel(d)); %Crop trailing delimiter
-    
+
     t_form=repmat([t_form_p,' '],1,size(F,2));
     t_form=t_form(1:end-1); %Crop trailing delimiter
 end
@@ -352,26 +356,26 @@ fprintf(fid,'%s\n','# Faces');
 fprintf(fid,'%s\r\n',t);
 
 end
-%% 
-% _*GIBBON footer text*_ 
-% 
+%%
+% _*GIBBON footer text*_
+%
 % License: <https://github.com/gibbonCode/GIBBON/blob/master/LICENSE>
-% 
+%
 % GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for
 % image segmentation, image-based modeling, meshing, and finite element
 % analysis.
-% 
+%
 % Copyright (C) 2006-2023 Kevin Mattheus Moerman and the GIBBON contributors
-% 
+%
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
 % the Free Software Foundation, either version 3 of the License, or
 % (at your option) any later version.
-% 
+%
 % This program is distributed in the hope that it will be useful,
 % but WITHOUT ANY WARRANTY; without even the implied warranty of
 % MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 % GNU General Public License for more details.
-% 
+%
 % You should have received a copy of the GNU General Public License
 % along with this program.  If not, see <http://www.gnu.org/licenses/>.

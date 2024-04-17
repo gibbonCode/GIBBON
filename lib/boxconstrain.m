@@ -5,17 +5,17 @@ function [xb]=boxconstrain(varargin)
 % The boxconstrain function can be used to constrain parameters from
 % [-inf,inf] to the range [lb ub]. The sigmoidal tanh function is used to
 % do this mapping. The middle of the sigmoid, denoted by the parameter m
-% need not be (lb+ub)/2. If x=m xb=m. 
+% need not be (lb+ub)/2. If x=m xb=m.
 % The optional parameter s sets the slope of the sigmoid at
-% x=m, the default slope is 1. 
-% 
+% x=m, the default slope is 1.
+%
 % 2018/06/22 Created to replace parLimNat
 %-------------------------------------------------------------------------
 
 %%
 % Parse input
 
-switch nargin    
+switch nargin
     case 3
         x=varargin{1};
         lb=varargin{2};
@@ -33,7 +33,7 @@ switch nargin
         lb=varargin{2};
         ub=varargin{3};
         m=varargin{4};
-        s=varargin{5};        
+        s=varargin{5};
 end
 
 %%
@@ -55,11 +55,11 @@ if abs(ub-lb)<eps
 end
 
 if m<lb || m>ub
-   error('Middle should be between limits'); 
+   error('Middle should be between limits');
 end
 
 if m==lb || m==ub
-   warning('Middle coincides with a boundary, transition will not be smooth'); 
+   warning('Middle coincides with a boundary, transition will not be smooth');
 end
 
 %%
@@ -68,32 +68,39 @@ end
 if isempty(x)
     xb=[];
 else
-    xb=(heaviside(m-x).*(m+tanh((x-m)./(m-lb).*s).*(m-lb)))... %part on left of middle
-      +(heaviside(x-m).*(m+tanh((x-m)./(ub-m).*s).*(ub-m)));   %part on right of middle
+    xb=(heaviside_step(m-x).*(m+tanh((x-m)./(m-lb).*s).*(m-lb)))... %part on left of middle
+      +(heaviside_step(x-m).*(m+tanh((x-m)./(ub-m).*s).*(ub-m)));   %part on right of middle
 end
 
 end
 
-%% 
-% _*GIBBON footer text*_ 
-% 
+function [yh]=heaviside_step(y)
+	yh = zeros(size(y));
+	%yh(y<0) = 0; %Implied
+	yh(y==0) = 0.5;
+	yh(y>=0) = 1;
+end
+
+%%
+% _*GIBBON footer text*_
+%
 % License: <https://github.com/gibbonCode/GIBBON/blob/master/LICENSE>
-% 
+%
 % GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for
 % image segmentation, image-based modeling, meshing, and finite element
 % analysis.
-% 
+%
 % Copyright (C) 2006-2023 Kevin Mattheus Moerman and the GIBBON contributors
-% 
+%
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
 % the Free Software Foundation, either version 3 of the License, or
 % (at your option) any later version.
-% 
+%
 % This program is distributed in the hope that it will be useful,
 % but WITHOUT ANY WARRANTY; without even the implied warranty of
 % MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 % GNU General Public License for more details.
-% 
+%
 % You should have received a copy of the GNU General Public License
 % along with this program.  If not, see <http://www.gnu.org/licenses/>.

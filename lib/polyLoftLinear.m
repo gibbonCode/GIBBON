@@ -71,7 +71,9 @@ c=(1:1:size(Z,1))';
 C=c(:,ones(1,size(Z,2)));
 
 %Create quad patch data
-[F,V,C] = surf2patch(X,Y,Z,C);
+[F,V,~,C] = grid2patch(X,Y,Z,C,[0 cPar.closeLoopOpt]);
+[C]=vertexToFaceMeasure(F,C);
+C=round(C);
 
 %Get start and end curves
 indStart=1:numSteps:size(V,1);
@@ -90,25 +92,17 @@ if logicFlip
     indEnd=flip(indEnd);
 end
 
-%% Close patch if required
-if cPar.closeLoopOpt
-    [F,V,C]=patchCylSurfClose(X,Y,Z,C);
-else
-    [C]=vertexToFaceMeasure(F,C);
-end
-C=round(C);
-
 %% Change mesh type if required
 
 switch cPar.patchType
     case 'quad' %Already quads
-        
-    case 'tri_slash' %Convert quads to triangles by slashing        
+
+    case 'tri_slash' %Convert quads to triangles by slashing
         [F]=quad2tri(F,V,'a');
     case 'tri' %Convert quads to approximate equilateral triangles
-        
+
         logicSlashType=repmat(iseven(C),2,1);
-        
+
         Xi=X;
         x=X(1,:);
         dx=diff(x)/2;
@@ -120,7 +114,7 @@ switch cPar.patchType
             X(:,1)=Xi(:,1);
             X(:,end)=Xi(:,end);
         end
-        
+
         Yi=Y;
         y=Y(1,:);
         dy=diff(y)/2;
@@ -132,7 +126,7 @@ switch cPar.patchType
             Y(:,1)=Yi(:,1);
             Y(:,end)=Yi(:,end);
         end
-        
+
         Zi=Z;
         z=Z(1,:);
         dz=diff(z)/2;
@@ -144,24 +138,24 @@ switch cPar.patchType
             Z(:,1)=Zi(:,1);
             Z(:,end)=Zi(:,end);
         end
-        
+
         V=[X(:) Y(:) Z(:)];
-        
+
         %Ensure end curve is unaltered if numSteps is even
         if iseven(numSteps)
             indBottom=numSteps:numSteps:size(V,1);
             V(indBottom,:)=Vc_end;
         end
-        
+
         F1=[F(:,1) F(:,3) F(:,2); F(:,1) F(:,4) F(:,3)];
         F2=[F(:,1) F(:,4) F(:,2); F(:,2) F(:,4) F(:,3)];
         F=fliplr([F1(~logicSlashType,:);F2(logicSlashType,:)]);
-        
+
         %         C=repmat(C,2,1);
         %         C=[C(~logicSlashType,:);C(logicSlashType,:)];
     otherwise
         error([cPar.patchType,' is not a valid patch type, use quad, tri_slash, or tri instead'])
-        
+
 end
 
 varargout{1}=F;
@@ -169,26 +163,26 @@ varargout{2}=V;
 varargout{3}=indStart;
 varargout{4}=indEnd;
 
-%% 
-% _*GIBBON footer text*_ 
-% 
+%%
+% _*GIBBON footer text*_
+%
 % License: <https://github.com/gibbonCode/GIBBON/blob/master/LICENSE>
-% 
+%
 % GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for
 % image segmentation, image-based modeling, meshing, and finite element
 % analysis.
-% 
+%
 % Copyright (C) 2006-2023 Kevin Mattheus Moerman and the GIBBON contributors
-% 
+%
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
 % the Free Software Foundation, either version 3 of the License, or
 % (at your option) any later version.
-% 
+%
 % This program is distributed in the hope that it will be useful,
 % but WITHOUT ANY WARRANTY; without even the implied warranty of
 % MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 % GNU General Public License for more details.
-% 
+%
 % You should have received a copy of the GNU General Public License
 % along with this program.  If not, see <http://www.gnu.org/licenses/>.

@@ -6,7 +6,7 @@
 
 %% Description
 % The |hex8_hex20| converts 4-node tetrahedral elements to 10-node
-% tetrahedral elements. 
+% tetrahedral elements.
 
 %% Examples
 
@@ -40,8 +40,7 @@ subplot(1,2,1); hold on;
 title('A linear HEXAHEDRON','FontSize',fontSize);
 
 hp=gpatch(F8,V8,'gw','k',faceAlpha);
-hp.Marker='.';
-hp.MarkerSize=markerSize1;
+set(hp,'Marker','.','MarkerSize',markerSize1);
 
 patchNormPlot(F8,V8,0.75); %Plotting face normals
 
@@ -57,8 +56,8 @@ subplot(1,2,2); hold on;
 title('A quadratic HEXAHEDRON','FontSize',fontSize);
 
 hp=gpatch(F20,V20,'rw','k',faceAlpha);
-hp.Marker='.';
-hp.MarkerSize=markerSize1;
+set(hp,'Marker','.','MarkerSize',markerSize1);
+
 patchNormPlot(F20,V20,0.75); %Plotting face normals
 
 for q=1:1:size(HEX20,2)
@@ -69,7 +68,7 @@ axisGeom(gca,fontSize);
 axis off;
 camlight('headlight'); lighting flat;
 
-drawnow; 
+drawnow;
 
 %% CONVERSION FROM HEX8 TO HEX20, EXAMPLE FOR A HEXAHEDRON MESH WITH NODAL PARAMETERS
 n=3;
@@ -103,8 +102,7 @@ subplot(2,2,1); hold on;
 title('A linear HEXAHEDRON mesh','FontSize',fontSize);
 
 hp=gpatch(F8,V8,'gw','k',faceAlpha);
-hp.Marker='.';
-hp.MarkerSize=markerSize2;
+set(hp,'Marker','.','MarkerSize',markerSize1);
 
 axisGeom(gca,fontSize); axis off;
 view([-50,12])
@@ -114,8 +112,7 @@ subplot(2,2,3); hold on;
 title('Data on linear HEXAHEDRON mesh','FontSize',fontSize);
 
 hp=gpatch(F8,V4d,C4,'k',faceAlpha);
-hp.Marker='.';
-hp.MarkerSize=markerSize2;
+set(hp,'Marker','.','MarkerSize',markerSize2);
 
 axisGeom(gca,fontSize); axis off;
 view([-50,12])
@@ -125,8 +122,7 @@ subplot(2,2,2); hold on;
 title('A quadratic HEXAHEDRON mesh','FontSize',fontSize);
 
 hp=gpatch(F20,V20,'rw','k',faceAlpha);
-hp.Marker='.';
-hp.MarkerSize=markerSize2;
+set(hp,'Marker','.','MarkerSize',markerSize2);
 
 axisGeom(gca,fontSize); axis off;
 view([-50,12])
@@ -136,14 +132,13 @@ subplot(2,2,4); hold on;
 title('Mapped data on quadratic HEXAHEDRON mesh','FontSize',fontSize);
 
 hp=gpatch(F20,V10d,C10,'k',faceAlpha);
-hp.Marker='.';
-hp.MarkerSize=markerSize2;
+set(hp,'Marker','.','MarkerSize',markerSize2);
 
 axisGeom(gca,fontSize); axis off;
 view([-50,12])
 camlight('headlight'); lighting flat;
 
-drawnow; 
+drawnow;
 
 %% CONVERSION FROM HEX8 TO HEX20, EXAMPLE FOR KEEPING TRACK OF BOUNDARY FACES
 
@@ -158,7 +153,7 @@ Fb4=F8(indBoundary,:);
 % Fb20=F20(indBoundary,:);
 
 %%
-% 
+%
 
 hf=cFigure; % Open figure for plotting
 subplot(1,2,1); hold on;
@@ -174,43 +169,42 @@ subplot(1,2,2); hold on;
 title('A quadratic HEXAHEDRON mesh','FontSize',fontSize);
 
 hp=gpatch(Fb10,V20,'rw','k',faceAlpha);
-hp.Marker='.';
-hp.MarkerSize=markerSize2;
+set(hp,'Marker','.','MarkerSize',markerSize2);
 
 axisGeom(gca,fontSize); axis off;
 camlight('headlight'); lighting flat;
 
 drawnow;
 
-%% 
+%%
 %
 % <<gibbVerySmall.gif>>
-% 
-% _*GIBBON*_ 
+%
+% _*GIBBON*_
 % <www.gibboncode.org>
-% 
+%
 % _Kevin Mattheus Moerman_, <gibbon.toolbox@gmail.com>
- 
-%% 
-% _*GIBBON footer text*_ 
-% 
+
+%%
+% _*GIBBON footer text*_
+%
 % License: <https://github.com/gibbonCode/GIBBON/blob/master/LICENSE>
-% 
+%
 % GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for
 % image segmentation, image-based modeling, meshing, and finite element
 % analysis.
-% 
+%
 % Copyright (C) 2006-2023 Kevin Mattheus Moerman and the GIBBON contributors
-% 
+%
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
 % the Free Software Foundation, either version 3 of the License, or
 % (at your option) any later version.
-% 
+%
 % This program is distributed in the hope that it will be useful,
 % but WITHOUT ANY WARRANTY; without even the implied warranty of
 % MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 % GNU General Public License for more details.
-% 
+%
 % You should have received a copy of the GNU General Public License
 % along with this program.  If not, see <http://www.gnu.org/licenses/>.

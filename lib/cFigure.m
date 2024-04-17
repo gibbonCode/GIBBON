@@ -51,25 +51,38 @@ function [varargout]=cFigure(varargin)
 % 2014/11/25 Created
 % 2015/04/15 Added vcw functionality
 % 2018/02/02 Fixed bug in relation to groot units (e.g. figure size is
-% wrong if units are not pixels). 
+% wrong if units are not pixels).
 % 2018/12/05 Updated figure size handling which now accepts either a
-% screen offset or a scaling factor. 
+% screen offset or a scaling factor.
 % 2018/12/19 Fixed bug to handle when both offset and scaling are specified
 % 2020/05/11 Changed vcw default buttons: {'pan','rot','zoom','zoom'}
-% 
-% To do: 
+%
+% To do:
 % Check handling of multiple screens for figure size setting
 %------------------------------------------------------------------------
 
 %% Parse input and set defaults
 
-%Force groot units to be pixels
-graphicalRoot=groot;
-grootUnits=graphicalRoot.Units;
-if ~strcmp(grootUnits,'pixels')
-    graphicalRoot.Units='pixels';
+% Check if graphics handles can be treated as structs with . indexing
+if is_octave % Octave does not use structs for graphics handles
+  useHandleStructs = false;
+elseif verLessThan('matlab', '8.4.0.150421 (R2014b)');
+  useHandleStructs = false;
+else % Assume modern MATLAB graphics handles (structs)
+  useHandleStructs = true;
 end
-screenSizeGroot = graphicalRoot.ScreenSize(3:4); %Get screen widht and height
+
+%Force groot units to be pixels
+graphicalRoot = groot;
+grootUnits = get(graphicalRoot,'Units');
+
+%Get screen widht and height
+if ~strcmp(grootUnits,'pixels')
+  set(graphicalRoot,'Units','Pixels');
+end
+
+screenSizeSpecGroot = get(graphicalRoot,'ScreenSize');
+screenSizeGroot = screenSizeSpecGroot(3:4);
 
 %Default settings
 defaultFigStruct.Visible='on';
@@ -83,7 +96,7 @@ defaultFigStruct.vcw=[]; %As per value set by user
 switch nargin
     case 0
        figStruct=[]; %Use default
-    case 1        
+    case 1
         figStruct=varargin{1}; %Use custom
 end
 
@@ -97,38 +110,34 @@ figStruct=rmfield(figStruct,'efw'); %Remove field from structure array
 %Get view control widget options and remove field
 vcwOpt=figStruct.vcw;
 figStruct=rmfield(figStruct,'vcw'); %Remove field from structure array
-            
-%%
-
-isOld=verLessThan('matlab', '8.4.0.150421 (R2014b)');
 
 %% Create a hidden figure
 hf = figure('Visible', 'off'); %create an invisible figure
 
 %% Setcolor definition and associated defaults
-hf=colordef(hf,figStruct.ColorDef); %Update figure handle
+if ~is_octave % The 'colordef' function is not yet implemented in Octave.
+  hf=colordef(hf,figStruct.ColorDef); %Update figure handle
+end
 figStruct=rmfield(figStruct,'ColorDef'); %Remove field from structure array
 
 %% Set figure size
 
 %Set figure units
-if isOld
-    set(hf,'units','pixels');    
-else
-    hf.Units='pixels';    
-end
+set(hf,'Units','pixels');
 
 %Set figure size
-if isfield(figStruct,'ScreenOffset')        
-    %Compute figure offset from border        
-    figSizeEdgeOffset=figStruct.ScreenOffset/2; 
+if isfield(figStruct,'ScreenOffset')
+    %Compute figure offset from border
+    figSizeEdgeOffset=figStruct.ScreenOffset/2;
 elseif isfield(figStruct,'ScreenScale')
     %Compute screen offset
-    figSizeEdgeOffset=(screenSizeGroot-(screenSizeGroot*figStruct.ScreenScale))/2;        
+    figSizeEdgeOffset=(screenSizeGroot-(screenSizeGroot*figStruct.ScreenScale))/2;
+else
+    figSizeEdgeOffset=(screenSizeGroot-(screenSizeGroot*0.95))/2;
 end
 
 %Remove custom fields from structure
-if isfield(figStruct,'ScreenOffset')        
+if isfield(figStruct,'ScreenOffset')
     figStruct=rmfield(figStruct,'ScreenOffset'); %Remove field from structure array
 end
 
@@ -137,22 +146,22 @@ if isfield(figStruct,'ScreenScale')
 end
 
 %Get/set units
-figUnits=hf.Units; %Get current figure units (users may change defaults)
-hf.Units=graphicalRoot.Units; %Force units the same
+figUnits=get(hf,'Units'); %Get current figure units (users may change defaults)
+set(hf,'Units',get(graphicalRoot,'Units')); %Force units the same
 
 %Compute figure size in terms of width and height
-figSize=screenSizeGroot-figSizeEdgeOffset*2; % width, height offsets
+figSize=screenSizeGroot-(figSizeEdgeOffset*2); % width, height offsets
 
 %Position and resize figure
-if isOld
-    set(hf,'outerPosition',[(screenSizeGroot(1)-figSize(1))/2 (screenSizeGroot(2)-figSize(2))/2 figSize(1) figSize(2)]); % left bottom width height
+s = [(screenSizeGroot(1)-figSize(1))/2 (screenSizeGroot(2)-figSize(2))/2 figSize(1) figSize(2)];
+if is_octave
+  set(hf,'Position',s); % left bottom width height
 else
-%     hf.Position=[figSizeEdgeOffset(1) figSizeEdgeOffset(2) figSize(1) figSize(2)]; % left bottom width height
-    hf.Position=[(screenSizeGroot(1)-figSize(1))/2 (screenSizeGroot(2)-figSize(2))/2 figSize(1) figSize(2)]; % left bottom width height
+  set(hf,'outerPosition',s); % left bottom width height
 end
 
 %Set figure units back
-hf.Units=figUnits;
+set(hf,'Units',figUnits);
 
 %% Parse remaining figure properties
 
@@ -160,28 +169,21 @@ hf.Units=figUnits;
 
 fieldSet = fieldnames(figStruct); % Cell containing all structure field names
 for q=1:1:numel(fieldSet)
-    fieldNameCurrent=fieldSet{q};
-    try
-        if isOld
-            set(hf,fieldNameCurrent,figStruct.(fieldNameCurrent));
-        else
-            hf.(fieldNameCurrent)=figStruct.(fieldNameCurrent);
-        end
-    catch errorMsg
-        rethrow(errorMsg); %likely false option
-    end
+  fieldNameCurrent=fieldSet{q};
+  set(hf,fieldNameCurrent,figStruct.(fieldNameCurrent));
 end
 
 %% Check for activation of vcw
+if ~is_octave
+  if isa(vcwOpt,'cell') || isempty(vcwOpt) %Allow enabling of vcw mode
+      hp=vcw(hf,vcwOpt);
+      hf.UserData.cFigure.Handles.vcw=hp;
+  end
 
-if isa(vcwOpt,'cell') || isempty(vcwOpt) %Allow enabling of vcw mode        
-    hp=vcw(hf,vcwOpt);
-    hf.UserData.cFigure.Handles.vcw=hp;
-end
-
-%% Check for activation of efw
-if efwOpt
-    efw; 
+  %% Check for activation of efw
+  if efwOpt
+      efw;
+  end
 end
 
 %%
@@ -192,41 +194,41 @@ end
 %%
 % Reset groot units if a change was needed
 if ~strcmp(grootUnits,'pixels')
-    graphicalRoot.Units=grootUnits;
+  set(graphicalRoot,'Units',grootUnits);
 end
 
 %%
 % Initiate a set of drawnow events to cope with MATLAB bug (observed in
-% MATLAB 2019a). Figure position might alter after several drawnow events. 
+% MATLAB 2019a). Figure position might alter after several drawnow events.
 
-pos=hf.Position;
-for q=1:1:10    
-    drawnow;    
-    if ~all(pos==hf.Position)        
-        break
-    end
-end
+%pos=get(hf,'Position');
+%for q=1:1:10
+%    drawnow;
+%    if ~all(pos==get(hf,'Position'))
+%        break
+%    end
+%end
 
-%% 
-% _*GIBBON footer text*_ 
-% 
+%%
+% _*GIBBON footer text*_
+%
 % License: <https://github.com/gibbonCode/GIBBON/blob/master/LICENSE>
-% 
+%
 % GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for
 % image segmentation, image-based modeling, meshing, and finite element
 % analysis.
-% 
+%
 % Copyright (C) 2006-2023 Kevin Mattheus Moerman and the GIBBON contributors
-% 
+%
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
 % the Free Software Foundation, either version 3 of the License, or
 % (at your option) any later version.
-% 
+%
 % This program is distributed in the hope that it will be useful,
 % but WITHOUT ANY WARRANTY; without even the implied warranty of
 % MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 % GNU General Public License for more details.
-% 
+%
 % You should have received a copy of the GNU General Public License
 % along with this program.  If not, see <http://www.gnu.org/licenses/>.

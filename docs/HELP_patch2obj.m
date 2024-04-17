@@ -18,13 +18,13 @@ clear; close all; clc;
 % .obj file contains the geometry information and texture/color coordinates
 % to use. The .mtl file contains the material information and refers to the
 % image to use to look up the colors based on the texture coordinates in
-% the .obj file. 
+% the .obj file.
 % The color data C should ideally define either the vertex or face colors
 % in the form of an nx1 array. If face colors are provided these are
 % re-sampled (averaged) to vertex colors which is the required format for
 % OBJ files. Colors are obtained from the input color map as well as the
 % color limits. The input structure mtlStruct defines the MTL file
-% components. With the default entries: 
+% components. With the default entries:
 %
 % mtlStruct.Ka=[1 1 1]; %Ambient color
 % mtlStruct.Kd=[1 1 1]; %Diffuse color
@@ -49,7 +49,7 @@ clear; close all; clc;
 % 10. Casts shadows onto invisible surfaces
 %
 %
-% For more information on the OBJ file format see: 
+% For more information on the OBJ file format see:
 % https://en.wikipedia.org/wiki/Wavefront_.obj_file
 % http://paulbourke.net/dataformats/obj/minobj.html
 
@@ -59,13 +59,13 @@ clear; close all; clc;
 
 %% Example 1: Export colored patch data to the OBJ format
 
-%Define patch data 
+%Define patch data
 testCase=1;
 switch testCase
     case 1 %David
-        [F,V]=graphicsModels(9);       
+        [F,V]=graphicsModels(9);
         t=V(:,1)-min(V(:,1));
-        t=t./max(t(:));               
+        t=t./max(t(:));
         C=sin(2*t*2*pi);
         C=abs(C);
         cMap=gjet(250); %Define colormap
@@ -75,12 +75,12 @@ switch testCase
         C=V(:,3);
         cMap=turbo(250); %Define colormap
     case 3 %Femur
-        [F,V]=graphicsModels(5);        
-        C=V(:,1); 
+        [F,V]=graphicsModels(5);
+        C=V(:,1);
         cMap=turbo(250); %Define colormap
     case 4
-        [F,V]=stanford_bunny; 
-        C=V(:,1); 
+        [F,V]=stanford_bunny;
+        C=V(:,1);
         cMap=viridis(250); %Define colormap
 end
 
@@ -90,43 +90,44 @@ savePath=fullfile(gibbonFolder,'data','OBJ');
 
 fileName=fullfile(savePath,'test.obj');
 
-%% 
-% Visualiza patch data 
+%%
+% Visualiza patch data
 
-cFigure; hold on; 
+cFigure; hold on;
 title('MATLAB patch','FontSize',25);
-hp=gpatch(F,V,C,'none'); hp.FaceColor='interp';
+hp=gpatch(F,V,C,'none');
+set(hp,'FaceColor','interp');
 axisGeom;
 colormap(cMap);
 camlight headlight;
 gdrawnow;
 
-%% 
+%%
 % Export to obj
 
 patch2obj(fileName,F,V,C,cMap);
 
 %%
-%% 
-% _*GIBBON footer text*_ 
-% 
+%%
+% _*GIBBON footer text*_
+%
 % License: <https://github.com/gibbonCode/GIBBON/blob/master/LICENSE>
-% 
+%
 % GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for
 % image segmentation, image-based modeling, meshing, and finite element
 % analysis.
-% 
+%
 % Copyright (C) 2006-2023 Kevin Mattheus Moerman and the GIBBON contributors
-% 
+%
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
 % the Free Software Foundation, either version 3 of the License, or
 % (at your option) any later version.
-% 
+%
 % This program is distributed in the hope that it will be useful,
 % but WITHOUT ANY WARRANTY; without even the implied warranty of
 % MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 % GNU General Public License for more details.
-% 
+%
 % You should have received a copy of the GNU General Public License
 % along with this program.  If not, see <http://www.gnu.org/licenses/>.

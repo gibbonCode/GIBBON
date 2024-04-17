@@ -168,7 +168,7 @@ nss=0; %Number of points parameter for constraint index correction
 for qCurve=1:1:numel(regionCell)
     %Get curve
     Vs=regionCell{qCurve};
-    
+
     %Resample curve evenly based on point spacing
     if ~isempty(V_must_boundary)
         [~,indMust]=minDist(V_must_boundary,Vs);
@@ -176,22 +176,22 @@ for qCurve=1:1:numel(regionCell)
     else
         indMust=[];
     end
-    
+
     [Vss]=evenlySpaceCurve(Vs,pointSpacing,interpMethod,closeLoopOpt,indMust);
 
     %Create refined set for distance based edge point removal
     [Vss_split]=subCurve(Vss,1,1);
-    
+
     %Resample curve
     if resampleCurveOpt==1
         Vs=Vss;
     end
-    
+
     %Collect curve points
     V=[V;Vs]; %Original or interpolated set
-    
+
     VSS=[VSS;Vss_split]; %Interpolated set
-    
+
     %Create curve constrains
     ns= size(Vs,1);
     Cs=[(1:ns)' [2:ns 1]'];
@@ -254,9 +254,13 @@ numPointsIni=size(V,1);
 %% DERIVE CONSTRAINED DELAUNAY TESSELATION
 
 %Initial Delaunay triangulation
-DT = delaunayTriangulation(V(:,1),V(:,2),C);
-V=DT.Points;
-F=DT.ConnectivityList;
+if is_octave
+	F = delaunay(V(:,1),V(:,2));
+else
+	DT = delaunayTriangulation(V(:,1),V(:,2),C);
+	V = DT.Points;
+	F = DT.ConnectivityList;
+end
 
 %% PLOTTING
 
@@ -286,13 +290,18 @@ if ~isempty(V_must_inner)
     C=ind2(C);
 end
 
-DT = delaunayTriangulation(V(:,1),V(:,2),C);
-V=DT.Points;
-F=DT.ConnectivityList;
+if is_octave
+	F = delaunay(V(:,1),V(:,2));
+else
+	DT = delaunayTriangulation(V(:,1),V(:,2),C);
+	V = DT.Points;
+	F = DT.ConnectivityList;
 
-%Remove faces not inside region
-L = isInterior(DT);
-F=F(L,:);
+	%Remove faces not inside region
+	L = isInterior(DT);
+	F = F(L,:);
+end
+
 
 %Removing unused points
 indUni=unique(F(:));
@@ -312,21 +321,21 @@ if numPoints==numPointsPost
     %     F=[];
     %     V=[];
 else
-    
+
     %% CONSTRAINED SMOOTHENING OF THE MESH
-    
+
     if ~isempty(V_must_inner)
         [~,indMustPointsInner]=minDist(V_must_inner,V);
     end
-    
+
     if smoothIterations>0
         smoothPar.Method='LAP';
         smoothPar.n=smoothIterations;
         smoothPar.Tolerance=0.01;
-        smoothPar.RigidConstraints=[boundaryInd(:); indMustPointsInner];        
+        smoothPar.RigidConstraints=[boundaryInd(:); indMustPointsInner];
         [V]=tesSmooth(F,V,[],smoothPar);
     end
-    
+
     %% PLOTTING
     if plotOn==1
         cFigure;
@@ -338,7 +347,7 @@ else
         axis equal; view(2); axis tight;  set(gca,'FontSize',fontSize); grid on;
         drawnow;
     end
-    
+
 end
 
 %% Collect ouput
@@ -380,26 +389,26 @@ end
 %
 % You should have received a copy of the GNU General Public License
 % along with this program.  If not, see <http://www.gnu.org/licenses/>.
-%% 
-% _*GIBBON footer text*_ 
-% 
+%%
+% _*GIBBON footer text*_
+%
 % License: <https://github.com/gibbonCode/GIBBON/blob/master/LICENSE>
-% 
+%
 % GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for
 % image segmentation, image-based modeling, meshing, and finite element
 % analysis.
-% 
+%
 % Copyright (C) 2006-2023 Kevin Mattheus Moerman and the GIBBON contributors
-% 
+%
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
 % the Free Software Foundation, either version 3 of the License, or
 % (at your option) any later version.
-% 
+%
 % This program is distributed in the hope that it will be useful,
 % but WITHOUT ANY WARRANTY; without even the implied warranty of
 % MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 % GNU General Public License for more details.
-% 
+%
 % You should have received a copy of the GNU General Public License
 % along with this program.  If not, see <http://www.gnu.org/licenses/>.

@@ -13,15 +13,15 @@ function [varargout]=febioStruct2xml(varargin)
 % 2018/02/09 Found bug in text write mode.
 % 2018/02/18 Created several "array parse methods" including based on text
 % file exporting providing a significant computational time reduction over
-% full XML based parsing. 
+% full XML based parsing.
 % 2018/05/15 Create temp directory if it is does not exist
 % 2020/11/26 Fixed bug in relation to undefined attributeStruct in
-% febioStruct2xmlStep 
+% febioStruct2xmlStep
 % 2023/09/01 Added "ElementSet" to arrayRowWrapKeywords
-% 
+%
 % To do:
 % Gracefully handle empty fields e.g. 0x8 element array
-% 
+%
 %------------------------------------------------------------------------
 
 %% Parse input
@@ -39,13 +39,13 @@ optionStructConv.dlmChar=',';
 optionStructConv.rowWrapLength=[]; %Is altered in code depending on filedname with arrayRowWrapKeywords
 defaultOptionStruct.optionStructConv=optionStructConv; %Add to default option structure
 
-if contains(lower(getFEBioPath),'febio2')
+if gcontains(lower(getFEBioPath),'febio2')
     warning('febio2 and related febio_spec handling are depricated. Update your codes for the latest FEBio version to avoid future errors.')
     defaultOptionStruct.fieldOrder={'Module','Control','Globals','Material',...
         'Geometry','MeshData','Initial','Boundary',...
         'Loads','Contact','Constraints','Rigid Connectors',...
         'Discrete','LoadData','Output','Parameters'};
-elseif contains(lower(getFEBioPath),'febio3')
+elseif gcontains(lower(getFEBioPath),'febio3')
     warning('febio3 and related febio_spec handling are depricated. Update your codes for the latest FEBio version to avoid future errors.')
     defaultOptionStruct.fieldOrder={...
         'Module','Control','Globals','Material',...
@@ -98,9 +98,9 @@ end
 %% Check febio_spec version
 if isfield(parseStruct,'ATTR')
     if isfield(parseStruct.ATTR,'version')
-        if contains(parseStruct.ATTR.version,'2.5')
+        if gcontains(parseStruct.ATTR.version,'2.5')
             warning('Old febio_spec detected. febio_spec 2.5 is depricated. Please upgrade to febio_spec 3.0');
-            if contains(lower(getFEBioPath),'febio3')
+            if gcontains(lower(getFEBioPath),'febio3')
                 warning('febio_spec 2.5 is likely not compatible with FEBio3');
             end
         end
@@ -109,7 +109,6 @@ end
 
 %% Initialize XML object
 
-domNode = com.mathworks.xml.XMLUtils.createDocument('febio_spec'); %Create the overall febio_spec field
 
 %% Add comment
 commentString = ['Created using GIBBON, ',char(datetime)];
@@ -183,13 +182,13 @@ for q_field=1:1:numel(fieldNameSet) %Loop for all field names
                 error('The rootNode is empty, the current attribute appears to lack a parent element');
             end
         case valueKeyword %VALUE
-            %Add the current value to rootNode            
+            %Add the current value to rootNode
             [domNode]=addElementValueXML(domNode,rootNode,currentFieldValue,optionStruct.optionStructConv);
         otherwise %ELEMENT
-            
+
             %Check if the current element tag correspods to one requiring looping
             logicArray=any(strcmp(currentFieldName,arrayLoopKeywords));
-            
+
             if logicArray %Check for looping across values
                 parseStructSub=currentFieldValue; %The current element should be a structure
                 if isfield(parseStructSub,valueKeyword) %if the structure contains a fielname which mathes the value keyword
@@ -200,7 +199,7 @@ for q_field=1:1:numel(fieldNameSet) %Loop for all field names
                     arrayDataSet=[];
                     numArray=[];
                 end
-                
+
                 if isfield(parseStructSub,attributeKeyword) %if the structure contains a fielname which mathes the attribute keyword
                     attributeStruct=parseStructSub.(attributeKeyword);
                     parseStructSub = rmfield(parseStructSub,attributeKeyword); %Remove the value field from the array
@@ -208,7 +207,7 @@ for q_field=1:1:numel(fieldNameSet) %Loop for all field names
                 else
                     fieldNameSetSub=[];
                 end
-                
+
                 if ~isempty(arrayDataSet) %if array entries exist
                     switch arrayParseMethod
                         case 0
@@ -235,13 +234,13 @@ for q_field=1:1:numel(fieldNameSet) %Loop for all field names
                         otherwise
                             [domNode,rootNode]=textModeElementAttributeParse(domNode,rootNode,currentFieldName,attributeStruct,arrayDataSet,numArray,fieldNameSetSub,fileName,arrayParseMethod);
                     end
-                    
+
                 elseif ~isempty(fieldNameSetSub) %If this is not empty there are attributes to add despite empty array
-                    
+
                     %Get length from first
                     currentFieldNameSub=fieldNameSetSub{1};
                     numArray=numel(attributeStruct.(currentFieldNameSub));
-                    
+
                     switch arrayParseMethod
                         case 0
                             for q_array=1:1:numArray %Loop over all entries
@@ -262,7 +261,7 @@ for q_field=1:1:numel(fieldNameSet) %Loop for all field names
                     end
                 elseif ~isempty(parseStructSub) %Despite arrayLoopKeywords trigger no values or attributes are to be added, but other fields might exist
                     [domNode,rootNode]=recursiveElementParse(domNode,rootNode,currentFieldName,currentFieldValue,optionStruct,fileName);
-                end                
+                end
             else
                 [domNode,rootNode]=recursiveElementParse(domNode,rootNode,currentFieldName,currentFieldValue,optionStruct,fileName);
             end
@@ -278,12 +277,12 @@ else
     optionStruct.optionStructConv.rowWrapLength=[];
 end
 
-if isnumeric(currentFieldValue) || ischar(currentFieldValue)        
+if isnumeric(currentFieldValue) || ischar(currentFieldValue)
     [domNode,~,rootNode]=addElementXML(domNode,rootNode,currentFieldName,currentFieldValue,optionStruct.optionStructConv);
-elseif isstruct(currentFieldValue)    
+elseif isstruct(currentFieldValue)
     [domNode,elementNode,rootNode]=addElementXML(domNode,rootNode,currentFieldName,[],optionStruct.optionStructConv); %Create the current element
     [domNode,elementNode]=febioStruct2xmlStep(domNode,elementNode,currentFieldValue,optionStruct,fileName); %Add whatever is nested in here
-elseif iscell(currentFieldValue)    
+elseif iscell(currentFieldValue)
     for q_cell=1:1:numel(currentFieldValue)
         parseStructSub=currentFieldValue{q_cell};
         [domNode,elementNode,rootNode]=addElementXML(domNode,rootNode,currentFieldName,[],optionStruct.optionStructConv);
@@ -321,7 +320,7 @@ switch arrayParseMethod
         else
             D=[];
         end
-        
+
         if all(isrounded(arrayDataSet))
             t_form=repmat(['%d',', '],1,size(arrayDataSet,2));
         else
@@ -330,37 +329,37 @@ switch arrayParseMethod
         t_form=t_form(1:end-2); %Take away last space and comma
         textFormat=[textFormat,'>',t_form,'</',currentFieldName,'>','\n'];
         D=[D arrayDataSet];
-        
+
         %Convert to string
         t=sprintf(textFormat,D');
         t=t(1:end-1); %take away last end of line character \n, would result in empty line in text file
-        T_add={t};      
-    case 2 %Flexible, handles non-uniform attributes, uses cellfun to "loop"         
+        T_add={t};
+    case 2 %Flexible, handles non-uniform attributes, uses cellfun to "loop"
         T_add=cell(numArray,1);
         tquote=repmat({'"'},numArray,1);
         if ~isempty(fieldNameSetSub) %If attributes exist
             for q_fieldSub=1:1:numel(fieldNameSetSub) %loop over all attributes
                 attributeName=fieldNameSetSub{q_fieldSub}; %Get current attribute name
-                attributeNameValue=attributeStruct.(attributeName);                
-                T_attributeValue=var2cellstr(attributeNameValue);          
+                attributeNameValue=attributeStruct.(attributeName);
+                T_attributeValue=var2cellstr(attributeNameValue);
                 T_add=strcat(T_add,repmat({[' ',attributeName,'=']},numArray,1),tquote,T_attributeValue,tquote);
             end
         end
         T_val=var2cellstr(arrayDataSet);
-        T_add=strcat(repmat({['<',currentFieldName,' ']},numArray,1),T_add,repmat({'>'},numArray,1),T_val,repmat({['</',currentFieldName,'>']},numArray,1));    
+        T_add=strcat(repmat({['<',currentFieldName,' ']},numArray,1),T_add,repmat({'>'},numArray,1),T_val,repmat({['</',currentFieldName,'>']},numArray,1));
     case 3 %Flexible, handles non-uniform attributes, loop through all entries (slowest)
         T_add=cell(numArray,1);
         for q_array=1:1:numArray %Loop over elements in array
             attributeText=[];
             if ~isempty(fieldNameSetSub) %If attributes exist
-                for q_fieldSub=1:1:numel(fieldNameSetSub) %loop over all attributes                    
+                for q_fieldSub=1:1:numel(fieldNameSetSub) %loop over all attributes
                     attributeName=fieldNameSetSub{q_fieldSub}; %Get current attribute name
                     if iscell(attributeStruct.(attributeName))
                         attributeNameValue=attributeStruct.(attributeName){q_array};
                     else
                         attributeNameValue=attributeStruct.(attributeName)(q_array,:);
-                    end                    
-                    [attributeNameValue]=vec2strIntDouble(attributeNameValue,'%6.7e');                    
+                    end
+                    [attributeNameValue]=vec2strIntDouble(attributeNameValue,'%6.7e');
                     attributeText=[attributeText,' ',attributeName,'="',attributeNameValue,'"'];
                 end
             end
@@ -402,7 +401,7 @@ function [B]=reorderStruct(A,fieldOrder)
 %Start with fieldOrder fields
 fieldNameSet=fieldnames(A);
 for q=1:1:numel(fieldOrder)
-    fieldNameNow=fieldOrder{q};    
+    fieldNameNow=fieldOrder{q};
     if any(strcmp(fieldNameNow,fieldNameSet))
         B.(fieldNameNow)=A.(fieldNameNow);
         A=rmfield(A,fieldNameNow);
@@ -418,26 +417,26 @@ end
 
 end
 
-%% 
-% _*GIBBON footer text*_ 
-% 
+%%
+% _*GIBBON footer text*_
+%
 % License: <https://github.com/gibbonCode/GIBBON/blob/master/LICENSE>
-% 
+%
 % GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for
 % image segmentation, image-based modeling, meshing, and finite element
 % analysis.
-% 
+%
 % Copyright (C) 2006-2023 Kevin Mattheus Moerman and the GIBBON contributors
-% 
+%
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
 % the Free Software Foundation, either version 3 of the License, or
 % (at your option) any later version.
-% 
+%
 % This program is distributed in the hope that it will be useful,
 % but WITHOUT ANY WARRANTY; without even the implied warranty of
 % MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 % GNU General Public License for more details.
-% 
+%
 % You should have received a copy of the GNU General Public License
 % along with this program.  If not, see <http://www.gnu.org/licenses/>.

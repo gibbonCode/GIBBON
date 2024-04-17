@@ -35,10 +35,10 @@ cMap=spectral(250); %colormap
 
 %Geometry parameters
 layerThickness=0.5;
-starRadiusOuter=100; 
+starRadiusOuter=100;
 starRadiusInner=30;
 starStripThickness=13;
-starNumSpike=5; 
+starNumSpike=5;
 filletRadiusPeakOuter=12;
 filletRadiusValleyOuter=0;
 filletRadiusPeakInner=0;
@@ -87,19 +87,51 @@ s=starStripThickness./sin(b/2);
 g=pi/2-b/2-a/2;
 s2=starStripThickness./cos(g);
 
+%% Define functions
+%%
+
+function [V,V_raw]=makeStar(starNumSpike,starRadiusInner,starRadiusOuter,filletRadiusInner,filletRadiusOuter,pointSpacing)
+
+a=(2*pi)/starNumSpike;
+
+th=-a/2+pi/2;
+t=linspace(th,th+2*pi,starNumSpike+1)'; t=t(1:end-1);
+x = starRadiusInner.*cos(t);
+y = starRadiusInner.*sin(t);
+Vi=[x y];
+
+x = starRadiusOuter.*cos(t+a/2);
+y = starRadiusOuter.*sin(t+a/2);
+Vo=[x y];
+
+V_raw=reshape([Vi Vo]',[size(Vi,2) size(Vi,1)*2])';
+% V=V(1:end-1,:);
+
+np=100;
+filletRadii=filletRadiusOuter.*ones(size(V_raw,1),1);
+filletRadii(1:2:end)=filletRadiusInner;
+
+V=filletCurve(V_raw,filletRadii,np,1);
+[d,indMin]=minDist(V_raw,V);
+V=evenlySpaceCurve(V,pointSpacing,'linear',1,indMin(d<1e-3));
+
+end
+
+%%
+
 [V1,V1_raw]=makeStar(starNumSpike,starRadiusInner,starRadiusOuter,filletRadiusValleyOuter,filletRadiusPeakOuter,pointSpacing);
 [V2,V2_raw]=makeStar(starNumSpike,starRadiusInner-s2,starRadiusOuter-s,filletRadiusValleyInner,filletRadiusPeakInner,pointSpacing);
 
 %%
 
-cFigure; hold on; 
+cFigure; hold on;
 plotV(V1,'r.-','MarkerSize',15,'LineWidth',2);
 plotV(V2,'b.-','MarkerSize',15,'LineWidth',2);
 plotV(V1_raw,'g.','MarkerSize',25)
 plotV(V2_raw,'g.','MarkerSize',25)
 
 axisGeom; view(2);
-gdrawnow; 
+gdrawnow;
 
 
 %% Meshing the region
@@ -124,14 +156,14 @@ Eb=patchBoundary(F);
 indBoundary=unique(Eb(:));
 
 D=meshDistMarch(F,V,indBoundary);
-D=D./(starStripThickness/2); 
+D=D./(starStripThickness/2);
 D(D>1)=1;
 bellyType='circular';
 switch bellyType
     case 'linear'
         V(:,3)=V(:,3)+D.*starBellyHeight;
     case 'circular'
-        D=abs(D-1); %Invert so height at boundaries. 
+        D=abs(D-1); %Invert so height at boundaries.
         a=acos(D); % Use D as "x" coord in unit circle to derive angle alpha
         V(:,3)=starBellyHeight.*sin(a);
 end
@@ -142,7 +174,7 @@ cFigure; hold on;
 hp=gpatch(F,V,D); hp.FaceColor='interp';
 % patchNormPlot(F,V);
 axisGeom; camlight headlight;
-colormap(spectral(250)); colorbar; 
+colormap(spectral(250)); colorbar;
 gdrawnow;
 
 %% Mirrowr/copy and merge
@@ -216,7 +248,7 @@ febio_spec.Mesh.Surface{1}.tri3.VAL=fliplr(F);
 %MeshDomains section
 febio_spec.MeshDomains.ShellDomain{1}.ATTR.name=partName1;
 febio_spec.MeshDomains.ShellDomain{1}.ATTR.mat=materialName1;
-febio_spec.MeshDomains.ShellDomain{1}.shell_thickness=layerThickness; 
+febio_spec.MeshDomains.ShellDomain{1}.shell_thickness=layerThickness;
 
 %Loads section
 % -> Surface load
@@ -347,31 +379,3 @@ if runFlag==1 %i.e. a succesful run
 
 end
 
-%%
-
-function [V,V_raw]=makeStar(starNumSpike,starRadiusInner,starRadiusOuter,filletRadiusInner,filletRadiusOuter,pointSpacing)
-
-a=(2*pi)/starNumSpike;
-
-th=-a/2+pi/2;
-t=linspace(th,th+2*pi,starNumSpike+1)'; t=t(1:end-1);
-x = starRadiusInner.*cos(t);
-y = starRadiusInner.*sin(t);
-Vi=[x y];
-
-x = starRadiusOuter.*cos(t+a/2);
-y = starRadiusOuter.*sin(t+a/2);
-Vo=[x y];
-
-V_raw=reshape([Vi Vo]',[size(Vi,2) size(Vi,1)*2])';
-% V=V(1:end-1,:);
-
-np=100;
-filletRadii=filletRadiusOuter.*ones(size(V_raw,1),1);
-filletRadii(1:2:end)=filletRadiusInner;
-
-V=filletCurve(V_raw,filletRadii,np,1);
-[d,indMin]=minDist(V_raw,V);
-V=evenlySpaceCurve(V,pointSpacing,'linear',1,indMin(d<1e-3));
-
-end

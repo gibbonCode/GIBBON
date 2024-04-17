@@ -26,7 +26,7 @@ markerSize=30;
 % Creating example patch data with unused nodes. This example is a sphere
 % triangulation. The sphere is roughly cut in half by deleting half of its
 % triangles. However, after the cut operation the nodes which used to be
-% used by the deleted half are still present in the vertex array. 
+% used by the deleted half are still present in the vertex array.
 
 %%
 % Defining geodesic dome triangulation
@@ -47,13 +47,13 @@ F=F(logicKeepFaces,:); %The cropped face list
 %%
 % Visualize results
 
-cFigure; 
+cFigure;
 subplot(1,2,1); hold on;
 title('Patch data with unused vertices');
 hp(1)=gpatch(F,V,'gw','g',1,edgeWidth);
 hp(2)=plotV(V,'k.','MarkerSize',markerSize);
 legend(hp,{'Patch data','Vertices'});
-axisGeom(gca,fontSize); 
+axisGeom(gca,fontSize);
 camlight headlight;
 view(0,0); ha=axis;
 
@@ -73,21 +73,21 @@ drawnow;
 %%
 % Gather additional output to fix indices referring to the old mesh. The
 % output indFix provides a mapping of the old indices to the new indices.
-% Zeros are returned for points which are no longer a member of the mesh. 
+% Zeros are returned for points which are no longer a member of the mesh.
 
 ind=find(V(:,3)>0);
 [Fc,Vc,indFix]=patchCleanUnused(F,V); %Clean-up /remove unused vertices
 ind_c=indFix(ind); %Fix the index set ind to be valid for the cleaned mesh
 ind_c=ind_c(ind_c>0); %remove zeros
 
-cFigure; 
+cFigure;
 subplot(1,2,1); hold on;
 title('Patch data with unused vertices');
 hp(1)=gpatch(F,V,'gw','g',1,edgeWidth);
 hp(2)=plotV(V,'k.','MarkerSize',markerSize);
 hp(3)=plotV(V(ind,:),'r.','MarkerSize',markerSize*2);
 legend(hp,{'Patch data','Vertices','Indexed points'});
-axisGeom(gca,fontSize); 
+axisGeom(gca,fontSize);
 camlight headlight;
 view(0,0); ha=axis;
 
@@ -106,7 +106,7 @@ drawnow;
 %% Example 3: Removing unused points from a mixed mesh
 
 %%
-% Creating a 
+% Creating a
 
 % Defining geodesic dome triangulation
 r=1; %sphere radius
@@ -136,16 +136,19 @@ V=[V1;V2];
 [Fc,Vc]=patchCleanUnused(F,V);
 
 %%
+if is_octave
+	hp=zeros(1,3);
+else
+	hp=gobjects(1,3);
+end
 
-hp=gobjects(1,3);
-
-cFigure; 
+cFigure;
 subplot(1,2,1); hold on;
 title('Patch data with unused vertices');
 hp(1:2)=gpatch(F,V,'gw','g',1,edgeWidth);
 hp(3)=plotV(V,'k.','MarkerSize',markerSize);
 legend(hp,{'Patch data','Patch data','Vertices'});
-axisGeom(gca,fontSize); 
+axisGeom(gca,fontSize);
 camlight headlight;
 view(0,0); ha=axis;
 
@@ -154,7 +157,7 @@ title('Cleaned patch data');
 hp(1:2)=gpatch(Fc,Vc,'gw','g',1,edgeWidth);
 hp(3)=plotV(Vc,'k.','MarkerSize',markerSize);
 legend(hp,{'Patch data','Patch data','Vertices'});
-axisGeom(gca,fontSize); 
+axisGeom(gca,fontSize);
 camlight headlight;
 view(0,0); axis(ha);
 
@@ -169,26 +172,26 @@ drawnow;
 %
 % _Kevin Mattheus Moerman_, <gibbon.toolbox@gmail.com>
 
-%% 
-% _*GIBBON footer text*_ 
-% 
+%%
+% _*GIBBON footer text*_
+%
 % License: <https://github.com/gibbonCode/GIBBON/blob/master/LICENSE>
-% 
+%
 % GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for
 % image segmentation, image-based modeling, meshing, and finite element
 % analysis.
-% 
+%
 % Copyright (C) 2006-2023 Kevin Mattheus Moerman and the GIBBON contributors
-% 
+%
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
 % the Free Software Foundation, either version 3 of the License, or
 % (at your option) any later version.
-% 
+%
 % This program is distributed in the hope that it will be useful,
 % but WITHOUT ANY WARRANTY; without even the implied warranty of
 % MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 % GNU General Public License for more details.
-% 
+%
 % You should have received a copy of the GNU General Public License
 % along with this program.  If not, see <http://www.gnu.org/licenses/>.

@@ -8,10 +8,10 @@ function [F,V,C]=delaunayZip(F1,V1,F2,V2,inputStruct)
 % 2018/05/09: Added growing of region size if error occurs
 % 2018/05/09: Added stepwise removal of last triangle since it does not
 % include next points.
-% 2018/11/02: Added self-triangulation as an option (default on) 
+% 2018/11/02: Added self-triangulation as an option (default on)
 % 2018/11/02: Added walk-back for paths so that one will not be too long
 % 2018/11/02: Fixed bug in relation to one of the paths "running out of
-% points". Remainder is triangulated properly. 
+% points". Remainder is triangulated properly.
 %-------------------------------------------------------------------------
 
 %%
@@ -48,8 +48,8 @@ if selfTriangulate==1
     numFaces_1=size(F1,1);
     numFacesInitial_2=size(F2,1);
     [F2,V2,ind2]=triSurfSelfTriangulateBoundary(F2,V2,ind2,angleThreshold,isClosedLoop);
-    numFaces_2=size(F2,1);  
-    
+    numFaces_2=size(F2,1);
+
     L1=false(size(F1,1),1);
     if numFaces_1>numFacesInitial_1
         L1(end-(numFaces_1-numFacesInitial_1-1):end)=1;
@@ -92,7 +92,7 @@ numGroupPrevious=0;
 if plotOn==1
     h1=[]; %Initiate empty plot handle
     markerSize=25;
-    
+
     hf=cFigure; hold on;
     gpatch(F1(~L1,:),V1,'r','none',0.2);
     gpatch(F1(L1,:),V1,'rw','k',1);
@@ -100,7 +100,7 @@ if plotOn==1
     gpatch(F2(L2,:),V2,'bw','k',1);
     plotV(V(ind1,:),'r.-','LineWidth',1,'MarkerSize',10);
     plotV(V(ind2,:),'b.-','LineWidth',1,'MarkerSize',10);
-    
+
     axisGeom;
     camlight headlight;
     colormap(gjet(250));
@@ -113,7 +113,7 @@ warning('off','MATLAB:delaunayTriangulation:ConsConsSplitWarnId');
 
 %%
 while 1
-    
+
     numGroupStep=1;
     lastTry=0;
     while 1
@@ -121,24 +121,24 @@ while 1
             if plotOn==1 %%Plot if plotting is on
                 delete(h1); h1=[];
             end
-            
+
             if plotOn==1 %%Plot if plotting is on
                 figure(hf);
                 h1(end+1)=plotV(V(startInd,:),'y.','MarkerSize',markerSize);
                 drawnow
             end
-            
+
             %Grow the current region
             while 1 %Loop to form local group (stuff attached to current group within a given distance)
                 logicMember=any(ismember(E,indGroup),2); %Logic for all edges touching the current groupt
                 E_sub=E(logicMember,:); %The subset of touching edges
-                
+
                 indGroup=unique([indGroup; E_sub(:)]); %Grow group with point indices in the edges that are touching
-                
+
                 d1=sqrt(sum((V(indGroup,:)-V(startInd(1)*ones(numel(indGroup),1),:)).^2,2));
                 d2=sqrt(sum((V(indGroup,:)-V(startInd(2)*ones(numel(indGroup),1),:)).^2,2));
                 D=min(d1,d2);
-                
+
                 logicKeep= (D<distLocal) & (logicNotUsed(indGroup));
                 indGroup=indGroup(logicKeep); %Remove points that are too far
                 if numGroup==numel(indGroup) %Compare current group size to previous step
@@ -146,16 +146,16 @@ while 1
                 end
                 numGroup=numel(indGroup); %Get new current group size
             end
-            
+
             %Get curve start and end points
             logicMember=all(ismember(E,indGroup),2); %Logic for all edges touching the current group
             E_sub=E(logicMember,:); %The subset of touching edges
-            
+
             [~,~,~,vCount]=cunique(E_sub); %Get vertex occurance counts
             indEndPoints=unique(E_sub(vCount==1));
             indEndPoints1=indEndPoints(ismember(indEndPoints,ind1));
             indEndPoints2=indEndPoints(ismember(indEndPoints,ind2));
-            
+
             %Compose sub-curves
             logicSub1=all(ismember(E_sub,ind1),2);
             %             if ~any(logicSub1)
@@ -164,7 +164,7 @@ while 1
             E_sub1=E_sub(logicSub1,:);
             [indListSub1]=edgeListToCurve(E_sub1);
             indListSub1=indListSub1(:);
-            
+
             logicSub2=all(ismember(E_sub,ind2),2);
             %             if ~any(logicSub2)
             %                 warning('None of the current edges nodes are a member of ind2');
@@ -172,7 +172,7 @@ while 1
             E_sub2=E_sub(logicSub2,:);
             [indListSub2]=edgeListToCurve(E_sub2);
             indListSub2=indListSub2(:);
-            
+
             %Alter segments so they can be merged into closed loop curve
             if isempty(Fn) %First iteration
                 d=sqrt(sum((V([indListSub2(1) indListSub2(end)],:)-V(indListSub1(1)*ones(1,2),:)).^2,2));
@@ -190,13 +190,13 @@ while 1
                     indListSub2=flipud(indListSub2);
                 end
             end
-            
+
             if any(ismember(indGroup,ind1))==0
                 startInd
                 ind1
                 indGroup
             end
-            
+
             %             if any(ismember(indGroup,ind1)) && any(ismember(indGroup,ind2))
             %             else
             %                 %One of the two sets contains only 1 member, triangulate
@@ -218,21 +218,21 @@ while 1
             %                     indLeft=indLeft(2:end); %First is part of startInd
             %                 end
             %             end
-            
-            
+
+
             %Shorten curves if they stick out to much wrt end of other curve
             d=sqrt(sum((V(indListSub2,:)-V(indListSub1(end)*ones(1,numel(indListSub2)),:)).^2,2));
             [~,indClosest]=min(d);
             if indClosest~=1 && indClosest~=numel(indListSub2)
                 indListSub2=indListSub2(indClosest:end);
             end
-            
+
             d=sqrt(sum((V(indListSub1,:)-V(indListSub2(1)*ones(1,numel(indListSub1)),:)).^2,2));
             [~,indClosest]=min(d);
             if indClosest~=numel(indListSub1) && indClosest~=1
                 indListSub1=indListSub1(1:indClosest);
             end
-            
+
             %Create closed curve
             if nnz(ismember(indGroup,ind1))==0
                 indListSub=[startInd(ismember(startInd,ind1)); indListSub2; startInd(ismember(startInd,ind1))]; %Closed loop
@@ -241,9 +241,9 @@ while 1
             else
                 indListSub=[indListSub1;indListSub2;indListSub1(1)]; %Closed loop
             end
-            
+
             indGroup=indListSub(1:end-1);
-            
+
             if plotOn==1 %%Plot if plotting is on
                 figure(hf);
                 if ~isempty(indEndPoints1)
@@ -263,12 +263,12 @@ while 1
                 end
                 drawnow
             end
-            
+
             %Rotate current point set
             V_now=V(indListSub(1:end-1),:); %Current closed curve coordinate set
             [R]=pointSetPrincipalDir(V_now); %Fit local coordinate system with 3rd direction pointing outward of local planar-ish region
             V_now_R=V_now*R; %Rotate coordinate set to prepare for 2D Delaunay based triangulation
-            
+
             %Do 2D Delaunay triangulation
             DT_contraints=[(1:numel(indGroup))' ([2:numel(indGroup) 1])']; %Constraints are edges forming boundary
             DT = delaunayTriangulation(V_now_R(:,[1 2]),DT_contraints); % Initial triangulation
@@ -276,7 +276,7 @@ while 1
             L = isInterior(DT); %Remove faces not inside region
             f=f(L,:); %Faces excluding external faces (only keep those inside constraint edges)
             f=indGroup(f); %Change indices to overall system
-            
+
             %Remove first and last triangles if there are more than 3 triangles, this
             %will improve triangulation quality as these triangles were not fully
             %embedded in the point set.
@@ -291,14 +291,14 @@ while 1
             %                     logicNeighbours(any(ismember(f,startInd),2))=1;
             %                     f=f(logicNeighbours,:);
             %                 end
-            
+
             break
-            
+
         catch ME
             if lastTry==1
                 rethrow(ME)
             end
-            
+
             if numGroupStep==numGroupPrevious
                 lastTry=1;
             end
@@ -308,11 +308,11 @@ while 1
         end
     end
     distLocal=inputStruct.distLocal; %reset
-    
+
     if dot(mean(patchNormal(f,V),1),mean(Nv(indListSub(1:end-1),:),1))<0
         f=fliplr(f);
     end
-    
+
     if plotOn==1 %%Plot if plotting is on
         figure(hf);
         V_now_mean=mean(V_now); %Mean of coordinate set
@@ -320,34 +320,34 @@ while 1
         gpatch(f,V,c*ones(size(f,1),1),'k',1);
         drawnow
     end
-    
+
     %Collect faces and color data
     Fn=[Fn;f];
     Cn=[Cn;c*ones(size(f,1),1)];
-    
+
     E_Fn=sort(patchEdges(Fn,0),2);
     ind_E_Fn= reshape(sub2indn(size(V,1)*ones(1,2),E_Fn),size(Fn));
-    
+
     Es=sort(E,2);
     ind_E= sub2indn(size(V,1)*ones(1,2),Es);
-    
+
     logicEdgesUsed=ismember(ind_E,ind_E_Fn);
-    
+
     E_sub=E(~logicEdgesUsed,:);
     indUnusedPoints=unique(E_sub);
     logicNotUsed=false(size(logicNotUsed));
     logicNotUsed(indUnusedPoints)=1;
-    
+
     if any(logicNotUsed)==0
         break
     end
-    
+
     %Get curve start and end points
     [~,~,~,vCount]=cunique(E_sub); %Get vertex occurance counts
     indEndPoints=unique(E_sub(vCount==1));
     indEndPoints1=indEndPoints(ismember(indEndPoints,ind1));
     indEndPoints2=indEndPoints(ismember(indEndPoints,ind2));
-    
+
     e=patchEdges(Fn,1);
     edgeEndPoints=e(any(ismember(e,indEndPoints1),2)&any(ismember(e,indEndPoints2),2),:);
     logicMemberOfLast=any(ismember(edgeEndPoints,f),2);
@@ -357,7 +357,7 @@ while 1
     else
         startInd=[indListSub1(end) indListSub2(1)];
     end
-    
+
     c=c+1;
 end
 
@@ -368,26 +368,26 @@ C=[C; max(C(:))+Cn];
 warning('on','MATLAB:delaunayTriangulation:ConsConsSplitWarnId');
 
 
-%% 
-% _*GIBBON footer text*_ 
-% 
+%%
+% _*GIBBON footer text*_
+%
 % License: <https://github.com/gibbonCode/GIBBON/blob/master/LICENSE>
-% 
+%
 % GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for
 % image segmentation, image-based modeling, meshing, and finite element
 % analysis.
-% 
+%
 % Copyright (C) 2006-2023 Kevin Mattheus Moerman and the GIBBON contributors
-% 
+%
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
 % the Free Software Foundation, either version 3 of the License, or
 % (at your option) any later version.
-% 
+%
 % This program is distributed in the hope that it will be useful,
 % but WITHOUT ANY WARRANTY; without even the implied warranty of
 % MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 % GNU General Public License for more details.
-% 
+%
 % You should have received a copy of the GNU General Public License
 % along with this program.  If not, see <http://www.gnu.org/licenses/>.

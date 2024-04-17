@@ -2,7 +2,7 @@ function exportGifAnim8(varargin)
 
 % function exportGifAnim8(hf,defStruct,1);
 % ------------------------------------------------------------------------
-% Activate gif export for an anim8 figure window. 
+% Activate gif export for an anim8 figure window.
 %
 %
 %
@@ -30,8 +30,9 @@ switch nargin
 end
 
 %%
-        
-defStruct=hf.UserData.efw;
+
+UserData = get(hf,'UserData');
+defStruct = UserData.efw;
 
 [inputStruct]=structComplete(inputStruct,defStruct,1); %Complement provided with default if missing or empty
 
@@ -47,12 +48,13 @@ if dlgOpt==1
         inputStruct.imExt,...
         inputStruct.imRes,...
         inputStruct.exportFigOpt,...
-        hf.UserData.efw.exportGifOpt,...
+        UserData.efw.exportGifOpt,...
         };
-    
-    s=25+max([cellfun(@numel,prompt) cellfun(@numel,defaultOptions)]);
-    
-    Q = inputdlg(prompt,dlg_title,[1 s],defaultOptions);
+
+    s=25+max([cellfun(@numel,prompt) cellfun(@numel,defaultOptions)])
+
+	Q = inputdlg(prompt,dlg_title,numel(prompt),defaultOptions);
+	% Q = inputdlg(prompt,dlg_title,[1 s],defaultOptions);
 else
     Q = {inputStruct.defaultPath,...
         inputStruct.imName,...
@@ -69,40 +71,40 @@ if ~isempty(Q)
             return;
         end
     end
-    
+
     if isempty(Q{2})
         error('Empty input. Please enter a file name');
     end
-    
+
     if ~exist(Q{1},'dir') %create output folder if it does not exist already
         mkdir(Q{1});
     end
-    
+
     if isempty(Q{3})
         warning('Empty input. No image format specified, using jpg files.');
         Q{3}='jpg';
     end
-    
+
     fileName=fullfile(Q{1},Q{2});
     exportGifCell{1,1}=fileName;
-    
+
     stringSet=Q{3}; %The image extension
     stringNoSpaces=regexprep(stringSet,'[^\w'']',''); %Remove potential extra spaces
-    
+
     if ~strcmp(stringNoSpaces(1),'-') %If first character is not '-'
         stringNoSpaces=['-',stringNoSpaces]; %Add '-' to start, e.g. 'jpg' becomes '-jpg'
     end
-    
+
     %Check format validaty and keep if valid
     if any(strcmp(stringNoSpaces,{'-png','-jpg','-tiff','-bmp'}))
         exportGifCell{1,end+1}=stringNoSpaces; %Add to input list
     else
         error('Wrong image format requested');
     end
-    
+
     figRes=['-r',Q{4}];
     exportGifCell{1,end+1}=figRes;
-    
+
     if ~isempty(Q{5})
         stringSet=Q{5}; %The set of potentially multiple options
         stringSetSep = strsplit(stringSet,',');
@@ -114,18 +116,18 @@ if ~isempty(Q)
             exportGifCell{1,end+1}=stringNoSpaces; %Add to input list
         end
     end
-    
+
     if ~isempty(Q{6})
         exportGifOpt=Q{6};
     end
-    
+
     fileNameGif=exportGifCell{1,1};
     exportGifCellSub=exportGifCell;
-    
+
     c=1;
-    stepRange=1:hf.UserData.anim8.shiftMag:numel(hf.UserData.anim8.animStruct.Time);    
+    stepRange=1:UserData.anim8.shiftMag:numel(hf.UserData.anim8.animStruct.Time);
     for q=stepRange
-        set(hf.UserData.anim8.sliderHandles{1},'Value',q);
+        set(UserData.anim8.sliderHandles{1},'Value',q);
         fileNameNow=[fileNameGif,'_',num2str(q)];
         exportGifCellSub{1,1}=fileNameNow;
         figure(hf);
@@ -133,10 +135,10 @@ if ~isempty(Q)
         gifStruct.FileNames{c}=[fileNameNow,'.',exportGifCell{1,2}(2:end)];
         c=c+1;
     end
-    
+
     if strcmp(exportGifOpt,'1')
         %Add reverse path
-        if strcmp(get(hf.UserData.anim8.ButtonHandles.hCycle,'State'),'on')
+        if strcmp(get(UserData.anim8.ButtonHandles.hCycle,'State'),'on')
             numFiles=numel(gifStruct.FileNames);
             if numFiles>2
                 for q=(numFiles-1):-1:2
@@ -144,12 +146,12 @@ if ~isempty(Q)
                 end
             end
         end
-        
-        gifStruct.DelayTime=hf.UserData.anim8.pauseTime;
+
+        gifStruct.DelayTime=UserData.anim8.pauseTime;
         gifStruct.FileNameGif=fileNameGif;
-        
+
         exportGif(gifStruct);
-        
+
         %Cleanup image files
         for q=1:1:numel(gifStruct.FileNames)
             if exist(gifStruct.FileNames{q},'file')==2
@@ -157,7 +159,7 @@ if ~isempty(Q)
             end
         end
     end
-    
+
     %Override defaults
     defStruct.defaultPath=Q{1};
     defStruct.imName=Q{2};
@@ -165,31 +167,32 @@ if ~isempty(Q)
     defStruct.imRes=Q{4};
     defStruct.exportFigOpt=Q{5};
     defStruct.efw.exportGifOpt=Q{6};
-    
-    hf.UserData.efw=defStruct;
-    
+
+    UserData.efw=defStruct;
+	set(hf,'UserData',UserData);
+
 end
-    
-%% 
-% _*GIBBON footer text*_ 
-% 
+
+%%
+% _*GIBBON footer text*_
+%
 % License: <https://github.com/gibbonCode/GIBBON/blob/master/LICENSE>
-% 
+%
 % GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for
 % image segmentation, image-based modeling, meshing, and finite element
 % analysis.
-% 
+%
 % Copyright (C) 2006-2023 Kevin Mattheus Moerman and the GIBBON contributors
-% 
+%
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
 % the Free Software Foundation, either version 3 of the License, or
 % (at your option) any later version.
-% 
+%
 % This program is distributed in the hope that it will be useful,
 % but WITHOUT ANY WARRANTY; without even the implied warranty of
 % MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 % GNU General Public License for more details.
-% 
+%
 % You should have received a copy of the GNU General Public License
 % along with this program.  If not, see <http://www.gnu.org/licenses/>.

@@ -5,24 +5,24 @@ function [varargout]=gpatch(varargin)
 % This function is a short-hand version of the |patch| command. The inputs
 % for |gpatch| are the faces (F), the vertices (V), the color description
 % (C), the edge color description CE, the transparancy (A), and the edge
-% width (L). 
-% The color data descriptions C (or equivalently CE for edges) can be: 
+% width (L).
+% The color data descriptions C (or equivalently CE for edges) can be:
 % 1) A string such as 'g' for green
 % 2) A triplet of RGD values e.g. [1 0 0] is blue
 % 3) A nx1 or a mx1 array of colormapped colors (where n=size(F,1) or
-% m=size(V,1)) 
+% m=size(V,1))
 % 4) (simiarl to 3) A nx3 or a mx3 RGB color value array for the faces or
-% vertices respectively. 
+% vertices respectively.
 %
 %
 % Kevin Mattheus Moerman
 % gibbon.toolbox@gmail.com
-% 
-% 2017 
+%
+% 2017
 % 2018/02/07 Added support for colormapped edges
 % 2019/07/03 Added handling of empty alpha data
 % 2021/05/12 Added "material dull" style lighting settings by default to
-% avoid white color reflectance distorting colormapped visualizations. 
+% avoid white color reflectance distorting colormapped visualizations.
 %------------------------------------------------------------------------
 
 switch nargin
@@ -80,10 +80,16 @@ if isempty(faceAlpha)
 end
 
 if isa(F,'cell') %Assume all entries are cells defining multiple patch data sets
-    hp=gobjects(numel(F),1);
+	if is_octave
+		hp=zeros(numel(F),1);
+	else
+		hp=gobjects(numel(F),1);
+	end
+
+
     for q=1:1:numel(F)
         f=F{q};
-        
+
         if isa(V,'cell')
             v=V{q};
         else
@@ -95,13 +101,13 @@ if isa(F,'cell') %Assume all entries are cells defining multiple patch data sets
         else
             c=C;
         end
-        
+
         if isa(CE,'cell')
             ce=CE{q};
         else
             ce=CE;
         end
-        
+
         if isa(faceAlpha,'cell')
             a=faceAlpha{q};
         else
@@ -161,7 +167,11 @@ if ischar(C) %Plain single color
     end
 elseif size(C,2)==1
     argInPatch.FaceColor='flat';
-    argInPatch.CData=double(C);
+	if size(C,1)==size(V,1) %Vertex colors
+		argInPatch.FaceVertexCData=double(C);
+	elseif size(C,1)==size(F,1) %Face colors
+		argInPatch.CData=double(C);
+	end
 elseif size(C,2)==3 && size(C,1)==1 %Assume single RGB level
     argInPatch.FaceColor=double(C);
 elseif size(C,2)==3 && size(C,1)>1 %Assume RGB array
@@ -172,7 +182,7 @@ else
 end
 
 if ischar(CE) %Plain single color
-    argInPatch.EdgeColor=CE;    
+    argInPatch.EdgeColor=CE;
     if strcmp(CE,'kw')
         argInPatch.EdgeColor=grayColor(0.5);
     end
@@ -204,14 +214,14 @@ elseif size(CE,2)==1
             argInPatch.EdgeColor='flat';
             argInPatch.CData=double(CE);
         end
-        if size(CE,1)==size(V,1)            
+        if size(CE,1)==size(V,1)
             argInPatch.EdgeColor='flat';
-            argInPatch.CData=double(CE);
+			argInPatch.CData=double(CE);
         end
     else
         argInPatch.EdgeColor='flat';
         argInPatch.CData=double(CE)*ones(size(V,1),1);
-    end    
+    end
 elseif size(CE,2)==3 && size(CE,1)==1 %Assume single RGB level
     argInPatch.EdgeColor=double(CE);
 elseif size(CE,2)==3 && size(CE,1)>1 %Assume RGB array
@@ -237,27 +247,27 @@ end
 hp=patch(argInPatch);
 
 end
- 
-%% 
-% _*GIBBON footer text*_ 
-% 
+
+%%
+% _*GIBBON footer text*_
+%
 % License: <https://github.com/gibbonCode/GIBBON/blob/master/LICENSE>
-% 
+%
 % GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for
 % image segmentation, image-based modeling, meshing, and finite element
 % analysis.
-% 
+%
 % Copyright (C) 2006-2023 Kevin Mattheus Moerman and the GIBBON contributors
-% 
+%
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
 % the Free Software Foundation, either version 3 of the License, or
 % (at your option) any later version.
-% 
+%
 % This program is distributed in the hope that it will be useful,
 % but WITHOUT ANY WARRANTY; without even the implied warranty of
 % MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 % GNU General Public License for more details.
-% 
+%
 % You should have received a copy of the GNU General Public License
 % along with this program.  If not, see <http://www.gnu.org/licenses/>.

@@ -6,7 +6,7 @@
 
 %% Description
 % The |tet4_tet10| converts 4-node tetrahedral elements to 10-node
-% tetrahedral elements. 
+% tetrahedral elements.
 
 %% Examples
 
@@ -40,8 +40,7 @@ subplot(1,2,1); hold on;
 title('A linear tetrahedron','FontSize',fontSize);
 
 hp=gpatch(F4,V4,'gw','k',faceAlpha);
-hp.Marker='.';
-hp.MarkerSize=markerSize1;
+set(hp,'Marker','.','MarkerSize',markerSize1);
 
 patchNormPlot(F4,V4,0.75); %Plotting face normals
 
@@ -57,8 +56,7 @@ subplot(1,2,2); hold on;
 title('A quadratic tetrahedron','FontSize',fontSize);
 
 hp=gpatch(F10,V10,'rw','k',faceAlpha);
-hp.Marker='.';
-hp.MarkerSize=markerSize1;
+set(hp,'Marker','.','MarkerSize',markerSize1);
 patchNormPlot(F10,V10,0.75); %Plotting face normals
 
 for q=1:1:size(TET10,2)
@@ -69,7 +67,7 @@ axisGeom(gca,fontSize);
 axis off;
 camlight('headlight'); lighting flat;
 
-drawnow; 
+drawnow;
 
 %% CONVERSION FROM TET4 TO TET10, EXAMPLE FOR A TETRAHEDRON MESH WITH NODAL PARAMETERS
 n=3;
@@ -103,8 +101,7 @@ subplot(2,2,1); hold on;
 title('A linear tetrahedron mesh','FontSize',fontSize);
 
 hp=gpatch(F4,V4,'gw','k',faceAlpha);
-hp.Marker='.';
-hp.MarkerSize=markerSize2;
+set(hp,'Marker','.','MarkerSize',markerSize2);
 
 axisGeom(gca,fontSize); axis off;
 view([-50,12])
@@ -114,8 +111,7 @@ subplot(2,2,3); hold on;
 title('Data on linear tetrahedron mesh','FontSize',fontSize);
 
 hp=gpatch(F4,V4d,C4,'k',faceAlpha);
-hp.Marker='.';
-hp.MarkerSize=markerSize2;
+set(hp,'Marker','.','MarkerSize',markerSize2);
 
 axisGeom(gca,fontSize); axis off;
 view([-50,12])
@@ -125,8 +121,7 @@ subplot(2,2,2); hold on;
 title('A quadratic tetrahedron mesh','FontSize',fontSize);
 
 hp=gpatch(F10,V10,'rw','k',faceAlpha);
-hp.Marker='.';
-hp.MarkerSize=markerSize2;
+set(hp,'Marker','.','MarkerSize',markerSize2);
 
 axisGeom(gca,fontSize); axis off;
 view([-50,12])
@@ -136,14 +131,13 @@ subplot(2,2,4); hold on;
 title('Mapped data on quadratic tetrahedron mesh','FontSize',fontSize);
 
 hp=gpatch(F10,V10d,C10,'k',faceAlpha);
-hp.Marker='.';
-hp.MarkerSize=markerSize2;
+set(hp,'Marker','.','MarkerSize',markerSize2);
 
 axisGeom(gca,fontSize); axis off;
 view([-50,12])
 camlight('headlight'); lighting flat;
 
-drawnow; 
+drawnow;
 
 %% CONVERSION FROM TET4 TO TET10, EXAMPLE FOR KEEPING TRACK OF BOUNDARY FACES
 
@@ -158,7 +152,7 @@ Fb4=F4(indBoundary,:);
 % Fb10=F10(indBoundary,:);
 
 %%
-% 
+%
 
 hf=cFigure; % Open figure for plotting
 subplot(1,2,1); hold on;
@@ -174,43 +168,42 @@ subplot(1,2,2); hold on;
 title('A quadratic tetrahedron mesh','FontSize',fontSize);
 
 hp=gpatch(Fb10,V10,'rw','k',faceAlpha);
-hp.Marker='.';
-hp.MarkerSize=markerSize2;
+set(hp,'Marker','.','MarkerSize',markerSize2);
 
 axisGeom(gca,fontSize); axis off;
 camlight('headlight'); lighting flat;
 
 drawnow;
 
-%% 
+%%
 %
 % <<gibbVerySmall.gif>>
-% 
-% _*GIBBON*_ 
+%
+% _*GIBBON*_
 % <www.gibboncode.org>
-% 
+%
 % _Kevin Mattheus Moerman_, <gibbon.toolbox@gmail.com>
- 
-%% 
-% _*GIBBON footer text*_ 
-% 
+
+%%
+% _*GIBBON footer text*_
+%
 % License: <https://github.com/gibbonCode/GIBBON/blob/master/LICENSE>
-% 
+%
 % GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for
 % image segmentation, image-based modeling, meshing, and finite element
 % analysis.
-% 
+%
 % Copyright (C) 2006-2023 Kevin Mattheus Moerman and the GIBBON contributors
-% 
+%
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
 % the Free Software Foundation, either version 3 of the License, or
 % (at your option) any later version.
-% 
+%
 % This program is distributed in the hope that it will be useful,
 % but WITHOUT ANY WARRANTY; without even the implied warranty of
 % MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 % GNU General Public License for more details.
-% 
+%
 % You should have received a copy of the GNU General Public License
 % along with this program.  If not, see <http://www.gnu.org/licenses/>.

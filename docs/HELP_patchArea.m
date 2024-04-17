@@ -9,13 +9,13 @@ clear; close all; clc;
 
 %% Description
 % The patchArea function computes the surface area of the patch elements
-% defined by the faces F and vertices V. 
+% defined by the faces F and vertices V.
 
 %% Examples
 %
 
 testCase=5;
-switch testCase    
+switch testCase
     case 1 %Circle
         r=1;
         n=250;
@@ -46,7 +46,7 @@ switch testCase
         r=1;
         n=4;
         % [F,V]=geoSphere(n,r);
-        [F,V]=quadSphere(n,r,2);        
+        [F,V]=quadSphere(n,r,2);
         aTotalTrue=4*pi*r^2 %True theoretical area
     case 6 %Sphere triangles
         r=1;
@@ -57,7 +57,7 @@ end
 
 %%
 
-%Compute areas for each patch/face 
+%Compute areas for each patch/face
 [A]=patchArea(F,V);
 
 %Checking sum with theoretical (not changes due to discrete nature are
@@ -70,7 +70,7 @@ aTotalEstimate=sum(A(:)) %Summed area check
 cFigure;
 gpatch(F,V,A);
 axisGeom; camlight headlight;
-colormap parula; colorbar;
+colormap viridis; colorbar;
 gdrawnow;
 
 %%
@@ -104,26 +104,26 @@ gdrawnow;
 %
 % You should have received a copy of the GNU General Public License
 % along with this program.  If not, see <http://www.gnu.org/licenses/>.
-%% 
-% _*GIBBON footer text*_ 
-% 
+%%
+% _*GIBBON footer text*_
+%
 % License: <https://github.com/gibbonCode/GIBBON/blob/master/LICENSE>
-% 
+%
 % GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for
 % image segmentation, image-based modeling, meshing, and finite element
 % analysis.
-% 
+%
 % Copyright (C) 2006-2023 Kevin Mattheus Moerman and the GIBBON contributors
-% 
+%
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
 % the Free Software Foundation, either version 3 of the License, or
 % (at your option) any later version.
-% 
+%
 % This program is distributed in the hope that it will be useful,
 % but WITHOUT ANY WARRANTY; without even the implied warranty of
 % MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 % GNU General Public License for more details.
-% 
+%
 % You should have received a copy of the GNU General Public License
 % along with this program.  If not, see <http://www.gnu.org/licenses/>.

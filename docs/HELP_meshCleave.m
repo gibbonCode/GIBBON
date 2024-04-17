@@ -13,12 +13,12 @@ clear; close all; clc;
 %% Description
 % This function creates logic arrays for the mesh components (e.g. elements
 % or faces) which are at, above, or below a plane defined by the point P,
-% and the normal direction n. 
+% and the normal direction n.
 % The optional inclusiveSwitch is a 2-component vector (default [0 0]) and
 % sets how "inclusive", the below/above logic is, i.e. they set wether <
 % and > is used ([0 0]), or <= and >= are used ([1 1]). A combination may
 % also be used e.g. [1 0] results in below checks which features <= and
-% above checks using >. 
+% above checks using >.
 
 %% Examples
 clear; close all; clc;
@@ -27,7 +27,7 @@ clear; close all; clc;
 
 %%
 % Create example patch data
-[F,V]=stanford_bunny; 
+[F,V]=stanford_bunny;
 
 %%
 
@@ -37,27 +37,27 @@ P=mean(V,1); %Point on plane
 
 %%
 % Visualize
-cFigure; 
+cFigure;
 subplot(1,3,1); hold on;
 title('At cleave plane');
 gpatch(F,V,'w','none',0.2);
 gpatch(F(logicAt,:),V,'bw','k',1);
 camlight headlight;
-axisGeom; 
+axisGeom;
 
 subplot(1,3,2); hold on;
 title('Above cleave plane');
 gpatch(F,V,'w','none',0.2);
 gpatch(F(logicAbove,:),V,'bw','k',1);
 camlight headlight;
-axisGeom; 
+axisGeom;
 
 subplot(1,3,3); hold on;
 title('Below cleave plane');
 gpatch(F,V,'w','none',0.2);
 gpatch(F(logicBelow,:),V,'bw','k',1);
 camlight headlight;
-axisGeom; 
+axisGeom;
 
 gdrawnow;
 
@@ -65,7 +65,7 @@ gdrawnow;
 
 %%
 % Creating an example tetrahedral mesh
-boxDim=[5 5 5]; % Box dimenstions   
+boxDim=[5 5 5]; % Box dimenstions
 pointSpacing=0.25;
 [meshStruct]=tetMeshBox(boxDim,pointSpacing);
 E=meshStruct.elements;
@@ -87,39 +87,39 @@ P=mean(V,1); %Point on plane
 
 %%
 % Visualize
-cFigure; 
+cFigure;
 subplot(1,3,1); hold on;
 title('At cleave plane');
 gpatch(F,V,'w','none',0.2);
 gpatch(F_cleave,V,CF_cleave,'k',1);
 camlight headlight;
-axisGeom; 
+axisGeom;
 
 subplot(1,3,2); hold on;
 title('Above cleave plane');
 gpatch(F,V,'w','none',0.2);
 gpatch(F_above,V,CF_above,'k',1);
 camlight headlight;
-axisGeom; 
+axisGeom;
 
 subplot(1,3,3); hold on;
 title('Below cleave plane');
 gpatch(F,V,'w','none',0.2);
 gpatch(F_below,V,CF_below,'k',1);
 camlight headlight;
-axisGeom; 
+axisGeom;
 
 gdrawnow;
 
-%% 
+%%
 % Visualizing cleaving operation for varying angles
 
-hf=cFigure; hold on; 
+hf=cFigure; hold on;
 gpatch(F,V,'w','none',0.2);
 hp1=gpatch(F_cleave,V,CF_cleave,'k',1);
-axisGeom; axis manual; 
-camlight headligth;
-gdrawnow; 
+axisGeom; axis manual;
+camlight headlight;
+gdrawnow;
 
 nSteps=50; %Number of animation steps
 
@@ -129,13 +129,13 @@ animStruct.Time=linspace(0,1,nSteps);
 %The vector lengths
 a=linspace(0,2*pi,nSteps);
 b=linspace(0,2*pi,nSteps);
-for q=1:1:nSteps    
+for q=1:1:nSteps
     R=euler2DCM([a(q) b(q) 0]);
-    nn=n*R;    
-    
+    nn=n*R;
+
     logicAt=meshCleave(E,V,P,nn,[1 0]);
 
-    % Get faces and matching color data for cleaves elements 
+    % Get faces and matching color data for cleaves elements
     [F_cleave,CF_cleave]=element2patch(E(logicAt,:),C(logicAt));
 
     %Set entries in animation structure
@@ -173,39 +173,39 @@ logicPlot=logicAt;
 
 %%
 % Visualize
-cFigure; 
+cFigure;
 subplot(1,3,1); hold on;
 title('At cleave plane');
 gpatch(F,V,'w','none',0.2);
 gpatch(F_cleave,V,CF_cleave,'k',1);
 camlight headlight;
-axisGeom; 
+axisGeom;
 
 subplot(1,3,2); hold on;
 title('Above cleave plane');
 gpatch(F,V,'w','none',0.2);
 gpatch(F_above,V,CF_above,'k',1);
 camlight headlight;
-axisGeom; 
+axisGeom;
 
 subplot(1,3,3); hold on;
 title('Below cleave plane');
 gpatch(F,V,'w','none',0.2);
 gpatch(F_below,V,CF_below,'k',1);
 camlight headlight;
-axisGeom; 
+axisGeom;
 
 gdrawnow;
 
-%% 
+%%
 % Visualizing slicing operation for varying angles
 
-hf=cFigure; hold on; 
+hf=cFigure; hold on;
 gpatch(F,V,'w','none',0.2);
 hp1=gpatch(F_cleave,V,CF_cleave,'k',1);
-axisGeom; axis manual; 
-camlight headligth;
-gdrawnow; 
+axisGeom; axis manual;
+camlight headlight;
+gdrawnow;
 
 nSteps=50; %Number of animation steps
 
@@ -215,13 +215,13 @@ animStruct.Time=linspace(0,1,nSteps);
 %The vector lengths
 a=linspace(0,2*pi,nSteps);
 b=linspace(0,2*pi,nSteps);
-for q=1:1:nSteps    
+for q=1:1:nSteps
     R=euler2DCM([a(q) b(q) 0]);
-    nn=n*R;    
-    
+    nn=n*R;
+
     logicAt=meshCleave(E,V,P,nn,inclusiveSwitch);
 
-    % Get faces and matching color data for cleaves elements 
+    % Get faces and matching color data for cleaves elements
     [F_cleave,CF_cleave]=element2patch(E(logicAt,:),C(logicAt));
 
     %Set entries in animation structure
@@ -232,26 +232,26 @@ end
 anim8(hf,animStruct);
 
 
-%% 
-% _*GIBBON footer text*_ 
-% 
+%%
+% _*GIBBON footer text*_
+%
 % License: <https://github.com/gibbonCode/GIBBON/blob/master/LICENSE>
-% 
+%
 % GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for
 % image segmentation, image-based modeling, meshing, and finite element
 % analysis.
-% 
+%
 % Copyright (C) 2006-2023 Kevin Mattheus Moerman and the GIBBON contributors
-% 
+%
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
 % the Free Software Foundation, either version 3 of the License, or
 % (at your option) any later version.
-% 
+%
 % This program is distributed in the hope that it will be useful,
 % but WITHOUT ANY WARRANTY; without even the implied warranty of
 % MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 % GNU General Public License for more details.
-% 
+%
 % You should have received a copy of the GNU General Public License
 % along with this program.  If not, see <http://www.gnu.org/licenses/>.

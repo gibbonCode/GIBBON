@@ -10,7 +10,7 @@
 % by connecting the face sides to form new faces. The output faces cover
 % the edges of the dual of the input surface (hence the name). The output
 % is the set of shrunk faces (same type as input) and a set of new
-% quadrilateral faces connecting the shrunk faces. 
+% quadrilateral faces connecting the shrunk faces.
 % The shrink factor, which can be a constant or a spatially varying metric
 % on the nodes or faces, defines the face and edge shrink used. The
 % clad method determines whether the output mesh is connected:
@@ -18,7 +18,7 @@
 % 2: From shrunk face to shrunk edge to shrunk face
 % 3: From shrunk face to shrunk face through edge (computes intersection at
 % edge which may not be the centre of edge. This method avoids potential
-% "kinks" seen for method 2. 
+% "kinks" seen for method 2.
 
 %% Examples
 clear; close all; clc;
@@ -29,9 +29,9 @@ clear; close all; clc;
 figStruct.ColorDef='black';
 figStruct.Color='k';
 
-%% 
+%%
 % Specify test surface. Alter settings to test for different geometries and
-% surface types. 
+% surface types.
 
 %Testing settings
 testCase=2; %1= sphere, 2=bunny, 3=dino
@@ -55,7 +55,7 @@ switch testCase
     case 4
         defaultFolder = fileparts(fileparts(mfilename('fullpath')));
         pathName=fullfile(defaultFolder,'data','libSurf');
-        
+
         dataStruct=load(fullfile(pathName,'sprocket.mat'));
         F=dataStruct.F;
         V=dataStruct.V;
@@ -63,7 +63,7 @@ switch testCase
     case 5
         defaultFolder = fileparts(fileparts(mfilename('fullpath')));
         pathName=fullfile(defaultFolder,'data','libSurf');
-        
+
         dataStruct=load(fullfile(pathName,'enginePart_p1.mat'));
         F=dataStruct.F;
         V=dataStruct.V;
@@ -83,7 +83,7 @@ end
 
 %% Example 1: Explaining the clad method
 
-%% 
+%%
 % Define |dualClad| settings, i.e. the cladMethod and the shrink factor.
 cladMethods=[1 2 3]; %1= fact-to-face connections, 2=
 
@@ -92,32 +92,32 @@ cladMethods=[1 2 3]; %1= fact-to-face connections, 2=
 %%
 % Visualize results
 
-cFigure; 
+cFigure;
 
 for q=1:1:numel(cladMethods)
-    
+
     [Fq,Vq,Fc,Vc]=dualClad(F,V,shrinkFactor,cladMethods(q));
-    
+
     subplot(1,3,q); hold on;
     title(['Clad method: ',num2str(cladMethods(q))]);
     h(1)=gpatch(F,V,'kw','k',0.25);
-    h(2)=gpatch(Fc,Vc,'gw','g',1);    
+    h(2)=gpatch(Fc,Vc,'gw','g',1);
     h(3)=gpatch(Fq,Vq,'rw','r',1);
-    h(4)=plotV([Vc;Vq],'b.','MarkerSize',15);    
+    h(4)=plotV([Vc;Vq],'b.','MarkerSize',15);
     axisGeom;
     camlight headlight;
     view(2);
     hl=legend(h,{'Input','Shrunk faces','Quads','Output vertices'});
-    hl.Location='SouthOutside';
+    set(hl,'Location','SouthOutside');
 end
 
 
-drawnow; 
+drawnow;
 
 
 %% Example 2: Explaining the shrink factor
 
-%% 
+%%
 % Define |dualClad| settings, i.e. the cladMethod and the shrink factor.
 cladMethod=3; %1= fact-to-face connections, 2=
 
@@ -126,7 +126,7 @@ shrinkFactors=linspace(0.1,0.75,3); %A range of shrink factors
 %%
 % Visualize results
 
-cFigure; 
+cFigure;
 subplot(2,2,1); hold on;
 title('Input surface');
 gpatch(F,V,'gw','g',1);
@@ -136,9 +136,9 @@ camlight headlight;
 view(2);
 
 for q=1:1:numel(shrinkFactors)
-    
+
     [Fq,Vq,Fc,Vc]=dualClad(F,V,shrinkFactors(q),cladMethod);
-    
+
     subplot(2,2,q+1); hold on;
     title(['Shrink factor: ',num2str(shrinkFactors(q))]);
     gpatch(Fc,Vc,'rw','r',1);
@@ -155,7 +155,7 @@ drawnow;
 % An animation will be created to show effect of a spatially varying shrink
 % factor
 
-cladMethod=3; 
+cladMethod=3;
 
 % Define spatially varying shrink factor
 shrinkFactor=-V(:,1);
@@ -182,10 +182,10 @@ hp2=gpatch(Fq,Vq,'r','none',1);
 axisGeom;
 camlight headlight;
 colormap(viridis(250));
-clim([0 1]);
+set(gca,'clim',[0 1]);
 drawnow;
 axis off
-axis manual; 
+axis manual;
 
 %%
 % Animate scene
@@ -201,13 +201,13 @@ shrinkFactor=shrinkFactor./max(shrinkFactor(:));
 shrinkFactor=shrinkFactor+1;
 minLevel=0.05;
 
-for q=1:1:nSteps    
-    
+for q=1:1:nSteps
+
       shrinkFactorNow=shrinkFactor;
       shrinkFactorNow=shrinkFactorNow-t(q);
-      shrinkFactorNow(shrinkFactorNow<minLevel)=minLevel;      
+      shrinkFactorNow(shrinkFactorNow<minLevel)=minLevel;
       shrinkFactorNow(shrinkFactorNow>1)=1;
-      
+
     [Fq,Vq,Fc,Vc]=dualClad(F,V,shrinkFactorNow,cladMethod);
 
     %Set entries in animation structure
@@ -218,35 +218,35 @@ end
 
 anim8(hf,animStruct); %Initiate animation
 
-%% 
+%%
 %
 % <<gibbVerySmall.gif>>
-% 
-% _*GIBBON*_ 
+%
+% _*GIBBON*_
 % <www.gibboncode.org>
-% 
+%
 % _Kevin Mattheus Moerman_, <gibbon.toolbox@gmail.com>
- 
-%% 
-% _*GIBBON footer text*_ 
-% 
+
+%%
+% _*GIBBON footer text*_
+%
 % License: <https://github.com/gibbonCode/GIBBON/blob/master/LICENSE>
-% 
+%
 % GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for
 % image segmentation, image-based modeling, meshing, and finite element
 % analysis.
-% 
+%
 % Copyright (C) 2006-2023 Kevin Mattheus Moerman and the GIBBON contributors
-% 
+%
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
 % the Free Software Foundation, either version 3 of the License, or
 % (at your option) any later version.
-% 
+%
 % This program is distributed in the hope that it will be useful,
 % but WITHOUT ANY WARRANTY; without even the implied warranty of
 % MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 % GNU General Public License for more details.
-% 
+%
 % You should have received a copy of the GNU General Public License
 % along with this program.  If not, see <http://www.gnu.org/licenses/>.

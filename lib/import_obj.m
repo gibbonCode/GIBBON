@@ -35,31 +35,43 @@ fullMode=optionStruct.fullMode;
 colorMappingOpt=optionStruct.colorMappingOpt;
 
 %% Import and parse OBJ
+
 % Import OBJ lines
-S_OBJ = readlines(fileName);
+fid = fopen(fileName);
+S_OBJ = textscan(fid,'%s','delimiter', '\n','Whitespace','');
+S_OBJ = S_OBJ{1};
+fclose(fid);
+% S_OBJ = readlines(fileName);
 
 %Process OBJ text to detect features
-Lc=contains(S_OBJ,'# ');
-L_mtl=contains(S_OBJ,'mtllib');
-L_mat=contains(S_OBJ,'usemtl');
+Lc    = gcontains(S_OBJ,'# ');
+L_mtl = gcontains(S_OBJ,'mtllib');
+L_mat = gcontains(S_OBJ,'usemtl');
 
 if fullMode %Also check for MTL and texture image
-    fileName_mtl=sscanf(S_OBJ(L_mtl),'mtllib %s');
+	S_OBJ(L_mtl)
+	S_OBJ(L_mtl){1}
+    fileName_mtl=sscanf(S_OBJ(L_mtl){1},'mtllib %s');
     %name_mat=sscanf(S_OBJ(L_mat),'usemtl %s');
 
     % Load texture image
     [filePath,~,~]=fileparts(fileName);
-    S_MTL = readlines(fullfile(filePath,fileName_mtl));
-    L_Kd = contains(S_MTL,'map_Kd');
-    imageName_Kd=sscanf(S_MTL(L_Kd),'map_Kd %s');
+
+   % S_MTL = readlines(fullfile(filePath,fileName_mtl));
+    fid = fopen(fullfile(filePath,fileName_mtl));
+    S_MTL = textscan(fid,'%s','delimiter', '\n','Whitespace',''){1};
+    fclose(fid);
+
+    L_Kd = gcontains(S_MTL,'map_Kd');
+    imageName_Kd=sscanf(S_MTL(L_Kd){1},'map_Kd %s');
     m=imread(fullfile(filePath,imageName_Kd));
 end
 
 L_exc = Lc | L_mtl | L_mat; %Logic of lines to exclude (all none v, vn, vt, or f lines).
-Lv=contains(S_OBJ,'v ') & ~L_exc;
-Lvn=contains(S_OBJ,'vn ') & ~L_exc;
-Lvt=contains(S_OBJ,'vt ') & ~L_exc;
-Lf=contains(S_OBJ,'f ') & ~L_exc;
+Lv = gcontains(S_OBJ,'v ') & ~L_exc;
+Lvn = gcontains(S_OBJ,'vn ') & ~L_exc;
+Lvt = gcontains(S_OBJ,'vt ') & ~L_exc;
+Lf = gcontains(S_OBJ,'f ') & ~L_exc;
 
 %% Get vertices
 
@@ -67,7 +79,8 @@ nVertices = nnz(Lv);
 V=zeros(nVertices,3);
 s=S_OBJ(Lv);
 for q=1:1:nVertices
-    V(q,:)=sscanf(s(q),'v %f %f %f')';
+    V(q,:)=sscanf(s{q},'v %f %f %f')';
+    %V(q,:)=sscanf(s(q),'v %f %f %f')';
 end
 
 %% Get normals/texture data
@@ -78,13 +91,13 @@ if fullMode
     N=zeros(nVertNorm,3);
     s=S_OBJ(Lvn);
     for q=1:1:nVertNorm
-        N(q,:)=sscanf(s(q),'vn %f %f %f')';
+        N(q,:)=sscanf(s(q){1},'vn %f %f %f')';
     end
 
     T=zeros(nVertTexture,2);
     s=S_OBJ(Lvt);
     for q=1:1:nVertTexture
-        T(q,:)=sscanf(s(q),'vt %f %f ')';
+        T(q,:)=sscanf(s(q){1},'vt %f %f ')';
     end
 
     %Convert UV to image coordinates (subscript indices into array)
@@ -109,8 +122,8 @@ if fullMode==1
     sf=regexprep(s,'/+[0-9]+|f', ' '); %Remove f and get just face vertex indices
     sd=regexprep(s,'/|f', ' '); %Remove f and /
     for q=1:1:nFaces
-        FC{q}=sscanf(sf(q),'%d')';
-        FD{q}=sscanf(sd(q),'%d')';
+        FC{q}=sscanf(sf(q){1},'%d')';
+        FD{q}=sscanf(sd(q){1},'%d')';
         nf(q)=numel(FC{q});
         if size(FD{q},2)==2*nf(q)
             i=(1:nf(q))*2-1;
@@ -144,7 +157,7 @@ else
     s=S_OBJ(Lf);
     sf=regexprep(s,'/+[0-9]+|f', ' '); %Remove f and get just face vertex indices
     for q=1:1:nFaces
-        FC{q}=sscanf(sf(q),'%d')';
+        FC{q}=sscanf(sf{q},'%d')'; % FC{q}=sscanf(sf(q),'%d')';
         nf(q)=numel(FC{q});
     end
 

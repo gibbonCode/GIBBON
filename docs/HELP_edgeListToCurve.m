@@ -7,14 +7,14 @@ clear; close all; clc;
 %% Syntax
 % |[indList]=edgeListToCurve(E);|
 
-%% Description 
+%% Description
 % This function converts the nx2 edges array |E|, which should define a
 % single curve, to an ordered list of mx1 indices |indList| for that curve.
 % Note that iff the edges define a closed curve the first and last indices
-% in the ordered list are the same and therefore repeated. 
+% in the ordered list are the same and therefore repeated.
 
-%% Examples 
-% 
+%% Examples
+%
 
 %%
 % Plot settings
@@ -30,7 +30,7 @@ t=linspace(0,2*pi,50); t=t(1:end-1); %Angles
 V1=[cos(t(:)) sin(t(:))];
 
 %Desired point spacing
-pointSpacing=0.5; 
+pointSpacing=0.5;
 
 [F,V]=regionTriMesh2D({V1},pointSpacing,1,0);
 
@@ -45,15 +45,15 @@ indList=edgeListToCurve(Eb);
 %%
 % Visualize example mesh and boundary edges/curves
 
-cFigure; 
-subplot(1,2,1); hold on; 
+cFigure;
+subplot(1,2,1); hold on;
 title('Boundary edges','FontSize',fontSize)
 hp1=gpatch(F,V,'kw','k',1,1);
 hp2=gpatch(Eb,V,'none',(1:1:size(Eb,1))',1,lineWidth);
 legend([hp1 hp2],{'Mesh','Boundary edges'});
 axisGeom(gca,fontSize); view(2);
 
-subplot(1,2,2); hold on; 
+subplot(1,2,2); hold on;
 title('Boundary curve','FontSize',fontSize)
 hp1=gpatch(F,V,'kw','k',1,1);
 hp2=plotV(V(indList,:),'r.-','MarkerSize',markerSize,'LineWidth',lineWidth);
@@ -89,7 +89,7 @@ regionCell={V1,V2,V3}; %A region between V1 and V2 (V2 forms a hole inside V1)
 plotOn=1; %This turns on/off plotting
 
 %Desired point spacing
-pointSpacing=0.5; 
+pointSpacing=0.5;
 
 [F,V]=regionTriMesh2D(regionCell,pointSpacing,1,0);
 
@@ -110,49 +110,49 @@ axisGeom(gca,fontSize); view(2);
 
 plotColors=gjet(max(G(:)));
 for q=1:1:max(G(:))
-        
+
     E_now=Eb(G==q,:);
 
     plotV(V(E_now,:),'b.','markersize',25);
 
     [indListNow]=edgeListToCurve(E_now);
-    
+
     hp=plotV(V(indListNow,:),'b.-','MarkerSize',markerSize,'LineWidth',lineWidth);
-    hp.Color=plotColors(q,:);
-    
+    set(hp,'Color',plotColors(q,:));
+
 end
 
 drawnow;
 
-%% 
+%%
 %
 % <<gibbVerySmall.gif>>
-% 
-% _*GIBBON*_ 
+%
+% _*GIBBON*_
 % <www.gibboncode.org>
-% 
+%
 % _Kevin Mattheus Moerman_, <gibbon.toolbox@gmail.com>
- 
-%% 
-% _*GIBBON footer text*_ 
-% 
+
+%%
+% _*GIBBON footer text*_
+%
 % License: <https://github.com/gibbonCode/GIBBON/blob/master/LICENSE>
-% 
+%
 % GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for
 % image segmentation, image-based modeling, meshing, and finite element
 % analysis.
-% 
+%
 % Copyright (C) 2006-2023 Kevin Mattheus Moerman and the GIBBON contributors
-% 
+%
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
 % the Free Software Foundation, either version 3 of the License, or
 % (at your option) any later version.
-% 
+%
 % This program is distributed in the hope that it will be useful,
 % but WITHOUT ANY WARRANTY; without even the implied warranty of
 % MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 % GNU General Public License for more details.
-% 
+%
 % You should have received a copy of the GNU General Public License
 % along with this program.  If not, see <http://www.gnu.org/licenses/>.

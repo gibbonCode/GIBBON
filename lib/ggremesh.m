@@ -5,9 +5,9 @@ function [Fn,Vn]=ggremesh(varargin)
 % This function uses the external library Geogram to remesh the input
 % triangulation defined by the faces F and the vertices V. In particular
 % the code "vorpalite" is used. An additional option structure may be
-% provided where users can set particular parameters for Geogram. 
-% 
-% Below the options and defaults are provided: 
+% provided where users can set particular parameters for Geogram.
+%
+% Below the options and defaults are provided:
 % optionStruct.nb_pts=size(V,1); %number of points
 % optionStruct.anisotropy=0; %Use anisotropy (~=0) to capture geometry or favour isotropic triangles (=0)
 % optionStruct.pre.max_hole_area=100; %Max hole area for pre-processing step
@@ -19,19 +19,19 @@ function [Fn,Vn]=ggremesh(varargin)
 % Instead of nb_pts users can also specify a pointSpacing to be used
 % instead of nb_pts. This is not a Geogram feature but a GIBBON option
 % which is translated to the number of points for Geogram remeshing. This
-% is and example for a desired point spacing of 4:  
+% is and example for a desired point spacing of 4:
 % optionStruct.pointSpacing=4
 %
 %
 % Geogram GitHub repository: https://github.com/BrunoLevy/geogram
-% 
+%
 %
 % Lévy B., Bonneel N. (2013) Variational Anisotropic Surface Meshing with
 % Voronoi Parallel Linear Enumeration. In: Jiao X., Weill JC. (eds)
 % Proceedings of the 21st International Meshing Roundtable. Springer,
-% Berlin, Heidelberg. https://doi.org/10.1007/978-3-642-33573-0_21 
-% 
-% See also: 
+% Berlin, Heidelberg. https://doi.org/10.1007/978-3-642-33573-0_21
+%
+% See also:
 % http://alice.loria.fr/publications/papers/2012/Vorpaline_IMR/vorpaline.pdf
 % https://www.ljll.math.upmc.fr/hecht/ftp/ff++days/2013/BrunoLevy.pdf
 %
@@ -43,7 +43,7 @@ function [Fn,Vn]=ggremesh(varargin)
 
 %% Parse input
 
-switch nargin    
+switch nargin
     case 2
         F=varargin{1};
         V=varargin{2};
@@ -68,7 +68,7 @@ defaultOptionStruct.disp_on=0; %Turn on/off displaying of Geogram text
 
 %Check for point spacing field
 if isfield(optionStruct,'pointSpacing')
-    optionStruct.nb_pts=spacing2numVertices(F,V,optionStruct.pointSpacing); 
+    optionStruct.nb_pts=spacing2numVertices(F,V,optionStruct.pointSpacing);
     optionStruct=rmfield(optionStruct,'pointSpacing');
 end
 
@@ -87,22 +87,22 @@ inputFileName=fullfile(pathNameTempFiles,'temp.obj');
 outputFileName=fullfile(pathNameTempFiles,'temp_out.obj');
 
 %Create runName for binary
-compString=computer; 
+compString=computer;
 switch compString
     case 'PCWIN64' %Windows 64-bit
         pathNameTetGenFile=fullfile(pathNameLib,'win64','bin');
         runName=fullfile(pathNameTetGenFile,'vorpalite.exe');
-    case 'GLNXA64' %Linux 64-bit       
+    case {'GLNXA64','x86_64-pc-linux-gnu'} %Linux 64-bit
         pathNameTetGenFile=fullfile(pathNameLib,'lin64','bin');
         runName=fullfile(pathNameTetGenFile,'vorpalite');
-    case 'MACI64'  %MAC 64-bit      
+    case 'MACI64'  %MAC 64-bit
         pathNameTetGenFile=fullfile(pathNameLib,'mac64','bin');
         runName=fullfile(pathNameTetGenFile,'vorpalite');
     otherwise
         error('Your platform does not seem to be supported');
 end
 
-%% 
+%%
 
 if disp_on==1
     startString=['------>  Geogram/vorpalite for resmeshing  <------ ',datestr(now)];
@@ -128,16 +128,16 @@ if disp_on==1
 end
 
 %Compose basic run string
-runString=['"',runName,'" "',inputFileName,'" "',outputFileName,'"']; 
+runString=['"',runName,'" "',inputFileName,'" "',outputFileName,'"'];
 
 %Grow run string with additional options
 fieldNameSet=fieldnames(optionStruct);
 for q=1:1:numel(fieldNameSet)
-    fieldNameNow=fieldNameSet{q};    
+    fieldNameNow=fieldNameSet{q};
     structVar=optionStruct.(fieldNameNow);
-    
-    if isstruct(structVar)        
-        preFix=fieldNameNow; 
+
+    if isstruct(structVar)
+        preFix=fieldNameNow;
         fieldNameSetPre=fieldnames(structVar);
         for qs=1:1:numel(fieldNameSetPre)
             fieldNameNow=fieldNameSetPre{qs};
@@ -167,7 +167,7 @@ try
     Fn=objStruct.F;
     Vn=objStruct.V;
 catch ME
-    warning('import of OBJ file not successful. Set disp_on=1 to see any Geogram error messages.');    
+    warning('import of OBJ file not successful. Set disp_on=1 to see any Geogram error messages.');
     rethrow(ME);
 end
 
@@ -178,8 +178,8 @@ if disp_on==1
 end
 
 %Delete the file
-delete(inputFileName); 
-delete(outputFileName); 
+delete(inputFileName);
+delete(outputFileName);
 
 %%
 if disp_on==1
@@ -211,28 +211,28 @@ else
     runString=[runString,' ',varName,'=',varValue];
 end
 
-    
+
 end
-%% 
-% _*GIBBON footer text*_ 
-% 
+%%
+% _*GIBBON footer text*_
+%
 % License: <https://github.com/gibbonCode/GIBBON/blob/master/LICENSE>
-% 
+%
 % GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for
 % image segmentation, image-based modeling, meshing, and finite element
 % analysis.
-% 
+%
 % Copyright (C) 2006-2023 Kevin Mattheus Moerman and the GIBBON contributors
-% 
+%
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
 % the Free Software Foundation, either version 3 of the License, or
 % (at your option) any later version.
-% 
+%
 % This program is distributed in the hope that it will be useful,
 % but WITHOUT ANY WARRANTY; without even the implied warranty of
 % MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 % GNU General Public License for more details.
-% 
+%
 % You should have received a copy of the GNU General Public License
 % along with this program.  If not, see <http://www.gnu.org/licenses/>.

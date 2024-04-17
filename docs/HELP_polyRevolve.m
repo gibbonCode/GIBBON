@@ -109,22 +109,22 @@ W=eye(3,3);
 cFigure;
 gtitle('Variation of the rotation axis',fontSize);
 for q=1:1:size(W,1)
-    
+
     cPar.w=W(q,:);
     [F,V,C]=polyRevolve(Vc,cPar);
-    
+
     %Visualizing mesh
     subplot(1,size(W,1),q);
     % title(patchTypes{q},'FontSize',fontSize,'Interpreter','none');
     hold on;
-    
+
     hp1=plotV(Vc,'r-','lineWidth',lineWidth);
     hp2=quiverVec([0 0 0],cPar.w,10,'k');
     hp3=gpatch(F,V,'g','none',0.5);
-    
+
     axisGeom(gca,fontSize);
     camlight headlight;
-    
+
 end
 
 drawnow;
@@ -149,22 +149,22 @@ cPar.closeLoopOpt=0; %Do not close feature
 cFigure;
 gtitle('Variation of the rotation angle',fontSize);
 for q=1:1:size(W,1)
-    
+
     cPar.theta=T(q);
     [F,V,C]=polyRevolve(Vc,cPar);
-    
+
     %Visualizing mesh
     subplot(1,size(W,1),q);
     % title(patchTypes{q},'FontSize',fontSize,'Interpreter','none');
     hold on;
-    
+
     hp1=plotV(Vc,'r-','lineWidth',lineWidth);
     hp2=quiverVec([0 0 0],cPar.w,10,'k');
     hp3=gpatch(F,V,'g','none',0.5);
-    
+
     axisGeom(gca,fontSize);
     camlight headlight;
-    
+
 end
 
 drawnow;
@@ -178,26 +178,26 @@ drawnow;
 %
 % _Kevin Mattheus Moerman_, <gibbon.toolbox@gmail.com>
 
-%% 
-% _*GIBBON footer text*_ 
-% 
+%%
+% _*GIBBON footer text*_
+%
 % License: <https://github.com/gibbonCode/GIBBON/blob/master/LICENSE>
-% 
+%
 % GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for
 % image segmentation, image-based modeling, meshing, and finite element
 % analysis.
-% 
+%
 % Copyright (C) 2006-2023 Kevin Mattheus Moerman and the GIBBON contributors
-% 
+%
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
 % the Free Software Foundation, either version 3 of the License, or
 % (at your option) any later version.
-% 
+%
 % This program is distributed in the hope that it will be useful,
 % but WITHOUT ANY WARRANTY; without even the implied warranty of
 % MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 % GNU General Public License for more details.
-% 
+%
 % You should have received a copy of the GNU General Public License
 % along with this program.  If not, see <http://www.gnu.org/licenses/>.

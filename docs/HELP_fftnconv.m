@@ -7,11 +7,11 @@ clear; close all; clc;
 %% Syntax
 % |[MF]=fftnconv(M,F);|
 
-%% Description 
+%% Description
 % DEPRICATED
 
-%% Examples 
-% 
+%% Examples
+%
 
 %%
 % Plot settings
@@ -22,7 +22,7 @@ lineWidth=3;
 n=50;
 m=[ones(1,n) 2*ones(1,n)];
 
-kernelSigma=3; 
+kernelSigma=3;
 padSize=kernelSigma*5;
 padDim=2;
 
@@ -43,30 +43,30 @@ mf=reshape(mfp(indOriginal),siz);
 %%
 % Visualization
 
-cFigure; 
-subplot(3,1,1); hold on; 
+cFigure;
+subplot(3,1,1); hold on;
 title('Original');
 plot(m,'r-','LineWidth',lineWidth);
-axis tight; grid on; box on; 
+axis tight; grid on; box on;
 
-subplot(3,1,2); hold on; 
+subplot(3,1,2); hold on;
 title('filter');
 plot(f,'g-','LineWidth',lineWidth);
-axis tight; grid on; box on; 
+axis tight; grid on; box on;
 
-subplot(3,1,3); hold on; 
+subplot(3,1,3); hold on;
 title('filtered');
 plot(mf,'b-','LineWidth',lineWidth);
-axis tight; grid on; box on; 
+axis tight; grid on; box on;
 
-drawnow; 
+drawnow;
 
 %% Example 2: 2D convolution
 
 n=50;
 m=[ones(25,n) 2*ones(25,n)];
 
-kernelSigma=3; 
+kernelSigma=3;
 padSize=kernelSigma*5;
 padDim=2;
 
@@ -88,52 +88,52 @@ mf=reshape(mfp(indOriginal),size(m));
 %%
 % Visualization
 
-cFigure; 
-subplot(3,1,1); hold on; 
+cFigure;
+subplot(3,1,1); hold on;
 title('Original');
 imagesc(m);
-axis tight; axis equal; 
+axis tight; axis equal;
 
-subplot(3,1,2); hold on; 
+subplot(3,1,2); hold on;
 title('filter');
 imagesc(f);
-axis tight; axis equal; 
+axis tight; axis equal;
 
-subplot(3,1,3); hold on; 
+subplot(3,1,3); hold on;
 title('filtered');
-imagesc(mf);
-axis tight; axis equal; 
+imagesc(real(mf));
+axis tight; axis equal;
 
-drawnow; 
+drawnow;
 
 %%
-% 
+%
 % <<gibbVerySmall.gif>>
-% 
-% _*GIBBON*_ 
+%
+% _*GIBBON*_
 % <www.gibboncode.org>
-% 
+%
 % _Kevin Mattheus Moerman_, <gibbon.toolbox@gmail.com>
-%% 
-% _*GIBBON footer text*_ 
-% 
+%%
+% _*GIBBON footer text*_
+%
 % License: <https://github.com/gibbonCode/GIBBON/blob/master/LICENSE>
-% 
+%
 % GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for
 % image segmentation, image-based modeling, meshing, and finite element
 % analysis.
-% 
+%
 % Copyright (C) 2006-2023 Kevin Mattheus Moerman and the GIBBON contributors
-% 
+%
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
 % the Free Software Foundation, either version 3 of the License, or
 % (at your option) any later version.
-% 
+%
 % This program is distributed in the hope that it will be useful,
 % but WITHOUT ANY WARRANTY; without even the implied warranty of
 % MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 % GNU General Public License for more details.
-% 
+%
 % You should have received a copy of the GNU General Public License
 % along with this program.  If not, see <http://www.gnu.org/licenses/>.
