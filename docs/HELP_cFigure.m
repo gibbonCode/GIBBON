@@ -27,10 +27,9 @@ edgeWidth=1.5;
 
 %Modifying standard figure properties
 figStruct.Name='GIBBON'; %Figure name
-figStruct.Color='k'; %Figure background color
+figStruct.Color='r'; %Figure background color
 
 %Custom figure properties
-figStruct.ColorDef='black'; %Setting colordefinitions to black
 figStruct.ScreenOffset=0; %Setting spacing of figure with respect to screen edges
 
 [H(1)]=cFigure(figStruct);

@@ -6,7 +6,6 @@ clear; close all; clc;
 
 %%
 % PLOT SETTINGS
-figColor='w'; figColorDef='white';
 fontSize=15;
 faceAlpha1=1;
 faceAlpha2=0.5;

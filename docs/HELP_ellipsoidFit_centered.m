@@ -17,8 +17,6 @@ clear; close all; clc;
 %%
 % Plot settings
 
-figColor='w';
-figColorDef='white';
 fontSize=11;
 
 %% Example: Using |ellipsoidFit_centered| to fit an ellipsoid to a point cloud with known centre

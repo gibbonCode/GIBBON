@@ -13,7 +13,7 @@ function setViewProfile(profileName)
 
 validSet={'default','CAD','febio','touchpad'};
 if ~ismember(profileName,validSet)    
-    error('Invalid profile type provided'); 
+    error(""" Invalid profile type provided, use 'CAD','febio', or 'touchpad' """); 
 end
 
 %% Create vcw setting

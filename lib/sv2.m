@@ -18,7 +18,7 @@ switch nargin
 end
 
 %Expand voxel size if it is scalar
-if numel(v)==1
+if isscalar(v)
     v=v.*ones(1,3);
 end
 
@@ -40,12 +40,9 @@ M(~logicMask)=NaN;
 %%
 % Plot settings
 fontSize=10;
-fontColor='w';
 cMap=gray(250);
 
 % figStruct.vcw=0; %Currently not compatible with vcw
-figStruct.Color='k'; %Figure background color
-figStruct.ColorDef='black'; %Setting colordefinitions to black
 % figStruct.ScreenOffset=20; %Setting spacing of figure with respect to screen edges
 
 %%
@@ -60,7 +57,7 @@ sliceIndexK=round(size(M,3)/2); %(close to) middle slice
 [ax,ay,az]=im2cart([size(M,1)+1 0],[size(M,2)+1 0],[size(M,3)+1 0],v);
 axLim=[ax(2) ax(1) ay(2) ay(1) az(2) az(1)];
 
-hf=cFigure(figStruct);
+hf=cFigure;
 
 for q=1:1:4
     subplot(2,2,q);
@@ -79,7 +76,7 @@ for q=1:1:4
             title('IJ-view','color','b');
             view(0,90);
         case 4
-            title('IJK-view ','color',fontColor);
+            title('IJK-view ','color','k');
             colorbar;
             view(3);
     end
@@ -102,7 +99,7 @@ hf.UserData.sv2.hpp=NaN(1,6);
 hf.UserData.sv2.sliceIndices=[sliceIndexI sliceIndexJ sliceIndexK];
 hf.UserData.sv2.axLim=axLim;
 hf.UserData.sv2.cLim=cLim;
-hf.UserData.sv2.fontColor=fontColor;
+hf.UserData.sv2.fontColor='k';
 
 updateSlices(hf);
  

@@ -58,8 +58,6 @@ fontSize=20;
 cMap=gray(250);
 scrollBarWidth=20; %Scrollbar width
 figStruct.Name='Image Segmentation Widget'; %Figure name
-figStruct.Color=0.*ones(1,3); %Figure background color
-figStruct.ColorDef='black'; %Setting colordefinitions to black
 figStruct.vcw=0;
 % figStruct.ScreenOffset=100; %Setting spacing of figure with respect to screen edges
 

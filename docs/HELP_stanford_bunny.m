@@ -33,7 +33,6 @@ clear; close all; clc;
 
 %%
 % Plot settings
-fig_color='w'; fig_colordef='white';
 fontSize=15;
 faceColor='b';
 faceAlpha=1;

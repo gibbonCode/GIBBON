@@ -55,8 +55,7 @@ end
 M=double(M); %Conver the image to a double
 
 figStruct.Name='GIBBON: Slice viewer'; %Figure name
-figStruct.Color='k'; %Figure background color
-figStruct.ColorDef='black'; %Setting colordefinitions to black
+figStruct.Color='w'; %Figure background color
 
 optionStructDefault.colormap=gray(250); %colormap
 optionStructDefault.clim=[min(M(~isnan(M))) max(M(~isnan(M)))]; %color limits

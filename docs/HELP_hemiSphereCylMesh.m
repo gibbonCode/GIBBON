@@ -15,7 +15,6 @@ clear; close all; clc;
 
 %%
 % Plot settings
-figColor='w'; figColorDef='white';
 fontSize=15;
 faceAlpha=1;
 lineWidth=1;

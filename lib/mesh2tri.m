@@ -29,7 +29,7 @@ function [F,V]=mesh2tri(X,Y,Z,tri_type)
 % [X,Y] = meshgrid(linspace(-10,10,25));
 % Z = sinc(sqrt((X/pi).^2+(Y/pi).^2));
 %
-% figure('units','normalized','Position',[0 0 1 1],'Color','w'); colordef('white');
+% cFigure; 
 % subplot(2,2,1);
 % surf(X,Y,Z); hold on;
 % axis tight; axis square; grid on; axis off; view(3); view(-30,70);

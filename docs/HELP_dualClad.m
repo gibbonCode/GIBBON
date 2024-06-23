@@ -23,12 +23,6 @@
 %% Examples
 clear; close all; clc;
 
-%%
-% Plot settings
-
-figStruct.ColorDef='black';
-figStruct.Color='k';
-
 %% 
 % Specify test surface. Alter settings to test for different geometries and
 % surface types. 
@@ -173,7 +167,7 @@ shrinkFactor(shrinkFactor>1)=1;
 
 %%
 % Initialize scene
-hf=cFigure(figStruct);
+hf=cFigure;
 hold on;
 
 hp1=gpatch(Fc,Vc,shrinkFactor,'k',1);

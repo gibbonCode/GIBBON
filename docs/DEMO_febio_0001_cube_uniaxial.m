@@ -61,7 +61,7 @@ numElementsThickness=round(sampleThickness/pointSpacings(2)); %Number of element
 numElementsHeight=round(sampleHeight/pointSpacings(3)); %Number of elements in dir 3
 
 %Define applied displacement 
-appliedStrain=0.3; %Linear strain (Only used to compute applied stretch)
+appliedStrain=0.5; %Linear strain (Only used to compute applied stretch)
 loadingOption='compression'; % or 'tension'
 switch loadingOption
     case 'compression'
@@ -84,7 +84,7 @@ max_retries=5; %Maximum number of retires
 dtmin=(1/numTimeSteps)/100; %Minimum time step size
 dtmax=1/numTimeSteps; %Maximum time step size
 
-runMode='external';% 'internal' or 'external'
+runMode='internal';% 'internal' or 'external'
 
 %% Creating model geometry and mesh
 % A box is created with tri-linear hexahedral (hex8) elements using the
@@ -274,6 +274,8 @@ febio_spec.LoadData.load_controller{1}.ATTR.type='loadcurve';
 febio_spec.LoadData.load_controller{1}.interpolate='LINEAR';
 %febio_spec.LoadData.load_controller{1}.extend='CONSTANT';
 febio_spec.LoadData.load_controller{1}.points.pt.VAL=[0 0; 1 1];
+
+febio_spec.Output.plotfile.var{end+1}.ATTR.type='right stretch';
 
 %Output section 
 % -> log file

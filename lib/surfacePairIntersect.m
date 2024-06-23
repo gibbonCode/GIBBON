@@ -35,7 +35,7 @@ function [Xi,Yi,Zi]=surfacePairIntersect(X1,Y1,Z1,X2,Y2,Z2,interpMethod)
 % 
 % %% Plotting surfaces and intersection curve
 % 
-% figure; colordef(gcf,'white'); set(gcf,'outerposition',get(0,'ScreenSize'),'Color',[1 1 1]);  hold on; 
+% cFigure; hold on; 
 % ht1=xlabel('X'); ht2=ylabel('Y'); ht3=zlabel('Z'); ht4=title(['Found ',num2str(numel(Xi)),' intersection curves']); set([ht1 ht2 ht3 ht4],'FontSize',20);
 % h1=surf(X1,Y1,Z1,'FaceColor','r'); h2=surf(X2,Y2,Z2,'FaceColor','g');
 % set([h1 h2],'EdgeColor','k','FaceAlpha',0.8);

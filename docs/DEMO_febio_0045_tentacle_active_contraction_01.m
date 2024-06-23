@@ -25,8 +25,6 @@ clear; close all; clc;
 
 %%
 % Plot settings
-figColor='w'; 
-figColorDef='white';
 fontSize=25;
 markerSize1=25;
 lineWidth1=3;

@@ -6,7 +6,7 @@ function [varargout]=hex2rdl(varargin)
 % lattice, based on the input hexahedral element mesh specified by E, (the
 % element array), and V (the vertex array). 
 %
-% The optional input structure containts the following defaults: 
+% The optional input structure contains the following defaults: 
 
 % inputStructDefault.shrinkFactor=0.25; 
 % inputStructDefault.latticePhaseType=1; % 1 = "bubble" centred, 2 = vertex centred, 3 = nested
@@ -134,7 +134,7 @@ switch latticePhaseType
                 logicPickPenta=logicFlip_Ep==0;
         end
         
-        Fs=element2patch(Et,logic1_Es,'tet4'); %  [Fs,logic1_Es_Fs]=element2patch(Et,logic1_Es,'tet4');
+        Fs=element2patch(Et,logic1_Es,'tet4');
         Ep=[Fs(faceId1(logicPickPenta),:) fliplr(Fs(faceId2(logicPickPenta),:))];
         Et=Et(logicPickTet,:);
 

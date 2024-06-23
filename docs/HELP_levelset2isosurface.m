@@ -39,7 +39,7 @@ contourName='imseg_calf_tibia';
 
 %% Control parameters
 pointSpacing=2; 
-numSmoothSteps=10;
+numSmoothSteps=50;
 
 %% Compute levelset
 
@@ -73,18 +73,18 @@ controlPar.voxelSize=v;
 controlPar.capOpt=1;
 controlPar.nSub=[1 1 1]; %ceil(pointSpacing./v);
 [Fi,Vi]=levelset2isosurface(K,controlPar);
-% 
-% %% Smoothen 
-% 
-% controlPar_smooth.Method='HC';
-% controlPar_smooth.n=numSmoothSteps;
-% [Vi]=patchSmooth(Fi,Vi,[],controlPar_smooth);
-% 
-% %% Remesh evenly 
-% 
-% controlPar_remesh.pointSpacing=pointSpacing; %Set desired point spacing
-% controlPar_remesh.disp_on=1; % Turn off command window text display
-% [Fi,Vi]=ggremesh(Fi,Vi,controlPar_remesh);
+
+%% Smoothen 
+
+controlPar_smooth.Method='HC';
+controlPar_smooth.n=numSmoothSteps;
+[Vi]=patchSmooth(Fi,Vi,[],controlPar_smooth);
+
+%% Remesh evenly 
+
+controlPar_remesh.pointSpacing=pointSpacing; %Set desired point spacing
+controlPar_remesh.disp_on=1; % Turn off command window text display
+[Fi,Vi]=ggremesh(Fi,Vi,controlPar_remesh);
 
 %% Visualise surface and contours on image 
 

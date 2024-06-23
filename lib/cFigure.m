@@ -73,7 +73,6 @@ screenSizeGroot = graphicalRoot.ScreenSize(3:4); %Get screen widht and height
 
 %Default settings
 defaultFigStruct.Visible='on';
-defaultFigStruct.ColorDef='white';
 defaultFigStruct.Color='w';
 defaultFigStruct.ScreenScale=0.85; %Figure size is based on scaled screensize
 defaultFigStruct.Clipping='off';
@@ -90,6 +89,12 @@ end
 %Fix option structure, complete and remove empty values
 [figStruct]=structComplete(figStruct,defaultFigStruct,1);
 
+% Check for old ColorDef 
+if isfield(figStruct,'ColorDef')
+    warning('ColorDef was ignored. This is no longer supported by MATLAB')
+    figStruct=rmfield(figStruct,'ColorDef'); %Remove field from structure array
+end
+
 %Get export figure option and remove field
 efwOpt=figStruct.efw;
 figStruct=rmfield(figStruct,'efw'); %Remove field from structure array
@@ -104,10 +109,6 @@ isOld=verLessThan('matlab', '8.4.0.150421 (R2014b)');
 
 %% Create a hidden figure
 hf = figure('Visible', 'off'); %create an invisible figure
-
-%% Setcolor definition and associated defaults
-hf=colordef(hf,figStruct.ColorDef); %Update figure handle
-figStruct=rmfield(figStruct,'ColorDef'); %Remove field from structure array
 
 %% Set figure size
 

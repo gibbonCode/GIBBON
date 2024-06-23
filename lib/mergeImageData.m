@@ -166,7 +166,6 @@ for qd=1:1:siz4
     if plotOn==1
         
         %% Plot settings
-        figColor='w'; figColorDef='white';
         fontSize=20;
         cMap=gray(250);
         faceAlpha1=1;

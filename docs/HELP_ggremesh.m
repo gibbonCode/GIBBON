@@ -95,6 +95,7 @@ gdrawnow;
 % Remesh using ggremesh
 
 optionStruct1.nb_pts=500; %Set desired number of points
+optionStruct1.disp_on=1
 [Fn,Vn]=ggremesh(F,V,optionStruct1);
 
 %%

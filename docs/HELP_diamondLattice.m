@@ -7,8 +7,8 @@ clear; close all; clc;
 %% Syntax
 % |[Ep,Et,VT]=diamondLattice(sampleSize,nRepeat,strutThickness,latticePhaseType);|
 
-%% Description 
-% This functions creates element/patch data for the diamond lattice 
+%% Description
+% This functions creates element/patch data for the diamond lattice
 
 %%
 % Plotting settings
@@ -21,8 +21,8 @@ markerSize=25;
 markerSize2=10;
 cMap=gjet(4);
 
-%% Examples 
-% 
+%% Examples
+%
 
 %Latticeparameters
 nRepeat=3; %Number of repetitions of the lattice pattern
@@ -41,20 +41,20 @@ Fp=element2patch(Ep,[],'penta6');
 Ft=element2patch(Et,[],'tet4');
 % strutThicknessCheck=mean(patchEdgeLengths(Fp{1},VT))
 
-%% 
+%%
 % Visualization
 
-cFigure; 
-subplot(1,2,1); hold on; 
+cFigure;
+subplot(1,2,1); hold on;
 gpatch(Fp,VT,'bw','k',1);
 gpatch(Ft,VT,'bw','k',1);
-axisGeom; camlight headlight; 
+axisGeom; camlight headlight;
 
-subplot(1,2,2); hold on; 
+subplot(1,2,2); hold on;
 hpl=gpatch(Fp,VT,'rw','r',0.5);
 hpl(end+1)=gpatch(Ft,VT,'gw','g',0.5);
 legend(hpl,{'Pentahedral triangles','Pentahedra quads','Tetrahedral triangles'});
-axisGeom; camlight headlight; 
+axisGeom; camlight headlight;
 
 drawnow;
 
@@ -79,14 +79,14 @@ end
 
 % %%
 % % Visualization
-% 
-% cFigure; hold on; 
+%
+% cFigure; hold on;
 % gpatch(FT,VT,CT,'k',1);
-% axisGeom; camlight headlight; 
+% axisGeom; camlight headlight;
 % colormap gjet; icolorbar;
 % drawnow;
 
-%% 
+%%
 % Refine using Loop-subdivision
 n=2;
 logicConstrain=(CT>0); %Logic for faces to subdivide linearly
@@ -101,7 +101,7 @@ faceBoundaryMarker_sub2=CT(indNotConstrain(Cs2)); %Get boundary markers for refi
 
 [Fs,Vs,Cs]=joinElementSets({Fs1,Fs2},{Vs1,Vs2},{faceBoundaryMarker_sub1,faceBoundaryMarker_sub2});
 
-[Fs,Vs]=patchCleanUnused(Fs,Vs); 
+[Fs,Vs]=patchCleanUnused(Fs,Vs);
 [Fs,Vs]=mergeVertices(Fs,Vs);
 
 %Fix boundary faces
@@ -115,40 +115,40 @@ end
 %%
 % Visualization
 
-cFigure; hold on; 
+cFigure; hold on;
 gpatch(Fs,Vs,Cs,'k',1);
-axisGeom; camlight headlight; 
+axisGeom; camlight headlight;
 colormap gjet; icolorbar;
 drawnow;
 
 %%
-% 
+%
 % <<gibbVerySmall.gif>>
-% 
-% _*GIBBON*_ 
+%
+% _*GIBBON*_
 % <www.gibboncode.org>
-% 
+%
 % _Kevin Mattheus Moerman_, <gibbon.toolbox@gmail.com>
-%% 
-% _*GIBBON footer text*_ 
-% 
+%%
+% _*GIBBON footer text*_
+%
 % License: <https://github.com/gibbonCode/GIBBON/blob/master/LICENSE>
-% 
+%
 % GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for
 % image segmentation, image-based modeling, meshing, and finite element
 % analysis.
-% 
+%
 % Copyright (C) 2006-2023 Kevin Mattheus Moerman and the GIBBON contributors
-% 
+%
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
 % the Free Software Foundation, either version 3 of the License, or
 % (at your option) any later version.
-% 
+%
 % This program is distributed in the hope that it will be useful,
 % but WITHOUT ANY WARRANTY; without even the implied warranty of
 % MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 % GNU General Public License for more details.
-% 
+%
 % You should have received a copy of the GNU General Public License
 % along with this program.  If not, see <http://www.gnu.org/licenses/>.

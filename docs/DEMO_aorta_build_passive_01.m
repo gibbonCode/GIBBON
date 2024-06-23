@@ -97,16 +97,6 @@ Vcol_data=dataStruct.Vcol;
 Vela_data=dataStruct.Vela;
 Vsmc_data=dataStruct.Vsmc;
 iswitch=dataStruct.iswitch;
-%Define plot color (black or white background)
-colorMode=1;
-switch colorMode
-    case 1
-        figStruct.ColorDef='white';
-        figStruct.Color='w';
-    case 2
-        figStruct.ColorDef='black';
-        figStruct.Color='k';
-end
 
 %% Access data structure components
 V_cent=dataStruct.Cent; %Centroid list
@@ -145,7 +135,7 @@ if ~isempty(smoothFactorCentreLine)
     V_cent_original=V_cent;
     d=pathLength(V_cent);
     V_cent = csaps(d,V_cent_original',smoothFactorCentreLine,d,w)'; %Smoothed
-    cFigure(figStruct); hold on;
+    cFigure; hold on;
     h1=plotV(V_cent_original,'g.-','LineWidth',3,'MarkerSize',35);
     h2=plotV(V_cent,'r-','LineWidth',2,'MarkerSize',15);
     h3=plotV(V_cent(w==max(w),:),'b.','MarkerSize',40);
@@ -164,7 +154,7 @@ end
 
 
 %% Visualize offset curves
-cFigure(figStruct); hold on;
+cFigure; hold on;
 plotV(V_cent,'b-','LineWidth',2,'MarkerSize',15);
 for q=1:size(segmentCellSmooth,2)
     plotV(segmentCellSmooth_pre{t,q}','r.-','LineWidth',3,'MarkerSize',15);
@@ -177,7 +167,7 @@ drawnow;
 % 
 
 % Initialize figure with center line
-hf1=cFigure(figStruct); hold on;
+hf1=cFigure; hold on;
 plotV(V_cent,'b.-','LineWidth',3,'markerSize',25);
 axisGeom;
 camlight headlight;
@@ -294,7 +284,7 @@ controlParameter.Method='HC';
 controlParameter.RigidConstraints=find(logicBoundary); %Ensure smoothing cannot change coordinates of planes of interest
 [V_main]=patchSmooth(F_main,V_main,[],controlParameter);
 % Plot
-cFigure(figStruct);
+cFigure;
 subplot(1,2,1); hold on;
 title('Segments')
 plotV(V_cent,'k.-','LineWidth',3,'markerSize',25);
@@ -401,7 +391,7 @@ smoothControlParameters.RigidConstraints=[unique(F_main(~logicFacesTouch,:)); in
 
 %% 
 % Plot Main and Transition Region
-cFigure(figStruct); hold on;
+cFigure; hold on;
 gpatch(F_main,V_main,logicFacesTouch,'none');
 patchNormPlot(F_main,V_main);
 plotV(V_main(indLowerCurve,:),'r.-','markerSize',25);
@@ -426,7 +416,7 @@ controlParSmooth.n=numSmoothPants_LAP;
 
 %%
 % Plot
-cFigure(figStruct); hold on;
+cFigure; hold on;
 % gpatch(F_main,V_main,'kw','k');
 gpatch(F_split,V_split,C_split,'k');
 patchNormPlot(F_split,V_split);
@@ -491,7 +481,7 @@ for q=1:1:2
     
     %%
     % plot loft paths and profile
-    cFigure(figStruct); hold on;
+    cFigure; hold on;
     plotV(V1,'b.-','markerSize',25);
     plotV(V2,'r.-','markerSize',25);
     plotV(Vc,'g.-','markerSize',25);
@@ -529,7 +519,7 @@ V_branch2=V_iliac_cell{2};
 
 %%
 % Plot Iliac extension Loft
-cFigure(figStruct); hold on;
+cFigure; hold on;
 % gpatch(F_main,V_main,C_main,'k');
 % gpatch(F_main(C_main==max(C_main),:),V_main,'kw','none');
 gpatch(F_split,V_split,C_split,'k');
@@ -569,7 +559,7 @@ smoothControlParameters.RigidConstraints=[unique(Fp(~logicFacesTouch,:)); indEnd
 
 %%
 % Plot Iliacs
-cFigure(figStruct); hold on;
+cFigure; hold on;
 gpatch(Fp,Vp,logicFacesTouch,'k');
 patchNormPlot(Fp,Vp);
 plotV(Vp(indBranch11,:),'r-','LineWidth',3)
@@ -613,7 +603,7 @@ smoothControlParameters.Method='HC';
 smoothControlParameters.RigidConstraints=indRigid;
 [V_main]=patchSmooth(F_main,V_main,[],smoothControlParameters);
 %
-cFigure(figStruct); hold on;
+cFigure; hold on;
 gpatch(F_main,V_main,logicFacesTouch,'k');
 % patchNormPlot(F_main,V_main);
 plotV(V_main(indLowerCurve,:),'r.-','markerSize',25);
@@ -693,7 +683,7 @@ V_Cent_LSA=dataStruct.Cent_LSA;
 V_Cent_LSA=resampleCurve(V_Cent_LSA,pointSpacing,0);
 
 % Plot
-cFigure(figStruct); hold on;
+cFigure; hold on;
 gpatch(F_main,V_main,C_main,0.65);
 plotV(V_R_Renal_Ori,'r.-','markerSize',5);
 plotV(V_R_Renal,'w.-','markerSize',5);
@@ -744,7 +734,7 @@ for q=1:1:numSteps
 end
 close(hw);
 % plot
-cFigure(figStruct); hold on;
+cFigure; hold on;
 gpatch(F_main,V_main,C_path,'k',1);
 for q=1:1:numel(V_endCurve_cell)
     plotV(V_endCurve_cell{q},'m.-','markerSize',25);
@@ -754,7 +744,7 @@ colormap gjet; colorbar;
 camlight headlight;
 drawnow;
 % plot
-cFigure(figStruct); hold on;
+cFigure; hold on;
 gpatch(F_main,V_main,C_path_mat,'k',1);
 axisGeom;
 colormap gjet; colorbar;
@@ -811,7 +801,7 @@ for q=1:1:numel(V_endCurve_cell)
         indBranchBottom_cell{q}=indLoftBottom;
     end
     % The below plot highlights each loft path in a loop
-    %     cFigure(figStruct); hold on;
+    %     cFigure; hold on;
     %     title(num2str(q))
     %     gpatch(F_main,V_main,'kw','none',0.5);
     %     gpatch(F_loft,V_loft,'rw','r',1);
@@ -840,7 +830,7 @@ C_path=[C_path; C_path_branch(:)];
 
 %%
 % plot
-cFigure(figStruct); hold on;
+cFigure; hold on;
 gpatch(F_main,V_main,'kw','none',0.5);
 axisGeom;
 colormap gjet; colorbar;
@@ -881,7 +871,7 @@ C_path_mat=round(rescale(C_path_mat,1,numMaterials));
 
 %%
 % plot
-cFigure(figStruct); hold on;
+cFigure; hold on;
 gpatch(F_main,V_main,C_path,'k',1);
 axisGeom;
 colormap gjet; colorbar;
@@ -909,7 +899,7 @@ C_thickness=interp1(indexData,thicknessData,C_path,'spline');
 
 %%
 % plot
-hf=cFigure(figStruct); hold on;
+hf=cFigure; hold on;
 gtitle('Wall Thickness')
 gpatch(F_main,V_main,C_thickness,'k',1);
 axisGeom;
@@ -924,7 +914,7 @@ nodalThickness=faceToVertexMeasure(F_main,V_main,C_thickness);
 
 %%
 % plot
-cFigure(figStruct); hold on;
+cFigure; hold on;
 gpatch(F_main,V_main,'kw','kw',0.5);
 title('Mesh Offset')
 quiverVec(V_main,-N.*nodalThickness,[],nodalThickness);
@@ -964,7 +954,7 @@ end
 
 %%
 % plot
-cFigure(figStruct); hold on;
+cFigure; hold on;
 gpatch(FT,VT,CFT,'k',0.5);
 gpatch(FT_inner,VT,'g','k',1);
 
@@ -1000,7 +990,7 @@ end
 
 %% 
 % plot
-cFigure(figStruct); hold on;
+cFigure; hold on;
 gpatch(FT,VT,'kw','none',0.5);
 
 plotColors=gjet(max(G_rings));
@@ -1025,7 +1015,7 @@ indicesElementsInner=find(logicElementsInner);
 
 %%
 % plot
-cFigure(figStruct); hold on;
+cFigure; hold on;
 gpatch(FT_inner,VT,'gw','none',0.5);
 gpatch(FT_outer,VT,'rw','none',0.5);
 patchNormPlot(FT_inner,VT)
@@ -1081,7 +1071,7 @@ indNodesFix=unique(indNodesFix(:));
 
 %%
 % plot full mesh
-cFigure(figStruct); hold on;
+cFigure; hold on;
 gpatch(FT,VT,CFT_logicBranchEndElement,'r',1);
 xlim([140 200]); ylim([120 200]); zlim([20 370]);
 axisGeom;
@@ -1092,7 +1082,7 @@ drawnow;
 %%
 % plot interpolated parameters 
 
-cFigure(figStruct);
+cFigure;
 subplot(2,3,1);hold on;
 title('Indexing color');
 gpatch(FT(indBoundary,:),VT,CFT_path_mat(indBoundary,:),'none',1);
@@ -1402,7 +1392,7 @@ C_merge=max(C(:))+ones(size(F_merge,1),1);
 %%
 
 % if plotOn==1
-%     cFigure(figStruct); hold on;
+%     cFigure; hold on;
 %     gpatch(F,V,C,'k',0.5);
 %     gpatch(F_merge,V_merge,'g','k',1);
 %     plotV(V_cent,'g.-','LineWidth',3,'markerSize',25);
@@ -1464,7 +1454,7 @@ smoothControlParameters.RigidConstraints=unique([indRigid(:);Eb(:)]);
 %%
 
 if plotOn==1
-    cFigure(figStruct); hold on;
+    cFigure; hold on;
     gpatch(Fs,Vs,logicSmooth,'k',1);
     patchNormPlot(Fs,Vs);
     plotV(Vs(indRigid,:),'b.','markerSize',25);
