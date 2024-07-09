@@ -31,7 +31,7 @@ Vt=2*[-1 -1; -1 1 ; 1 1; 1 -1]; %A square
 
 %%
 %Setting control parameters
-r=1; %Fillet radius
+r=[]; %Fillet radius
 np=25; %Number of points used to construct each fillet edge
 closedLoopOption=0; %Use 1 if curve represents a closed loop but containes unique points
 VN=filletCurve(Vt,r,np,closedLoopOption);

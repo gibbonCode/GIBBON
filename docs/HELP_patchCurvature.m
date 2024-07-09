@@ -22,6 +22,8 @@ cMap=warmcold(250);
 [F,V]=graphicsModels(9);
 % [F,V]=stanford_bunny;
 % [F,V]=tri2quad(F,V);
+% [F,V]=patchcylinder(60,100,60,60,'tri');
+
 
 %% Compute curvature
 

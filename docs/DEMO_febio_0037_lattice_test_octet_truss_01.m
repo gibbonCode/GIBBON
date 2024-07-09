@@ -130,7 +130,7 @@ switch latticeType
         Cs=Cs(logicKeepEs,:);
 %         [Es,Vs,indFix]=patchCleanUnused(Es,Vs);
         
-        % [Es,Vs,~,~]=subHex(Es,Vs,1,1);
+        % 
         % Cs=repmat(Cs,8,1);
         
         % Create patch Data for visualization

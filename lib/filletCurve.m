@@ -1,4 +1,4 @@
-function [V]=filletCurve(V,r,np,closedLoopOpt)
+function [VC]=filletCurve(VP,rMax,np,closedLoopOpt)
 
 % [V]=filletCurve(V,r,np,closedLoopOpt)
 % ------------------------------------------------------------------------
@@ -30,128 +30,162 @@ function [V]=filletCurve(V,r,np,closedLoopOpt)
 
 %% Parse input
 
-angleTolerance=1e-3;
+eps_level=1e-6;
 
 %Cope with 2D input
-if size(V,2)==2
-    V(:,3)=0;
+if size(VP,2)==2
+    VP(:,3)=0;
     nDim=2;
 else
     nDim=3;
 end
 
-if numel(r)==1
-    r=r.*ones(size(V,1),1);
+if isscalar(rMax) % true for length 1, false for >1 and empty.    
+    rOpt = 0;
+elseif isempty(rMax)
+    rOpt = -1;
+elseif length(rMax) == size(VP,1)
+    rMax = mcol(rMax);
+    rOpt = 1;
+else
+    error('rMax should either be empty, match VP in length, or be a single number');
 end
 
 %%
-numPoints=size(V,1);
+numPoints=size(VP,1);
+VC = [];
 if numPoints>2
-    numSteps=numPoints-2;
-    indStart=1;
-    for q=1:1:numSteps
-        if r(q+1)>0
-            Vr=filletEdgeSet(V(indStart:indStart+2,:),r(q+1),np,angleTolerance);
-            V=[V(1:indStart,:);Vr;V(indStart+2:end,:)];
-            indStart=indStart+size(Vr,1);
+
+    if closedLoopOpt==1
+        VP = [VP(end,:); VP; VP(1,:)]; % Add start and end
+        if rOpt == 1
+            rMax = [rMax(end); rMax; rMax(1,:)]; % Add start and end
+        end
+    end
+
+    if closedLoopOpt~=1
+        VC(end+1,:) = VP(1,:);
+    end
+
+    % lp = 0;
+    i_last = size(VP,1)-1;
+    L = sqrt(sum(diff(VP).^2,2));
+    for i = 2:1:i_last
+        if rOpt == 1
+            r = rMax(i);
         else
-            indStart=indStart+1;
+            r = rMax;
+        end
+        if i == 2
+            e1 = VP(i,:)-VP(i-1,:);
+        else
+            e1 = e2;
+        end
+        e2 = VP(i+1,:)-VP(i,:);
+
+        n1 = vecnormalize(e1);
+        n2 = vecnormalize(e2);
+        n3 = vecnormalize(cross(n1,n2));
+        a = pi - acos(dot(n1,n2));
+        if abs(a-pi) > eps_level
+            b = pi/2 - a/2;
+
+            n1_e = vecnormalize(cross(n3,n1));
+            n2_e = vecnormalize(cross(n3,n2));
+            m1 = vecnormalize(n1_e + n2_e);
+            l1 = L(i-1);
+            l2 = L(i);
+
+            l = min(l1,l2)/2;
+
+            rFit = l/tan(b);          
+            if rOpt ==-1
+                r = rFit;
+            end
+
+            if rOpt~=-1 && r<=rFit
+                rNow = r;
+                lNow = rNow * tan(b);
+                if lNow == l
+                    fullRound = 1;
+                else
+                    fullRound = 0;
+                end
+            else
+                fullRound = 1;
+                rNow = rFit;
+                lNow = l;
+            end
+
+            if rNow > 0
+                d = abs(rNow/cos(b));
+                Q = [-m1; vecnormalize(cross(n3,-m1)); n3]';
+                m1p = -m1*Q;
+                a = atan(m1p(2)/m1p(1));
+                vc = VP(i,:)+ m1.*d;
+
+                t = linspace(a-b,a+b,np)';
+                
+                Vc = vc + ([rNow.*cos(t) rNow.*sin(t) zeros(size(t))]*Q');
+
+                if closedLoopOpt ~= 1 && i==2 && fullRound==1 && norm(Vc(1,:)-VC(1,:))<eps_level
+                    Vc = Vc(2:end,:);
+                end
+
+                if i>2 && fullRound==1 && norm(Vc(1,:)-VC(end,:))<eps_level
+                    Vc = Vc(2:end,:);
+                end
+
+                if closedLoopOpt==1 && i == i_last && fullRound==1 && norm(Vc(end,:)-VC(1,:))<eps_level
+                    Vc = Vc(1:end-1,:);
+                end
+                VC=[VC;Vc];
+            else
+                VC(end+1,:) = VP(i,:);
+            end
+        else
+            VC(end+1,:) = VP(i,:); % No rounding so add point
+            lNow = 0.0;
+        end
+    end
+    if closedLoopOpt~=1
+        if norm(VC(end,:)-VP(end,:))<eps_level
+            VC(end,:) = VP(end,:); % overwrite end
+        else
+            VC(end+1,:)=VP(end,:); % add end
         end
     end
 else
-    error('Input curve V has too few points!');
-end
-
-if closedLoopOpt==1
-    if r(end)>0
-        V_closed=[V(end-1:end,:); V(1,:);];
-        [Vr]=filletEdgeSet(V_closed,r(end),np,angleTolerance);
-        V=[V(1:end-1,:); Vr];
-    end
-
-    if r(1)>0
-        V_closed=[V(end,:); V(1:2,:);];
-        [Vr]=filletEdgeSet(V_closed,r(1),np,angleTolerance);
-        V=[Vr; V(2:end,:); ];
-    end
+    VC = VP;
 end
 
 %Remove 3rd dimension when 2D input was provided
 if nDim==2
-    V=V(:,1:2);
+    VC=VC(:,1:2);
 end
 
 end
 
-function [Vr]=filletEdgeSet(V,r,np,angleTolerance)
-Vc=V-V(2*ones(size(V,1),1),:);
-
-P1=Vc(1,:);
-M1=norm(P1);
-N1=P1./M1;
-
-P2=Vc(3,:);
-M2=norm(P2);
-N2=P2./M2;
-
-M_min=min([M1 M2]);
-
-rMax=sqrt(sum((M_min.*N1-M_min.*N2).^2))/2;
-
-if r>rMax
-    error(['Radius is too big! Current max: ',num2str(rMax)]);
-end
-
-Nm=(N1+N2)/2;
-Nm=Nm./norm(Nm);
-
-a=real(acos(dot(P1,Nm)./norm(P1)));
-
-if mod(abs(a),pi)<angleTolerance
-    Vr=[];
-else
-    d=r./sin(a);
-    d1=r./tan(a);
-    d2=r./tan(a);
-    
-    Pc=Nm.*d;
-    
-    P1c=N1.*d1;
-    P2c=N2.*d2;
-    
-    P1cc=P1c-Pc;
-    P2cc=P2c-Pc;
-    
-    Vn=linspacen(P1cc,P2cc,np)';
-    [theta_Vn,phi_Vn,~] = cart2sph(Vn(:,1),Vn(:,2),Vn(:,3));
-    [Vn(:,1),Vn(:,2),Vn(:,3)]=sph2cart(theta_Vn,phi_Vn,r.*ones(size(phi_Vn)));
-    Vn=Vn+Pc(ones(1,size(Vn,1)),:);
-    
-    Vr=Vn+V(2*ones(size(Vn,1),1),:);
-end
-
-end
- 
-%% 
-% _*GIBBON footer text*_ 
-% 
+%%
+% _*GIBBON footer text*_
+%
 % License: <https://github.com/gibbonCode/GIBBON/blob/master/LICENSE>
-% 
+%
 % GIBBON: The Geometry and Image-based Bioengineering add-On. A toolbox for
 % image segmentation, image-based modeling, meshing, and finite element
 % analysis.
-% 
+%
 % Copyright (C) 2006-2023 Kevin Mattheus Moerman and the GIBBON contributors
-% 
+%
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
 % the Free Software Foundation, either version 3 of the License, or
 % (at your option) any later version.
-% 
+%
 % This program is distributed in the hope that it will be useful,
 % but WITHOUT ANY WARRANTY; without even the implied warranty of
 % MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 % GNU General Public License for more details.
-% 
+%
 % You should have received a copy of the GNU General Public License
 % along with this program.  If not, see <http://www.gnu.org/licenses/>.
