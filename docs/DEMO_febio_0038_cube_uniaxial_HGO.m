@@ -88,7 +88,7 @@ runMode='external';% 'internal' or 'external'
 
 %Material parameters
 
-alphaFib=45/180*pi; %Fibre angle
+alphaFib=90/180*pi; %Fibre angle
 
 %% Creating model geometry and mesh
 % A box is created with tri-linear hexahedral (hex8) elements using the
