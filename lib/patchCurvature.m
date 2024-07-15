@@ -8,6 +8,10 @@ function [U_min,U_max,C_min,C_max,C_mean,C_gauss] = patchCurvature(F,V)
 % ------------------------------------------------------------------------
 
 %%
+
+warning('This function is obsolete, and will be removed, use patchCurvaturePolynomial instead');
+
+%%
 % Get connectivity matrices
 connecticityStruct=patchConnectivity(F,V);
 edgeVertexConnectivity=connecticityStruct.edge.vertex;
