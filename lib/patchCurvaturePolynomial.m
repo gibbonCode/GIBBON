@@ -1,6 +1,6 @@
-function [U1,U2,K1,K2,H,G] = patchCurvaturePolynomial(F,V)
+function [U1,U2,K1,K2,H,G] = patchCurvaturePolynomial(F,V,growsteps)
 
-% function [U1,U2,K1,K2,H,G] = patchCurvaturePolynomial(F,V)
+% function [U1,U2,K1,K2,H,G] = patchCurvaturePolynomial(F,V,growsteps)
 % ------------------------------------------------------------------------
 %
 % This function computes the mesh curvature at each vertex for the input mesh 
@@ -19,6 +19,9 @@ function [U1,U2,K1,K2,H,G] = patchCurvaturePolynomial(F,V)
 % ------------------------------------------------------------------------
 
 %%
+
+indB = unique(patchBoundary(F));
+
 m = size(V,1);
 CC = patchConnectivity(F,V,{'vv'});
 con_V2V = CC.vertex.vertex;
@@ -31,11 +34,25 @@ U1 = zeros(m,3);
 U2 = zeros(m,3);
 for q = 1:1:m
     n = NV(q,:);
+ 
     [a,d]=vectorOrthogonalPair(n);
-    Q=[a; d; n];
-    ind = con_V2V(q,:); ind = ind(ind>0);
+    Q = [a; d; n];
+    % Q = vecPair2Rot(n,nz);
+
+    ind = con_V2V(q,:); 
+    ind = ind(ind>0);
+    if growsteps>1
+        for i = 1:1:growsteps-1
+            ind = con_V2V(ind,:);
+            ind = unique(ind(ind>0));
+        end        
+    end
+
     vr = (V(ind,:)-V(q,:))*Q';
-    
+    if ismember(q,indB)
+        % vr=[vr;-vr];
+    end
+        
     % Set up polynomial fit
     T = zeros(length(ind),5);
     w = zeros(length(ind),1);
@@ -53,14 +70,18 @@ for q = 1:1:m
     f =       a(4) / d;
     g = (2.0*a(5)) / d;
 
-    S = -[e f; f g] * inv([E F; F G]);
+    S = -[e f; f g]/[E F; F G]; % S = -[e f; f g] * inv([E F; F G]);
+        
     [u,k] = eig(S); % Eigen decomposition to get first/second eigenvalue and vectors    
 
     % Store derived quantities
-    K1(q) = k(2,2);
-    K2(q) = k(1,1);
-    U1(q,:) = [u(1,2) u(2,2) 0.0]*Q;
-    U2(q,:) = [u(1,1) u(2,1) 0.0]*Q;   
+    [ks,indSort]=sort(diag(k));
+    K1(q) = ks(2);
+    K2(q) = ks(1);
+    u1 = u(:,indSort(2));
+    u2 = u(:,indSort(1));
+    U1(q,:) = [u1(1) u1(2) 0.0]*Q;
+    U2(q,:) = [u2(1) u2(2) 0.0]*Q;   
 
 end
 

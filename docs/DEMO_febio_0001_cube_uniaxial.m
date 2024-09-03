@@ -311,8 +311,8 @@ febio_spec.Output.plotfile.compression=0;
 % The |febView| function can be used to view the xml structure in a MATLAB
 % figure window. 
 
-%%
-% |febView(febio_spec); %Viewing the febio file|
+%%1
+% |febView(febio_spec); %Viewing the febio file|1
 
 %% Exporting the FEBio input file
 % Exporting the febio_spec structure to an FEBio input file is done using

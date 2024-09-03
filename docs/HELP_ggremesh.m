@@ -62,7 +62,6 @@ edgeWidth=0.5;
 
 %%
 % Remesh using ggremesh
-
 [Fn,Vn]=ggremesh(F,V);
 
 %%
@@ -89,13 +88,13 @@ gdrawnow;
 
 %% 
 % Get example geometry
-[F,V]=graphicsModels(1); % Get surface
+[F,V]=stanford_bunny; % Get surface
 
 %%
 % Remesh using ggremesh
 
-optionStruct1.nb_pts=500; %Set desired number of points
-optionStruct1.disp_on=1
+optionStruct1.nb_pts=1500; %Set desired number of points
+optionStruct1.disp_on=1;
 [Fn,Vn]=ggremesh(F,V,optionStruct1);
 
 %%
@@ -125,8 +124,9 @@ gdrawnow;
 %%
 % Remesh using ggremesh
 
-optionStruct2.pointSpacing=4; %Set desired point spacing
+optionStruct2.pointSpacing=3; %Set desired point spacing
 optionStruct2.disp_on=1; % Turn off command window text display
+% optionStruct2.anisotropy=5;
 [Fn,Vn]=ggremesh(F,V,optionStruct2);
 
 %%

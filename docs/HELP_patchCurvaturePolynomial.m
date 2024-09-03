@@ -20,14 +20,29 @@ cMap=warmcold(250);
 %%
 
 % [F,V]=geoSphere(4,5.25);
-[F,V]=graphicsModels(9);
+
+optionStruct.cylRadius=2.3;
+optionStruct.numRadial=50;
+optionStruct.cylHeight=2*optionStruct.cylRadius;
+optionStruct.numHeight=17;
+optionStruct.meshType='tri';
+optionStruct.closeOpt=0;
+[F,V] = patchcylinder(optionStruct);
+Q = euler2DCM(rand(1,3)*pi);
+V = V*Q;
+% [F,V]=graphicsModels(9);
 % [F,V]=stanford_bunny;
 % [F,V]=tri2quad(F,V);
 % [F,V]=patchcylinder(60,100,60,60,'tri');
 
+[~,~,N]=patchNormal(F,V);
+[a,d]=vectorOrthogonalPair(N);
+
+nz=[0 0 1];
+
 
 %% Compute curvature
-[U1,U2,K1,K2,H,G] = patchCurvaturePolynomial(F,V);
+[U1,U2,K1,K2,H,G] = patchCurvaturePolynomial(F,V,2);
 
 %% Visualize curvature on mesh
 
@@ -38,10 +53,23 @@ vecPlotSize=mean(patchEdgeLengths(F,V)); %Vector plotting size
 cFigure; 
 subplot(1,2,1); hold on;
 title('K1');
-hp=gpatch(F,V,K1,'none',0.9);
+hp=gpatch(F,V,K1,'w',0.9);
 hp.FaceColor='interp';
 colormap(gca,cMap); colorbar;
 quiverVec(V,U1,vecPlotSize,'k');
+
+% quiverVec(V,N,vecPlotSize,'r');
+% quiverVec(V,a,vecPlotSize,'g');
+% quiverVec(V,d,vecPlotSize,'b');
+
+% for i=1:1:size(V,1)
+%     n=N(i,:);
+%     Q = vecPair2Rot(n,nz)';
+%     quiverVec(V(i,:),Q(:,1)',vecPlotSize,'r');
+%     quiverVec(V(i,:),Q(:,2)',vecPlotSize,'g');
+%     quiverVec(V(i,:),Q(:,3)',vecPlotSize,'b');
+% end
+
 axisGeom; 
 c=max(abs(K1(:)));
 caxis(0.1*[-c c]);
@@ -49,7 +77,7 @@ camlight headlight;
   
 subplot(1,2,2); hold on;
 title('K2');
-hp=gpatch(F,V,K2,'none',0.9);
+hp=gpatch(F,V,K2,'k',0.9);
 hp.FaceColor='interp';
 quiverVec(V,U2,vecPlotSize,'k');
 colormap(gca,cMap); colorbar;
@@ -58,7 +86,7 @@ c=max(abs(K2(:)));
 caxis(0.1*[-c c]);
 camlight headlight;
 
-drawnow;
+gdrawnow;
 
 %%
 %

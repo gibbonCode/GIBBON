@@ -126,6 +126,21 @@ V4=[(-TabWidth/2)+cutOffset  BodyWidth/2+cutWidth/2;...
 V5=flipud(V4);
 V5(:,2)=-V5(:,2);
 
+%%
+% Plotting meshed model
+cFigure; hold on;
+title('The model curves','FontSize',fontSize);
+
+plotV(V1,'r.-');
+plotV(V2,'r.-');
+plotV(V3,'r.-');
+plotV(V4,'r.-');
+plotV(V5,'r.-');
+
+axisGeom(gca,fontSize);
+camlight headlight;
+drawnow;
+
 %% Creating triangulated surface mesh
 
 % Define input parameters
