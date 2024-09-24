@@ -17,7 +17,8 @@
 - [Citing GIBBON](#Cite)
 - [Contributing](#Contributing)  
 - [Code of conduct](#CodeOfConduct)  
-- [Road Map](#RoadMap)  
+- [Road Map](#RoadMap)
+- [Projects using GIBBON](#Projects)  
 
 # Project summary <a name="Summary"></a>
 GIBBON (The Geometry and Image-Based Bioengineering add-ON) is an open-source MATLAB toolbox, which includes an array of image and geometry visualization and processing tools and is interfaced with free open source software such as [TetGen](http://wias-berlin.de/software/tetgen/), for robust tetrahedral meshing, and [FEBio](http://febio.org/) for finite element analysis. The combination provides a highly flexible image-based modelling environment and enables advanced inverse finite element analysis.
@@ -165,3 +166,6 @@ See [CODE_OF_CONDUCT](CODE_OF_CONDUCT.md)
 
 # Roadmap <a name="RoadMap"></a>
 See [ROADMAP](ROADMAP.md)
+
+# Projects using GIBBON <a name="Projects"></a>
+* [LatticeWorks](https://github.com/mahtab-vafaee/LatticeWorks/tree/main) 
