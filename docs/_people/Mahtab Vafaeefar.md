@@ -3,7 +3,7 @@ title: Mahtab Vafaeefar
 name: Dr Mahtab Vafaeefar
 role: Contributor
 location: Ireland
-img: MahtabVafaeefar.jpg
+img: MV_ProfilePic.jpg
 github_username: mahtab-vafaee
 twitter_username: MahtabVfa
 orcid_id: 0000-0002-0475-8586
