@@ -12,8 +12,12 @@ nV=size(V,1); %Number of vertices
 %Compute Euler characteristic 
 X=size(V,1)-size(E,1)+size(F,1); 
 
+%Number of theoretical refinement steps needed to get number of faces
+% This assumes subtri like splitting whereby each edge spawns new point
+% and each face is split into 4 new faces.  
 nRefScalar=(log(NF)-log(nF))/log(4);
 
+% Create refinement iteration set from 0 (not refined) up to nRef
 if nRefScalar<0
     nRef=floor(nRefScalar);
     nRange=0:-1:nRef;
@@ -22,14 +26,16 @@ else
     nRange=0:1:nRef;
 end
 
+
 nvR=nV.*ones(numel(nRange),1);
 neR=nE.*ones(numel(nRange),1);
-
 nfR=nF*4.^nRange';
 for q=2:1:numel(nRange)
     if nRef>0                
+        % New vertices equals previous number of vertices plus previous number of edges
         nvR(q)=nvR(q-1)+neR(q-1);        
     elseif nRef<0
+        % New vertices equals previous 
         nvR(q)=(nvR(q-1)+X-nfR(q))/2;
     end    
     neR(q)=-X+nfR(q)+nvR(q);

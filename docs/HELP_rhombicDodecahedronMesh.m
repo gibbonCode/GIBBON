@@ -29,7 +29,7 @@ faceAlpha1=0.8;
 %% Creating a mesh of rhombic dodecahedra
 
 r=0.5; %Radii, results in a width of 1
-nCopies=[3 3 3]; %Number of offset copies
+nCopies=[3 4 5]; %Number of offset copies
 
 [E,V,C,F,CF]=rhombicDodecahedronMesh(r,nCopies);
 

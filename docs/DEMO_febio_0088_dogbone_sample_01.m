@@ -1,7 +1,7 @@
-%% DEMO_febio_0001_cube_uniaxial
+%% DEMO_febio_0088_dogbone_sample_01.m
 % Below is a demonstration for:
 % 
-% * Building geometry for a cube with hexahedral elements
+% * Building geometry for a dogbone sample 
 % * Defining the boundary conditions 
 % * Coding the febio structure
 % * Running the model

@@ -30,7 +30,7 @@ faceAlpha1=0.75;
 
 r=sqrt(5)/4; %Radii, results in a width of 1
 
-n=2; %Desired number of copies in each direction 
+n=3; %Desired number of copies in each direction 
 
 %The actual input 
 nCopies=[n n n+ceil((n+1)/2)+1]; %Number of offset copies
@@ -48,7 +48,7 @@ gpatch(F2,VT,C2,'k',faceAlpha1);
 colormap(gjet);
 axisGeom(gca,fontSize);
 camlight('headlight'); 
-drawnow; 
+gdrawnow; 
 
 %% 
 % _*GIBBON footer text*_ 

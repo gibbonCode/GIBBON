@@ -54,6 +54,7 @@ axisGeom(gca,fontSize);
 camlight headlight;
 legend([hp1 hp2],'The input polygon','The extruded surface');
 drawnow;
+
 %% Exmaple: Mesh type control
 
 %%
