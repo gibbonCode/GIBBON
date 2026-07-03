@@ -143,11 +143,8 @@ end
 
 %% Adding paths
 
-[pathNames]=getSubPaths(gibbonPath);
-
-%Remove "hidden" folders with . in path name
-logicKeep=~gcontains(pathNames,'.');
-pathNames=pathNames(logicKeep);
+% Get subdirectories, ignoring hidden folders
+[pathNames]=getSubPaths(gibbonPath, true);
 
 for q=1:1:numel(pathNames)
      pathNameNow=pathNames{q};     

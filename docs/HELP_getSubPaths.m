@@ -5,18 +5,18 @@
 clear; close all; clc;
 
 %% Syntax
-% |[pathNames]=getSubPaths(pathName);|
+% |[pathNames]=getSubPaths(pathName, ignoreHidden);|
 
 %% Description 
 % Returns a cell array for all the sub-paths nested for the input folder
-% pathName. 
+% pathName. If the optional input ignoreHidden is true, folders starting with a dot will be ignored.
 
 %% Examples 
 % 
 
 pathToCheck = fullfile(fileparts(fileparts(mfilename('fullpath'))),'data')
 
-[pathNames]=getSubPaths(pathToCheck)
+[pathNames]=getSubPaths(pathToCheck, true)
 
 %%
 % 
