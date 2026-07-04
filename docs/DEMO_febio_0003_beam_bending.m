@@ -216,11 +216,11 @@ febio_spec.Boundary.bc{1}.z_dof=1;
 
 %Loads section
 % -> Surface load
-febio_spec.Loads.surface_load{1}.ATTR.type='pressure';
+febio_spec.Loads.surface_load{1}.ATTR.type='traction';
 febio_spec.Loads.surface_load{1}.ATTR.surface=surfaceName1;
-febio_spec.Loads.surface_load{1}.pressure.ATTR.lc=1;
-febio_spec.Loads.surface_load{1}.pressure.VAL=appliedPressure;
-febio_spec.Loads.surface_load{1}.symmetric_stiffness=1;
+febio_spec.Loads.surface_load{1}.scale.ATTR.lc=1;
+febio_spec.Loads.surface_load{1}.scale.VAL=appliedPressure;        
+febio_spec.Loads.surface_load{1}.traction=[0 0 -1];
 
 %LoadData section
 % -> load_controller
