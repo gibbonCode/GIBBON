@@ -1,17 +1,21 @@
-function [pathNames]=getSubPaths(pathName)
+function [pathNames]=getSubPaths(pathName, ignoreHidden)
 
-% function [pathNames]=getSubPaths(pathName)
+% function [pathNames]=getSubPaths(pathName, ignoreHidden)
 % ------------------------------------------------------------------------
 %
 % This function (based on the GENPATH command) creates the output pathNames
 % which contains all folders and sub-folders within the folder specified by
 % the input pathName.
 %
+% If the optional input ignoreHidden is true, folders starting with a dot
+% will be ignored.
+%
 % Kevin Mattheus Moerman
 % gibbon.toolbox@gmail.com
 %
 % 2013/04/18 Created
 % 2017/06/01 Fixed bug in relation to operational system differences
+% 2026/06/05 Added option to ignore hidden folders
 %------------------------------------------------------------------------
 
 %%
@@ -23,6 +27,16 @@ end
 pathNames=regexp(genpath(pathName),strPattern, 'split');
 pathNames=pathNames(2:end-1)';
 
+if nargin > 1 && ignoreHidden
+    pathNames(cellfun(@isHiddenFolder,pathNames)) = [];
+end
+
+end
+
+function yn = isHiddenFolder(path)
+    assert(isfolder(path))
+    [~, name] = fileparts(path);
+    yn = isempty(name) || startsWith(name, '.');
 end
  
 %% 
