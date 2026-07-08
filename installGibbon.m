@@ -1,4 +1,4 @@
-function installGibbon
+function installGibbon(unattended)
 
 % function installGibbon
 %-------------------------------------------------------------------------
@@ -7,39 +7,115 @@ function installGibbon
 % 2020/11/24 Minor fix to suggested path names for FEBio and export_fig
 %-------------------------------------------------------------------------
 
+if nargin < 1 || isempty(unattended)
+    unattended = ~usejava('desktop');
+end
+
 %% Add GIBBON library path so functions are known to use here
 gibbonPath=fileparts(mfilename('fullpath')); %Get the GIBBON path
 addpath(fullfile(gibbonPath,'lib')); %Add gibbon lib path so gibbon functions used here are known
 
-%% Control parameters
-
-W=60; %Scrollbar width
-squareSizeMax=1200;
-
-%% Set GIBBON settings
+%% GIBBON settings
 
 s=settings;
-
-if hasGroup(s,'GIBBON') %Prior GIBBON settings group exists -> Check for setting
-    if ~hasSetting(s.GIBBON,'vcw_profile') %Prior vcw_profile setting exists -> Update setting        
-        addSetting(s.GIBBON,'vcw_profile'); % Add vcw_profile setting
-        s.GIBBON.vcw_profile.PersonalValue='CAD'; %Make setting as personal setting
-    end
-else %No GIBBON settings at all -> Make group and setting
-    addGroup(s,'GIBBON'); % Add GIBBON settings group
-    addSetting(s.GIBBON,'vcw_profile'); % Add vcw_profile setting    
-    s.GIBBON.vcw_profile.PersonalValue='CAD'; %Make setting as personal setting    
-end
-
-try  
+try
     profileNameVCW=s.GIBBON.vcw_profile.PersonalValue; %Make setting as personal setting
 catch
-    profileNameVCW='CAD';
-    s.GIBBON.vcw_profile.PersonalValue=profileNameVCW; %Make setting as personal setting
+    setViewProfile('CAD')
+    profileNameVCW=s.GIBBON.vcw_profile.PersonalValue;
 end
 
-%% Open figure
+FEBioPath=getFEBioPath;
 
+%% Setup installer
+
+if ~unattended
+    hf = drawInstallerFigure(gibbonPath);
+    updateTitle = @(m) updateAndReDraw(hf.UserData.uihandles.hTextTitle,'String', m);
+    updateStatus = @(m) updateAndReDraw(hf.UserData.uihandles.hTextStatement,'String', m);
+else
+    updateTitle = @disp;
+    updateStatus = @(m) disp(['  ' m]);
+end
+
+updateTitle('Installing GIBBON');
+updateStatus('Setting up...');
+
+%% Adding temp folder if it does not exist
+
+tempPath=fullfile(gibbonPath,'data','temp');
+
+if ~exist(tempPath,'file')
+    mkdir(tempPath)
+end
+
+%% Add paths
+
+top_statement = 'Adding gibbon paths. Please wait...';
+updateStatus(top_statement);
+
+% Get subdirectories, ignoring hidden folders
+[pathNames]=getSubPaths(gibbonPath, true);
+
+timer = tic();
+for q=1:1:numel(pathNames)
+     pathNameNow=pathNames{q};     
+     addpath(pathNameNow); %Add path    
+     if ~unattended || toc(timer) > 10
+        updateStatus([top_statement,' ',num2str(round(100*q/numel(pathNames))),'% complete']);
+        timer = tic();
+     end
+end
+
+savepath;
+
+updateStatus('Done adding toolbox paths');
+pause(0.5);
+
+%% Add FEBio path
+
+if ~unattended
+    confirmFEBioPathUI(hf, FEBioPath);
+    confirmViewerProfileUI(hf, profileNameVCW);
+else
+    % FEBioPath already comes from config file,
+    % viewer profile stored in s.GIBBON.vcw_profile.PersonalValue
+end
+
+%% Unzip compressed data
+updateStatus('Unzipping compressed data'); 
+
+dataFolder=fullfile(gibbonPath,'data');
+unzipAll(dataFolder,1);
+
+updateStatus('Done unzipping data');
+pause(0.5); 
+
+%% Integrating help/documentations
+updateStatus('Integrating help');
+createHelpDemoDocumentation;
+updateStatus('Done integrating help');
+pause(0.5); 
+
+%% Wrap up
+
+updateTitle('Finished! GIBBON is installed.');
+updateStatus('Use gdoc to open the GIBBON help from the command window, or visit https://www.gibboncode.org/Documentation/');
+
+if ~unattended
+    doneUI(hf)
+end
+
+end
+
+function hf = drawInstallerFigure(gibbonPath)
+
+%% UI Control parameters
+
+W=60; % Scrollbar width
+squareSizeMax=1200;
+
+%% Open figure
 close all; 
 
 %Force groot units to be pixels
@@ -55,7 +131,6 @@ figStruct.Name='Installing GIBBON';
 
 hf = cFigure(figStruct);
 hf.NumberTitle='off';
-
 
 squareSize=round([min(screenSizeGroot(3:4)) min(screenSizeGroot(3:4))]); % width, height
 squareSize(squareSize>squareSizeMax)=squareSizeMax;
@@ -85,18 +160,16 @@ end
 
 textPositionInstall=[W hf.Position(4)-W hf.Position(3)-W*2 round(W/1.5)];
 
-top_title='Installing GIBBON';
-hTextTitle = uicontrol(hf,'Style','text','String',top_title,...
+hTextTitle = uicontrol(hf,'Style','text','String','Setting up...',...
     'Position',textPositionInstall,...
     'BackgroundColor',[1 1 1],'HorizontalAlignment','Left','FontSize',18,'FontWeight','normal');
 
 hf.UserData.uihandles.hTextTitle=hTextTitle;
 
-top_statement='Adding gibbon paths. Please wait...';
 textPositionStatement=textPositionInstall;
 textPositionStatement(2)=textPositionInstall(2)-W;
 
-hTextStatement = uicontrol(hf,'Style','text','String',top_statement,...
+hTextStatement = uicontrol(hf,'Style','text','String','...',...
     'Position',textPositionStatement,...
     'BackgroundColor',[1 1 1],'HorizontalAlignment','Left','FontSize',12,'FontWeight','bold');
 
@@ -130,129 +203,13 @@ hAxis.Position=[round((hf.Position(3)-axisWidth)/2) round((hf.Position(4)-axisHe
 hf.UserData.uihandles.hAxis=hAxis;
 hf.UserData.hImage=hImage;
 
-%%
 drawnow;
-
-%% Adding temp folder if it does not exist
-
-tempPath=fullfile(gibbonPath,'data','temp');
-
-if ~exist(tempPath,'file')
-    mkdir(tempPath)
 end
 
-%% Adding paths
-
-% Get subdirectories, ignoring hidden folders
-[pathNames]=getSubPaths(gibbonPath, true);
-
-for q=1:1:numel(pathNames)
-     pathNameNow=pathNames{q};     
-     addpath(pathNameNow); %Add path     
-     hTextStatement.String=[top_statement,' ',num2str(round(100*q/numel(pathNames))),'% complete'];
-     drawnow;
+function updateAndReDraw(h, prop, val)
+    set(h, prop, val);
+    drawnow();
 end
-
-hTextStatement.String='Done adding toolbox paths';
-drawnow;
-pause(0.5);
-
-%% Add FEBio path
-
-delete(hf.UserData.hImage);
-hf.UserData.hImage=image(hf.UserData.febioBanner);
-axis tight; axis equal; axis off;
-
-hTextStatement.String='Please provide the full path to the FEBio executable. Leave blank if FEBio is not needed.';
-
-if ispc
-    hTextInfoStringDefault='On Windows likely similar to: C:\Program Files\FEBioStudio2\febio\FEBio4.exe';
-elseif ismac
-    hTextInfoStringDefault='On MacOS likely similar to: /Applications/FEBioStudio/FEBioStudio.app/Contents/MacOS/febio4';
-else
-    hTextInfoStringDefault='On Linux likely similar to: /home/<UserName>/FEBioStudio/bin/febio4';
-end
-
-hTextInfo1 = uicontrol(hf,'Style','text','String',hTextInfoStringDefault,...
-    'Position',[W hf.Position(4)-W*3 round(hf.Position(3))-W*2 round(W/1.5)],...
-    'BackgroundColor',[1 1 1],'HorizontalAlignment','Left','FontSize',12,'FontWeight','normal');
-
-FEBioPath=getFEBioPath;
-
-hTextInput1 = uicontrol(hf,'Style','edit','String',FEBioPath,...
-    'Position',[W hf.Position(4)-W*3.5 round(hf.Position(3))-W*2 round(W/1.5)],...
-    'BackgroundColor',[1 1 1],'HorizontalAlignment','Left','FontSize',12);
-
-hf.UserData.uihandles.hTextInfo1=hTextInfo1;
-hf.UserData.uihandles.hTextInput1=hTextInput1;
-
-%% Create push button
-hf.UserData.pathDefinitionsDone=0;
-
-hBrowseButton = uicontrol('Style', 'pushbutton', 'String', 'Browse','Position',[W hf.Position(4)-W*4.5   5*W round(W/1.5)],'Callback',{@getFEBioExecPath,{hf}},'FontSize',12);
-hf.UserData.uihandles.hBrowseButton=hBrowseButton;
-
-hconfirmButton = uicontrol('Style', 'pushbutton', 'String', 'Confirm path','Position',[W hf.Position(4)-W*5.5   5*W round(W/1.5)],'Callback',{@setThirdpartyPaths,{hf}},'FontSize',12);
-hf.UserData.uihandles.hconfirmButton=hconfirmButton;
-
-% Wait for path definitions to be set
-
-while hf.UserData.pathDefinitionsDone==0
-    pause(0.1);
-end
-
-%% Add image
-
-hf.UserData.VCWOptionDone=0;
-
-indCurrent=find(strcmp(profileNameVCW,{'CAD','febio','touchpad'}));
-
-hf.UserData.uihandles.hTextStatement.String=['Set+test view control widget button mapping profile. Current setting: ',profileNameVCW];
-
-delete(hf.UserData.hImage);
-hf.UserData.hImage=image(hf.UserData.viewControlImage);
-axis tight; axis equal; axis off;
-
-hVCWSelect = uicontrol('Style', 'popupmenu', 'String', {'CAD','febio','touchpad'},'Value',indCurrent,'Position',[W hf.Position(4)-W*3.5   5*W round(W/1.5)],'Callback',{@setVCWOption,{hf}},'FontSize',12);
-hf.UserData.uihandles.hVCWSelect=hVCWSelect;
-
-hconfirmButton = uicontrol('Style', 'pushbutton', 'String', 'Confirm view profile','Position',[W hf.Position(4)-W*4.5   5*W round(W/1.5)],'Callback',{@VCWOptionDone,{hf}},'FontSize',12);
-hf.UserData.uihandles.hconfirmButton=hconfirmButton;
-
-createTestFigure(hf,profileNameVCW);
-
-while hf.UserData.VCWOptionDone==0
-    pause(0.1);
-end
-
-%% Unzip compressed data
-hf.UserData.uihandles.hTextStatement.String='Unzipping compressed data'; 
-drawnow;
-
-dataFolder=fullfile(hf.UserData.gibbonPath,'data');
-unzipAll(dataFolder,1);
-
-hf.UserData.uihandles.hTextStatement.String='Done unzipping data'; drawnow;
-pause(0.5); 
-
-%% Integrating help/documentations
-hf.UserData.uihandles.hTextStatement.String='Integrating help'; drawnow;
-createHelpDemoDocumentation;
-hf.UserData.uihandles.hTextStatement.String='Done integrating help'; drawnow;
-pause(0.5); 
-
-%%
-
-hf.UserData.uihandles.hTextTitle.String='Finished! GIBBON is installed.';
-
-hf.UserData.uihandles.hTextStatement.String='Use gdoc to open the GIBBON help from the command window, or visit https://www.gibboncode.org/Documentation/';
-
-hDoneButton = uicontrol('Style', 'pushbutton', 'String', 'Done!','Position',[W hf.Position(4)-W*3.5   5*W round(W/1.5)],'Callback',{@closeDone,{hf}},'FontSize',12);
-hf.UserData.uihandles.hBrowseButton=hDoneButton;
-
-end
-
-%% Resizing
 
 function resizeAll(~,~,inputCell)
 hf=inputCell{1};
@@ -294,7 +251,83 @@ end
 
 end
 
-%%
+function confirmFEBioPathUI(hf, FEBioPath)
+
+delete(hf.UserData.hImage);
+hf.UserData.hImage=image(hf.UserData.febioBanner);
+axis tight; axis equal; axis off;
+
+hf.UserData.uihandles.hTextStatement.String='Please provide the full path to the FEBio executable. Leave blank if FEBio is not needed.';
+drawnow;
+
+if ispc
+    hTextInfoStringDefault='On Windows likely similar to: C:\Program Files\FEBioStudio2\febio\FEBio4.exe';
+elseif ismac
+    hTextInfoStringDefault='On MacOS likely similar to: /Applications/FEBioStudio/FEBioStudio.app/Contents/MacOS/febio4';
+else
+    hTextInfoStringDefault='On Linux likely similar to: /home/<UserName>/FEBioStudio/bin/febio4';
+end
+
+W = hf.UserData.W;
+hTextInfo1 = uicontrol(hf,'Style','text','String',hTextInfoStringDefault,...
+    'Position',[W hf.Position(4)-W*3 round(hf.Position(3))-W*2 round(W/1.5)],...
+    'BackgroundColor',[1 1 1],'HorizontalAlignment','Left','FontSize',12,'FontWeight','normal');
+
+hTextInput1 = uicontrol(hf,'Style','edit','String',FEBioPath,...
+    'Position',[W hf.Position(4)-W*3.5 round(hf.Position(3))-W*2 round(W/1.5)],...
+    'BackgroundColor',[1 1 1],'HorizontalAlignment','Left','FontSize',12);
+
+hf.UserData.uihandles.hTextInfo1=hTextInfo1;
+hf.UserData.uihandles.hTextInput1=hTextInput1;
+
+%% Create push button
+hf.UserData.pathDefinitionsDone=0;
+
+hBrowseButton = uicontrol('Style', 'pushbutton', 'String', 'Browse','Position',[W hf.Position(4)-W*4.5   5*W round(W/1.5)],'Callback',{@getFEBioExecPath,{hf}},'FontSize',12);
+hf.UserData.uihandles.hBrowseButton=hBrowseButton;
+
+hconfirmButton = uicontrol('Style', 'pushbutton', 'String', 'Confirm path','Position',[W hf.Position(4)-W*5.5   5*W round(W/1.5)],'Callback',{@setThirdpartyPaths,{hf}},'FontSize',12);
+hf.UserData.uihandles.hconfirmButton=hconfirmButton;
+
+% Wait for path definitions to be set
+while hf.UserData.pathDefinitionsDone==0
+    pause(0.1);
+end
+end
+
+function confirmViewerProfileUI(hf, profileNameVCW)
+
+hf.UserData.VCWOptionDone=0;
+
+indCurrent=find(strcmp(profileNameVCW,{'CAD','febio','touchpad'}));
+
+hf.UserData.uihandles.hTextStatement.String=['Set+test view control widget button mapping profile. Current setting: ',profileNameVCW];
+
+delete(hf.UserData.hImage);
+hf.UserData.hImage=image(hf.UserData.viewControlImage);
+axis tight; axis equal; axis off;
+
+W = hf.UserData.W;
+hVCWSelect = uicontrol('Style', 'popupmenu', 'String', {'CAD','febio','touchpad'},'Value',indCurrent,'Position',[W hf.Position(4)-W*3.5   5*W round(W/1.5)],'Callback',{@setVCWOption,{hf}},'FontSize',12);
+hf.UserData.uihandles.hVCWSelect=hVCWSelect;
+
+hconfirmButton = uicontrol('Style', 'pushbutton', 'String', 'Confirm view profile','Position',[W hf.Position(4)-W*4.5   5*W round(W/1.5)],'Callback',{@VCWOptionDone,{hf}},'FontSize',12);
+hf.UserData.uihandles.hconfirmButton=hconfirmButton;
+
+createTestFigure(hf,profileNameVCW);
+
+while hf.UserData.VCWOptionDone==0
+    pause(0.1);
+end
+end
+
+function doneUI(hf)
+    W = hf.UserData.W;
+    hDoneButton = uicontrol('Style', 'pushbutton', 'String', 'Done!','Position',[W hf.Position(4)-W*3.5   5*W round(W/1.5)],'Callback',{@closeDone,{hf}},'FontSize',12);
+    hf.UserData.uihandles.hBrowseButton=hDoneButton;
+end
+
+%% Button Callbacks
 
 function setThirdpartyPaths(~,~,inputCell)
 hf=inputCell{1};
@@ -316,23 +349,10 @@ hf.UserData.uihandles=rmfield(hf.UserData.uihandles,'hBrowseButton');
 delete(hf.UserData.uihandles.hconfirmButton)
 hf.UserData.uihandles=rmfield(hf.UserData.uihandles,'hconfirmButton');
 
-hf.UserData.uihandles.hTextStatement.String='Done, adding third party paths';
-drawnow;
-
-% Saving path definitions
-hf.UserData.uihandles.hTextStatement.String='Saving path definitions';
-drawnow;
-
-savepath;
-
-hf.UserData.uihandles.hTextStatement.String='Done, saving path definitions';
-drawnow;
-
+hf.UserData.uihandles.hTextStatement.String ='Done, adding third party paths';
 hf.UserData.pathDefinitionsDone=1;
-
+drawnow;
 end
-
-%% Browse to exec file
 
 function getFEBioExecPath(~,~,inputCell)
 
@@ -346,9 +366,6 @@ end
 drawnow; 
 
 end
-
-
-%% Set VCW option
 
 function setVCWOption(~,~,inputCell)
 
@@ -374,11 +391,11 @@ drawnow;
 hf.UserData.VCWOptionDone=1;
 
 %Clean-up guide components
-hf.UserData.uihandles.hTextStatement.String='';
+hf.UserData.uihandles.hTextStatement.String ='';
 delete(hf.UserData.uihandles.hVCWSelect); %Delete toggle input
 delete(hf.UserData.uihandles.hconfirmButton); %Delete confirm button
 
-if isfield(hf.UserData,'hf2')
+if isfield(hf.UserData,'hf2') && ishandle(hf.UserData.hf2)
     close(hf.UserData.hf2);
 end
 
