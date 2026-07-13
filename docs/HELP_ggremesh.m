@@ -95,8 +95,6 @@ gdrawnow;
 
 optionStruct1.nb_pts=1500; %Set desired number of points
 optionStruct1.disp_on=1;
-optionStruct1.remesh.gradation=1.0; 
-optionStruct1.anisotropy=0.0;
 [Fn,Vn]=ggremesh(F,V,optionStruct1);
 
 %%
@@ -128,7 +126,9 @@ gdrawnow;
 
 optionStruct2.pointSpacing=3; %Set desired point spacing
 optionStruct2.disp_on=1; % Turn off command window text display
-% optionStruct2.anisotropy=5;
+optionStruct2.remesh.gradation=1.0; 
+optionStruct2.anisotropy=0.5;
+
 [Fn,Vn]=ggremesh(F,V,optionStruct2);
 
 %%

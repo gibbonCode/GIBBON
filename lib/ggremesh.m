@@ -79,7 +79,7 @@ optionStruct=rmfield(optionStruct,'disp_on');
 
 %%
 
-%Setting pathnames
+%Setting path names
 pathNameLib=fullfile(fileparts(fileparts(mfilename('fullpath'))),'lib_ext','geogram');
 pathNameTempFiles=fullfile(fileparts(fileparts(mfilename('fullpath'))),'data','temp');
 
@@ -106,7 +106,7 @@ end
 %% 
 
 if disp_on==1
-    startString=['------>  Geogram/vorpalite for resmeshing  <------ ',datestr(now)];
+    startString=['------>  Geogram/vorpalite for resmeshing  <------ ', string(datetime)];
     stringLength=numel(startString);
     lineSep=repmat('%',1,stringLength); %Stripe of % symbols
     disp(' '); %Empty line
@@ -120,7 +120,7 @@ if disp_on==1
     dispMessage('# Export mesh input file.',stringLength);
 end
 
-patch2obj(inputFileName,F,V)
+patch2obj(inputFileName,F,V);
 
 %% Start Geogram -> vorpalite
 
@@ -150,12 +150,10 @@ for q=1:1:numel(fieldNameSet)
     end
 end
 
-runString
-
 if disp_on==1
-    [runStatus,runOut]=system(runString,'-echo');
+    system(runString,'-echo');
 else
-    [runStatus,runOut]=system(runString);
+    system(runString);
 end
 
 %% Import mesh
@@ -164,8 +162,7 @@ if disp_on==1
     dispMessage('# Importing remeshed geometry.',stringLength);
 end
 
-try
-    outputFileName
+try    
     objImportOptionStruct.fullMode=0;
     objStruct=import_obj(outputFileName,objImportOptionStruct);
     Fn=objStruct.F;
@@ -193,7 +190,7 @@ end
 end
 
 function dispMessage(m,stringLength)
-d=datestr(now);
+d=string(datetime);
 nRep=stringLength-numel(d)-numel(m);
 if nRep>0
     s=repmat(' ',1,nRep);
