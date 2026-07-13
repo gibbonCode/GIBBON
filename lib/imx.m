@@ -53,12 +53,13 @@ end
 [X,Y,Z]=im2cart(I,J,K,v);
 
 %% Plot settings
-fontColor='w';
+fontColor='k';
 fontSize=20;
 cMap=gray(250);
 scrollBarWidth=20; %Scrollbar width
 figStruct.Name='Image Segmentation Widget'; %Figure name
 figStruct.vcw=0;
+
 % figStruct.ScreenOffset=100; %Setting spacing of figure with respect to screen edges
 
 %%

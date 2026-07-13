@@ -29,20 +29,16 @@ function [varargout]=cFigure(varargin)
 % h.outerPosition=[a b c d];
 %
 % Some additional fields can be added that are not normally part of the
-% figure property set: ColorDef and ScreenOffset.
-% ColorDef sets the color definition which is either 'white' or 'black'.
-% This allows the user to select a dark background and appropriately set
-% the colorscheme for it e.g. for a black background:
-%         figStruct.ColorDef='black';
-%         figStruct.Color='k';
-% Where the Color property sets the figure background color while the
-% ColorDef property sets the colorscheme used (of axes etc.).
+% figure property set: theme and ScreenOffset.
+% theme (>=R2025) sets the color theme for the figure which can be "light" 
+% or "dark". % 
+%
 % By default cFigure creates figures that are the full screensize but
 % reduced 10% away from the edges. The spacing between the figure window
 % and the screen edges is set by the figStruct.ScreenOffset property. The
 % units are pixels.
 %
-% See also: figure, set, get, colordef, mfv, scf
+% See also: figure, set, get, theme, mfv, scf
 %
 % Kevin Mattheus Moerman
 % gibbon.toolbox@gmail.com
@@ -56,6 +52,8 @@ function [varargout]=cFigure(varargin)
 % screen offset or a scaling factor. 
 % 2018/12/19 Fixed bug to handle when both offset and scaling are specified
 % 2020/05/11 Changed vcw default buttons: {'pan','rot','zoom','zoom'}
+% 2026/07/13 Removed Color setting so color is inherited from the newer
+% theme settings. 
 % 
 % To do: 
 % Check handling of multiple screens for figure size setting
@@ -69,15 +67,20 @@ grootUnits=graphicalRoot.Units;
 if ~strcmp(grootUnits,'pixels')
     graphicalRoot.Units='pixels';
 end
-screenSizeGroot = graphicalRoot.ScreenSize(3:4); %Get screen widht and height
+screenSizeGroot = graphicalRoot.ScreenSize(3:4); %Get screen width and height
 
 %Default settings
 defaultFigStruct.Visible='on';
-defaultFigStruct.Color='w';
 defaultFigStruct.ScreenScale=0.85; %Figure size is based on scaled screensize
 defaultFigStruct.Clipping='off';
 defaultFigStruct.efw=1;
 defaultFigStruct.vcw=[]; %As per value set by user
+
+if isMATLABReleaseOlderThan("R2025b")
+    defaultFigStruct.Color='w';
+else % Newer than R2025b so theme can be used
+    defaultFigStruct.theme = "light";
+end
 
 switch nargin
     case 0
@@ -95,6 +98,11 @@ if isfield(figStruct,'ColorDef')
     figStruct=rmfield(figStruct,'ColorDef'); %Remove field from structure array
 end
 
+if isfield(figStruct,'Color')
+    warning('Color functionality is replaced by theme based colouring at and after R2025b')    
+end
+
+
 %Get export figure option and remove field
 efwOpt=figStruct.efw;
 figStruct=rmfield(figStruct,'efw'); %Remove field from structure array
@@ -109,6 +117,12 @@ isOld=verLessThan('matlab', '8.4.0.150421 (R2014b)');
 
 %% Create a hidden figure
 hf = figure('Visible', 'off'); %create an invisible figure
+
+%% Set theme if provided
+if isfield(figStruct,'theme')
+    theme(hf, figStruct.theme)
+    figStruct=rmfield(figStruct,'theme'); %Remove field from structure array
+end
 
 %% Set figure size
 

@@ -57,7 +57,13 @@ sliceIndexK=round(size(M,3)/2); %(close to) middle slice
 [ax,ay,az]=im2cart([size(M,1)+1 0],[size(M,2)+1 0],[size(M,3)+1 0],v);
 axLim=[ax(2) ax(1) ay(2) ay(1) az(2) az(1)];
 
-hf=cFigure;
+if isMATLABReleaseOlderThan("R2025b")
+    figStruct.Color='w';
+else % Newer than R2025b so theme can be used
+    figStruct.theme = "dark";
+end
+
+hf=cFigure(figStruct);
 
 for q=1:1:4
     subplot(2,2,q);

@@ -95,6 +95,8 @@ gdrawnow;
 
 optionStruct1.nb_pts=1500; %Set desired number of points
 optionStruct1.disp_on=1;
+optionStruct1.remesh.gradation=1.0; 
+optionStruct1.anisotropy=0.0;
 [Fn,Vn]=ggremesh(F,V,optionStruct1);
 
 %%

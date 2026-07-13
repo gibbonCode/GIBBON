@@ -62,6 +62,7 @@ defaultOptionStruct.pre.max_hole_edges=0; %Max number of hole edges for pre-proc
 defaultOptionStruct.post.max_hole_area=100; %Max hole area for post-processing step
 defaultOptionStruct.post.max_hole_edges=0; %Max number of hole edges for post-processing step
 defaultOptionStruct.disp_on=0; %Turn on/off displaying of Geogram text
+defaultOptionStruct.remesh.gradation = 0.0; 
 
 %Complement input with default if missing
 [optionStruct]=structComplete(optionStruct,defaultOptionStruct,1);
@@ -119,7 +120,7 @@ if disp_on==1
     dispMessage('# Export mesh input file.',stringLength);
 end
 
-patch2obj(inputFileName,F,V);
+patch2obj(inputFileName,F,V)
 
 %% Start Geogram -> vorpalite
 
@@ -149,6 +150,8 @@ for q=1:1:numel(fieldNameSet)
     end
 end
 
+runString
+
 if disp_on==1
     [runStatus,runOut]=system(runString,'-echo');
 else
@@ -162,6 +165,7 @@ if disp_on==1
 end
 
 try
+    outputFileName
     objImportOptionStruct.fullMode=0;
     objStruct=import_obj(outputFileName,objImportOptionStruct);
     Fn=objStruct.F;

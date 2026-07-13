@@ -54,12 +54,17 @@ end
 
 M=double(M); %Conver the image to a double
 
-figStruct.Name='GIBBON: Slice viewer'; %Figure name
-figStruct.Color='w'; %Figure background color
+figStruct.Name='GIBBON: 3D slice viewer'; %Figure name
+if isMATLABReleaseOlderThan("R2025b")
+    figStruct.Color='w';
+    optionStructDefault.fontColor='k'; %font color
+else % Newer than R2025b so theme can be used
+    figStruct.theme = "dark";
+    optionStructDefault.fontColor='w'; %font color
+end
 
 optionStructDefault.colormap=gray(250); %colormap
 optionStructDefault.clim=[min(M(~isnan(M))) max(M(~isnan(M)))]; %color limits
-optionStructDefault.fontColor='w'; %font color
 optionStructDefault.fontSize=20; %font size
 optionStructDefault.edgeColor='none';
 optionStructDefault.figStruct=figStruct; %figure options (see cFigure)
