@@ -14,6 +14,10 @@ function setupOnce(testCase)
 
     % Record warnings state before test
     testCase.TestData.warnings = warning;
+
+    % Create a dummy FEBio executable 
+    testCase.TestData.dummyFEBio = tempname;
+    fclose(fopen(testCase.TestData.dummyFEBio,'w'));
 end
 
 function setup(~)
@@ -40,6 +44,10 @@ function teardownOnce(testCase)
 
     % Restore warnings
     warning(testCase.TestData.warnings);
+
+    if isfile(testCase.TestData.dummyFEBio)
+        delete(testCase.TestData.dummyFEBio);
+    end
 end
 
 function s = backupSettings(obj)
@@ -74,10 +82,9 @@ function restoreSettings(backup, obj)
     end
 end
 
-function testConstructor(testCase)
+function testDefaults(testCase)
 
-    warning('off','gibbon:Settings:FEBioPath')
-    g = gibbonSettings();
+    g = gibbonSettings.get();
 
     f = gibbonSettings.names;
     for j = 1:length(f)
@@ -87,29 +94,38 @@ end
 
 function testGetSet(testCase)
 
-    warning('off','gibbon:Settings:FEBioPath')
-    g = gibbonSettings();
+    gibbonSettings.set('view','touch');
+    gibbonSettings.set('febio', testCase.TestData.dummyFEBio);
 
-    set(g,'view','touch');
-    set(g,'febio','febio3');
+    g = gibbonSettings.get();
+    verifyEqual(testCase, g.ViewProfile, 'touchpad');
+    verifyEqual(testCase, g.FEBioPath, testCase.TestData.dummyFEBio);
 
-    verifyEqual(testCase, g.ViewProfile, 'touchpad')
-    verifyEqual(testCase, g.FEBioPath, 'febio3')
+    h = gibbonSettings.get();
+    verifyEqual(testCase, g, h)
+end
 
-    h = gibbonSettings();
-    verifyEqual(testCase, h.ViewProfile, g.ViewProfile)
-    verifyEqual(testCase, h.FEBioPath, g.FEBioPath)
+function testFindFEBioPicksFirstValid(testCase)
+
+    options = {'definitely_not_a_file', testCase.TestData.dummyFEBio, 'foo'};
+    p = gibbonSettings.findFEBioPath(options);
+    verifyEqual(testCase, p, testCase.TestData.dummyFEBio);
+end
+
+function testFindFEBioKeepsExisting(testCase)
+
+    gibbonSettings.set('FEBioPath', testCase.TestData.dummyFEBio);
+    p = gibbonSettings.findFEBioPath();
+    verifyEqual(testCase, p, testCase.TestData.dummyFEBio);
 end
 
 function testReset(testCase)
 
-    warning('off','gibbon:Settings:FEBioPath')
-    g = gibbonSettings();
+    gibbonSettings.set('view','touch','febio', testCase.TestData.dummyFEBio);
+    gibbonSettings.set('view','touch');
 
-    set(g,'ViewProfile','touchpad');
-    set(g,'FEBioPath','febio3');
-
-    g.reset();
+    gibbonSettings.reset();
+    g = gibbonSettings.get();
 
     f = gibbonSettings.names;
     for j = 1:length(f)
@@ -119,22 +135,16 @@ end
 
 function testInvalidOption(testCase)
 
-    g = gibbonSettings();
-    verifyError(testCase, @() get(g, 'notAnOption'), 'gibbon:Settings:InvalidOption')
-    verifyError(testCase, @() set(g, 'notAnOption', 'value'), 'gibbon:Settings:InvalidOption')
+    verifyError(testCase, @() gibbonSettings.get('notAnOption'), 'MATLAB:unrecognizedStringChoice')
+    verifyError(testCase, @() gibbonSettings.set('notAnOption', 'value'), 'MATLAB:unrecognizedStringChoice')
 end
 
 function testInvalidViewProfileValue(testCase)
 
-    g = gibbonSettings();
-    verifyError(testCase, @() set(g, 'ViewProfile', 'not-a-profile'), 'gibbon:Settings:InvalidViewProfile')
+    verifyError(testCase, @() gibbonSettings.set('ViewProfile', 'not-a-profile'), 'MATLAB:unrecognizedStringChoice')
 end
 
 function testInvalidFEBioPathValue(testCase)
 
-    warning('off','gibbon:Settings:FEBioPath')
-    g = gibbonSettings();
-
-    warning('error','gibbon:Settings:FEBioPath')
-    verifyError(testCase, @() set(g, 'FEBioPath', 'definitely_not_a_real_febio_binary'), 'gibbon:Settings:FEBioPath')
+    verifyError(testCase, @() gibbonSettings.set('FEBioPath', 'definitely_not_a_file'), 'MATLAB:validators:mustBeFile')
 end
