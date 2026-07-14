@@ -100,7 +100,7 @@ end
 if ~isa(buttonOpt,'cell')
     if isempty(buttonOpt)
         % Get current view profile (uses default if none is set)
-        vcw_profile=getViewProfile;        
+        vcw_profile=gibbonSettings.get('ViewProfile');        
     elseif isa(buttonOpt,'char')
         vcw_profile=buttonOpt; %Assume it defines a view profile
     end
@@ -113,6 +113,8 @@ if ~isa(buttonOpt,'cell')
             buttonOpt = {'rot','pan','zoom','zoom'};
         case 'touchpad'
             buttonOpt = {'rot','zoom','pan','zoom'};
+        otherwise
+            error('Unexpected vcw_profile: %s', vcw_profile)
     end
 end
 

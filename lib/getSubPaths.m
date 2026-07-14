@@ -28,15 +28,14 @@ pathNames=regexp(genpath(pathName),strPattern, 'split');
 pathNames=pathNames(2:end-1)';
 
 if nargin > 1 && ignoreHidden
-    pathNames(cellfun(@isHiddenFolder,pathNames)) = [];
+    pathNames(cellfun(@inHiddenFolder,pathNames)) = [];
 end
 
 end
 
-function yn = isHiddenFolder(path)
+function yn = inHiddenFolder(path)
     assert(isfolder(path))
-    [~, name] = fileparts(path);
-    yn = isempty(name) || startsWith(name, '.');
+    yn = ~isempty(regexp(path,'^\.|[\\/]\.','once'));
 end
  
 %% 

@@ -8,7 +8,7 @@ function febio(varargin)
 % If the input is a valid FEBio model input file path then FEBio will run
 % the analysis for that file. 
 % The input may also be a structure with the following default fields: 
-%   defaultOptionStruct.FEBioPath=getFEBioPath; %The FEBio path
+%   defaultOptionStruct.FEBioPath=gibbonSettings.get('FEBioPath'); %The FEBio path
 %   defaultOptionStruct.run_filename=[]; %The .feb file name
 %   defaultOptionStruct.run_logname=[]; %The log file name
 %   defaultOptionStruct.runMode='internal'; %Running internally
@@ -20,7 +20,7 @@ function febio(varargin)
 %% Parse input
 
 %Create default structure
-defaultOptionStruct.FEBioPath=getFEBioPath; %Get FEBio path
+defaultOptionStruct.FEBioPath=gibbonSettings.get('FEBioPath'); %Get FEBio path
 defaultOptionStruct.run_filename=[];
 defaultOptionStruct.run_logname=[];
 defaultOptionStruct.runMode='internal';

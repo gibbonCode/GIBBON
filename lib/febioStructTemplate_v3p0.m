@@ -25,8 +25,8 @@ switch nargin
 end
 
 %% Check for old FEBio version (febio2) 
-
-if contains(lower(getFEBioPath),'febio2')
+FEBioPath = gibbonSettings.get('FEBioPath');
+if contains(lower(FEBioPath),'febio2')
     [outputStruct]=febioStructTemplate_v2p5(inputStruct);     
     return    
 end
