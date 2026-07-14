@@ -7,7 +7,7 @@ function setupOnce(testCase)
     mkdir(rootDir);
 
     visible = {'foo', 'bar', fullfile('foo', 'nested')};
-    hidden = {'.hidden', fullfile('foo', '.secrets')};
+    hidden = {'.hidden', fullfile('foo', '.secrets'), '.git', fullfile('.git', 'stuff')};
     files = {'.gitignore', 'some.txt', fullfile('foo','bam.m')};
 
     visible = cellfun(@(d) fullfile(rootDir, d), visible, 'unif', 0);
