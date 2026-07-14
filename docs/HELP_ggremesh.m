@@ -65,7 +65,7 @@ edgeWidth=0.5;
 [Fn,Vn]=ggremesh(F,V);
 
 %%
-% Visualiza patch data
+% Visualise patch data
 
 cFigure; 
 subplot(1,2,1); hold on;

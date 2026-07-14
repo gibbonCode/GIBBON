@@ -55,7 +55,7 @@ imSiz=imSiz([2 1 3]); %Image size (x, y corresponds to j,i in image coordinates,
 % Using |triSurf2Im| function to convert patch data to image data
 [M,G,bwLabels]=triSurf2Im(F,V,voxelSize,imOrigin,imSiz);
 
-%calucalte coordinate in image system
+% Calculate coordinates in image system
 Vt=V-imOrigin(ones(size(V,1),1),:);
 
 %%

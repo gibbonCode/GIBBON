@@ -69,24 +69,33 @@ if ~strcmp(grootUnits,'pixels')
 end
 screenSizeGroot = graphicalRoot.ScreenSize(3:4); %Get screen width and height
 
-%Default settings
+%Main default settings
 defaultFigStruct.Visible='on';
 defaultFigStruct.ScreenScale=0.85; %Figure size is based on scaled screensize
 defaultFigStruct.Clipping='off';
 defaultFigStruct.efw=1;
 defaultFigStruct.vcw=[]; %As per value set by user
-
-if isMATLABReleaseOlderThan("R2025b")
-    defaultFigStruct.Color='w';
-else % Newer than R2025b so theme can be used
-    defaultFigStruct.theme = "light";
+if ~isMATLABReleaseOlderThan("R2025b") % Newer than R2025b so theme can be used
+    defaultFigStruct.theme = "light";    
 end
 
+% Get/define input structure now
 switch nargin
     case 0
        figStruct=[]; %Use default
     case 1        
         figStruct=varargin{1}; %Use custom
+end
+
+% Add color defaults based on theme if provided
+if isfield(figStruct, "theme") && ~isfield(figStruct, "Color")
+    if figStruct.theme == "light"
+        defaultFigStruct.Color='w';
+    elseif figStruct.theme == "dark"
+        defaultFigStruct.Color='k';
+    end
+else
+    defaultFigStruct.Color='w';
 end
 
 %Fix option structure, complete and remove empty values
@@ -97,11 +106,6 @@ if isfield(figStruct,'ColorDef')
     warning('ColorDef was ignored. This is no longer supported by MATLAB')
     figStruct=rmfield(figStruct,'ColorDef'); %Remove field from structure array
 end
-
-if isfield(figStruct,'Color')
-    warning('Color functionality is replaced by theme based colouring at and after R2025b')    
-end
-
 
 %Get export figure option and remove field
 efwOpt=figStruct.efw;
@@ -120,8 +124,10 @@ hf = figure('Visible', 'off'); %create an invisible figure
 
 %% Set theme if provided
 if isfield(figStruct,'theme')
-    theme(hf, figStruct.theme)
-    figStruct=rmfield(figStruct,'theme'); %Remove field from structure array
+    if ~isMATLABReleaseOlderThan("R2025b")        
+        theme(hf, figStruct.theme);        
+        figStruct=rmfield(figStruct,'theme'); %Remove field from structure array
+    end
 end
 
 %% Set figure size

@@ -60,6 +60,7 @@ if isMATLABReleaseOlderThan("R2025b")
     optionStructDefault.fontColor='k'; %font color
 else % Newer than R2025b so theme can be used
     figStruct.theme = "dark";
+    figStruct.Color='k';
     optionStructDefault.fontColor='w'; %font color
 end
 

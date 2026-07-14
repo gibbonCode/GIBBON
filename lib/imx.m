@@ -53,12 +53,13 @@ end
 [X,Y,Z]=im2cart(I,J,K,v);
 
 %% Plot settings
-fontColor='k';
+fontColor='w';
 fontSize=20;
 cMap=gray(250);
 scrollBarWidth=20; %Scrollbar width
 figStruct.Name='Image Segmentation Widget'; %Figure name
 figStruct.vcw=0;
+figStruct.theme="dark";
 
 % figStruct.ScreenOffset=100; %Setting spacing of figure with respect to screen edges
 
@@ -162,7 +163,7 @@ D=importdata(fullfile(iconPath,'help.jpg'));
 S=double(D);
 S=S-min(S(:));
 S=S./max(S(:));
-logicOne=repmat(all(S==1,3),1,1,size(S,3)); S(logicOne)=NaN;
+% logicOne=repmat(all(S==1,3),1,1,size(S,3)); S(logicOne)=NaN;
 if size(S,3)==1
     S=repmat(S,[1 1 3]);
 end
@@ -177,7 +178,7 @@ D=importdata(fullfile(iconPath,'save.jpg'));
 S=double(D);
 S=S-min(S(:));
 S=S./max(S(:));
-logicOne=repmat(all(S==1,3),1,1,size(S,3)); S(logicOne)=NaN;
+% logicOne=repmat(all(S==1,3),1,1,size(S,3)); S(logicOne)=NaN;
 if size(S,3)==1
     S=repmat(S,[1 1 3]);
 end
@@ -193,7 +194,7 @@ D=importdata(fullfile(iconPath,'load.jpg'));
 S=double(D);
 S=S-min(S(:));
 S=S./max(S(:));
-logicOne=repmat(all(S==1,3),1,1,size(S,3)); S(logicOne)=NaN;
+% logicOne=repmat(all(S==1,3),1,1,size(S,3)); S(logicOne)=NaN;
 if size(S,3)==1
     S=repmat(S,[1 1 3]);
 end
@@ -208,7 +209,7 @@ D=importdata(fullfile(iconPath,'colorbar.jpg'));
 S=double(D);
 S=S-min(S(:));
 S=S./max(S(:));
-logicOne=repmat(all(S==1,3),1,1,size(S,3)); S(logicOne)=NaN;
+% logicOne=repmat(all(S==1,3),1,1,size(S,3)); S(logicOne)=NaN;
 if size(S,3)==1
     S=repmat(S,[1 1 3]);
 end
@@ -223,7 +224,7 @@ D=importdata(fullfile(iconPath,'ghost.jpg'));
 S=double(D);
 S=S-min(S(:));
 S=S./max(S(:));
-logicOne=repmat(all(S==1,3),1,1,size(S,3)); S(logicOne)=NaN;
+% logicOne=repmat(all(S==1,3),1,1,size(S,3)); S(logicOne)=NaN;
 if size(S,3)==1
     S=repmat(S,[1 1 3]);
 end
@@ -238,7 +239,7 @@ D=importdata(fullfile(iconPath,'eye.jpg'));
 S=double(D);
 S=S-min(S(:));
 S=S./max(S(:));
-logicOne=repmat(all(S==1,3),1,1,size(S,3)); S(logicOne)=NaN;
+% logicOne=repmat(all(S==1,3),1,1,size(S,3)); S(logicOne)=NaN;
 if size(S,3)==1
     S=repmat(S,[1 1 3]);
 end
@@ -253,7 +254,7 @@ D=importdata(fullfile(iconPath,'home.jpg'));
 S=double(D);
 S=S-min(S(:));
 S=S./max(S(:));
-logicOne=repmat(all(S==1,3),1,1,size(S,3)); S(logicOne)=NaN;
+% logicOne=repmat(all(S==1,3),1,1,size(S,3)); S(logicOne)=NaN;
 if size(S,3)==1
     S=repmat(S,[1 1 3]);
 end
@@ -268,7 +269,7 @@ D=importdata(fullfile(iconPath,'sample.jpg'));
 S=double(D);
 S=S-min(S(:));
 S=S./max(S(:));
-logicOne=repmat(all(S==1,3),1,1,size(S,3)); S(logicOne)=NaN;
+% logicOne=repmat(all(S==1,3),1,1,size(S,3)); S(logicOne)=NaN;
 if size(S,3)==1
     S=repmat(S,[1 1 3]);
 end
@@ -283,7 +284,7 @@ D=importdata(fullfile(iconPath,'cut.jpg'));
 S=double(D);
 S=S-min(S(:));
 S=S./max(S(:));
-logicOne=repmat(all(S==1,3),1,1,size(S,3)); S(logicOne)=NaN;
+% logicOne=repmat(all(S==1,3),1,1,size(S,3)); S(logicOne)=NaN;
 if size(S,3)==1
     S=repmat(S,[1 1 3]);
 end
@@ -298,7 +299,7 @@ D=importdata(fullfile(iconPath,'draw.jpg'));
 S=double(D);
 S=S-min(S(:));
 S=S./max(S(:));
-logicOne=repmat(all(S==1,3),1,1,size(S,3)); S(logicOne)=NaN;
+% logicOne=repmat(all(S==1,3),1,1,size(S,3)); S(logicOne)=NaN;
 if size(S,3)==1
     S=repmat(S,[1 1 3]);
 end
@@ -313,7 +314,7 @@ D=importdata(fullfile(iconPath,'select.jpg'));
 S=double(D);
 S=S-min(S(:));
 S=S./max(S(:));
-logicOne=repmat(all(S==1,3),1,1,size(S,3)); S(logicOne)=NaN;
+% logicOne=repmat(all(S==1,3),1,1,size(S,3)); S(logicOne)=NaN;
 if size(S,3)==1
     S=repmat(S,[1 1 3]);
 end
@@ -328,7 +329,7 @@ D=importdata(fullfile(iconPath,'delete.jpg'));
 S=double(D);
 S=S-min(S(:));
 S=S./max(S(:));
-logicOne=repmat(all(S==1,3),1,1,size(S,3)); S(logicOne)=NaN;
+% logicOne=repmat(all(S==1,3),1,1,size(S,3)); S(logicOne)=NaN;
 if size(S,3)==1
     S=repmat(S,[1 1 3]);
 end
@@ -344,7 +345,7 @@ D=importdata(fullfile(iconPath,'polygonSelect.jpg'));
 S=double(D);
 S=S-min(S(:));
 S=S./max(S(:));
-logicOne=repmat(all(S==1,3),1,1,size(S,3)); S(logicOne)=NaN;
+% logicOne=repmat(all(S==1,3),1,1,size(S,3)); S(logicOne)=NaN;
 if size(S,3)==1
     S=repmat(S,[1 1 3]);
 end
@@ -359,7 +360,7 @@ D=importdata(fullfile(iconPath,'reset.jpg'));
 S=double(D);
 S=S-min(S(:));
 S=S./max(S(:));
-logicOne=repmat(all(S==1,3),1,1,size(S,3)); S(logicOne)=NaN;
+% logicOne=repmat(all(S==1,3),1,1,size(S,3)); S(logicOne)=NaN;
 if size(S,3)==1
     S=repmat(S,[1 1 3]);
 end
@@ -389,7 +390,7 @@ D=importdata(fullfile(iconPath,'closePolygon.jpg'));
 S=double(D);
 S=S-min(S(:));
 S=S./max(S(:));
-logicOne=repmat(all(S==1,3),1,1,size(S,3)); S(logicOne)=NaN;
+% logicOne=repmat(all(S==1,3),1,1,size(S,3)); S(logicOne)=NaN;
 if size(S,3)==1
     S=repmat(S,[1 1 3]);
 end
@@ -404,7 +405,7 @@ D=importdata(fullfile(iconPath,'smooth.jpg'));
 S=double(D);
 S=S-min(S(:));
 S=S./max(S(:));
-logicOne=repmat(all(S==1,3),1,1,size(S,3)); S(logicOne)=NaN;
+% logicOne=repmat(all(S==1,3),1,1,size(S,3)); S(logicOne)=NaN;
 if size(S,3)==1
     S=repmat(S,[1 1 3]);
 end
@@ -419,7 +420,7 @@ D=importdata(fullfile(iconPath,'mark.jpg'));
 S=double(D);
 S=S-min(S(:));
 S=S./max(S(:));
-logicOne=repmat(all(S==1,3),1,1,size(S,3)); S(logicOne)=NaN;
+% logicOne=repmat(all(S==1,3),1,1,size(S,3)); S(logicOne)=NaN;
 if size(S,3)==1
     S=repmat(S,[1 1 3]);
 end
@@ -449,7 +450,7 @@ D=importdata(fullfile(iconPath,'grow.jpg'));
 S=double(D);
 S=S-min(S(:));
 S=S./max(S(:));
-logicOne=repmat(all(S==1,3),1,1,size(S,3)); S(logicOne)=NaN;
+% logicOne=repmat(all(S==1,3),1,1,size(S,3)); S(logicOne)=NaN;
 if size(S,3)==1
     S=repmat(S,[1 1 3]);
 end
@@ -464,7 +465,7 @@ D=importdata(fullfile(iconPath,'shrink.jpg'));
 S=double(D);
 S=S-min(S(:));
 S=S./max(S(:));
-logicOne=repmat(all(S==1,3),1,1,size(S,3)); S(logicOne)=NaN;
+% logicOne=repmat(all(S==1,3),1,1,size(S,3)); S(logicOne)=NaN;
 if size(S,3)==1
     S=repmat(S,[1 1 3]);
 end
@@ -479,7 +480,7 @@ D=importdata(fullfile(iconPath,'move.jpg'));
 S=double(D);
 S=S-min(S(:));
 S=S./max(S(:));
-logicOne=repmat(all(S==1,3),1,1,size(S,3)); S(logicOne)=NaN;
+% logicOne=repmat(all(S==1,3),1,1,size(S,3)); S(logicOne)=NaN;
 if size(S,3)==1
     S=repmat(S,[1 1 3]);
 end
