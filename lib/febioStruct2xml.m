@@ -39,13 +39,14 @@ optionStructConv.dlmChar=',';
 optionStructConv.rowWrapLength=[]; %Is altered in code depending on filedname with arrayRowWrapKeywords
 defaultOptionStruct.optionStructConv=optionStructConv; %Add to default option structure
 
-if contains(lower(getFEBioPath),'febio2')
+FEBioPath = gibbonSettings.get('FEBioPath');
+if contains(lower(FEBioPath),'febio2')
     warning('febio2 and related febio_spec handling are depricated. Update your codes for the latest FEBio version to avoid future errors.')
     defaultOptionStruct.fieldOrder={'Module','Control','Globals','Material',...
         'Geometry','MeshData','Initial','Boundary',...
         'Loads','Contact','Constraints','Rigid Connectors',...
         'Discrete','LoadData','Output','Parameters'};
-elseif contains(lower(getFEBioPath),'febio3')
+elseif contains(lower(FEBioPath),'febio3')
     warning('febio3 and related febio_spec handling are depricated. Update your codes for the latest FEBio version to avoid future errors.')
     defaultOptionStruct.fieldOrder={...
         'Module','Control','Globals','Material',...
@@ -100,7 +101,7 @@ if isfield(parseStruct,'ATTR')
     if isfield(parseStruct.ATTR,'version')
         if contains(parseStruct.ATTR.version,'2.5')
             warning('Old febio_spec detected. febio_spec 2.5 is depricated. Please upgrade to febio_spec 3.0');
-            if contains(lower(getFEBioPath),'febio3')
+            if contains(lower(FEBioPath),'febio3')
                 warning('febio_spec 2.5 is likely not compatible with FEBio3');
             end
         end
