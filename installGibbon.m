@@ -56,18 +56,23 @@ function installGibbon(unattended)
 
     % Get subdirectories, ignoring hidden folders
     [pathNames]=getSubPaths(gibbonPath, true);
+    addpath(pathNames{:})
 
-    timer = tic();
-    for q=1:1:numel(pathNames)
-        pathNameNow=pathNames{q};
-        addpath(pathNameNow); %Add path
-        if ~unattended || toc(timer) > 10
-            updateStatus([top_statement,' ',num2str(round(100*q/numel(pathNames))),'% complete']);
-            timer = tic();
+    % Try to make sure we save the path...
+    ws = warning();
+    warning('error','MATLAB:SavePath:PathNotSaved');
+
+    try
+        savepath();
+    catch err
+        % ... but let it fail with a warning on the second try
+        warning(ws);
+
+        if ~strcmp(err.identifier, 'MATLAB:SavePath:PathNotSaved')
+            throw(err);
         end
-    end
-
-    savepath;
+        savepath(fullfile(userpath,'pathdef.m'));
+        end
 
     updateStatus('Done adding toolbox paths');
     pause(0.5);
