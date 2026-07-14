@@ -30,7 +30,7 @@ end
 %% Get pdf file location
 
 febioPath=gibbonSettings.get('FEBioPath');
-documentationPath=fullfile(fileparts(fileparts(febioPath)),'doc')
+documentationPath=fullfile(fileparts(fileparts(febioPath)),'doc');
 
 %Get list of pdf files in folder
 files = dir(fullfile(documentationPath,'*.pdf'));
