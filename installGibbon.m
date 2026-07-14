@@ -12,7 +12,7 @@ function installGibbon(interactive, FEBioPath, profileNameVCW)
         FEBioPath (1,:) char = '';  %*
         profileNameVCW (1,:) char = 'CAD';  %*
     end
-    % (*) These will be propperly validated by gibbonSettings, below
+    % (*) These will be properly validated by gibbonSettings, below
 
     %% Add GIBBON library path so functions are known to use here
     gibbonPath=fileparts(mfilename('fullpath')); %Get the GIBBON path
@@ -365,7 +365,6 @@ function setThirdpartyPaths(~,~,inputCell)
 end
 
 function getFEBioExecPath(~,~,inputCell)
-
     hf=inputCell{1};
     [fileName,filePath]=uigetfile('*','Select the FEBio executable file', hf.UserData.uihandles.hTextInput1.String);
     if fileName==0 %Selection was cancelled
@@ -430,7 +429,7 @@ function createTestFigure(hf,profileNameVCW)
     s=['Testing VCW profile: ',profileNameVCW];
     title(s,'FontSize',25); hf.UserData.hf2.Name=s;
     vcw(hf.UserData.hf2,profileNameVCW);
-    hp=gpatch(F,V,C,'none');
+    gpatch(F,V,C,'none');
     axisGeom; camlight headlight; gdrawnow;
 end
 

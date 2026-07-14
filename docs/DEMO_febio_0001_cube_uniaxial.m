@@ -89,7 +89,7 @@ runMode='internal';% 'internal' or 'external'
 %% Creating model geometry and mesh
 % A box is created with tri-linear hexahedral (hex8) elements using the
 % |hexMeshBox| function. The function offers the boundary faces with
-% seperate labels for the top, bottom, left, right, front, and back sides.
+% separate labels for the top, bottom, left, right, front, and back sides.
 % As such these can be used to define boundary conditions on the exterior. 
 
 % Create a box with hexahedral elements

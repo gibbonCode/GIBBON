@@ -18,7 +18,7 @@ function [runFlag]=runMonitorFEBio(FEBioRunStruct)
 %% Parse input
 
 %Create default structure
-defaultFEBioRunStruct.FEBioPath=getFEBioPath; %Get FEBio path
+defaultFEBioRunStruct.FEBioPath=gibbonSettings.get('FEBioPath'); %Get FEBio path
 defaultFEBioRunStruct.run_filename=[];
 defaultFEBioRunStruct.run_logname=[];
 defaultFEBioRunStruct.runMode='external';
