@@ -1,4 +1,4 @@
-function installGibbon(unattended)
+function installGibbon(interactive, FEBioPath, profileNameVCW)
 
 % function installGibbon
 %-------------------------------------------------------------------------
@@ -7,29 +7,20 @@ function installGibbon(unattended)
 % 2020/11/24 Minor fix to suggested path names for FEBio and export_fig
 %-------------------------------------------------------------------------
 
-    if nargin < 1 || isempty(unattended)
-        unattended = ~usejava('desktop');
+    arguments
+        interactive (1,1) logical = usejava('desktop')
+        FEBioPath (1,:) char = '';  %*
+        profileNameVCW (1,:) char = 'CAD';  %*
     end
+    % (*) These will be propperly validated by gibbonSettings, below
 
     %% Add GIBBON library path so functions are known to use here
     gibbonPath=fileparts(mfilename('fullpath')); %Get the GIBBON path
     addpath(fullfile(gibbonPath,'lib')); %Add gibbon lib path so gibbon functions used here are known
 
-    %% GIBBON settings
-
-    s=settings;
-    try
-        profileNameVCW=s.GIBBON.vcw_profile.PersonalValue; %Make setting as personal setting
-    catch
-        setViewProfile('CAD')
-        profileNameVCW=s.GIBBON.vcw_profile.PersonalValue;
-    end
-
-    FEBioPath=getFEBioPath;
-
     %% Setup installer
 
-    if ~unattended
+    if interactive
         hf = drawInstallerFigure(gibbonPath);
         updateTitle = @(m) updateAndReDraw(hf.UserData.uihandles.hTextTitle,'String', m);
         updateStatus = @(m) updateAndReDraw(hf.UserData.uihandles.hTextStatement,'String', m);
@@ -72,19 +63,34 @@ function installGibbon(unattended)
             throw(err);
         end
         savepath(fullfile(userpath,'pathdef.m'));
-        end
+    end
 
     updateStatus('Done adding toolbox paths');
     pause(0.5);
 
-    %% Add FEBio path
+    %% GIBBON settings (FEBio path, VCS profile)
 
-    if ~unattended
-        confirmFEBioPathUI(hf, FEBioPath);
-        confirmViewerProfileUI(hf, profileNameVCW);
+    if interactive
+        ws = warning();
+        warning('off','gibbon:Settings:FEBioPath');
+        restoreWarning = onCleanup(@() warning(ws));
+    end
+    FEBioPath = gibbonSettings.findFEBioPath(FEBioPath);
+
+    if ~isempty(FEBioPath)
+        gibbonSettings.set('FEBioPath', FEBioPath);
+    end
+    if ~isempty(profileNameVCW)
+        gibbonSettings.set('ViewProfile', profileNameVCW);
+    end
+    opts = gibbonSettings.get();
+
+    if interactive
+        confirmFEBioPathUI(hf, opts.FEBioPath);
+        confirmViewerProfileUI(hf, opts.ViewProfile);
     else
-        % FEBioPath already comes from config file,
-        % viewer profile stored in s.GIBBON.vcw_profile.PersonalValue
+        disp('Gibbon Settings:')
+        disp(opts);
     end
 
     %% Unzip compressed data
@@ -107,7 +113,7 @@ function installGibbon(unattended)
     updateTitle('Finished! GIBBON is installed.');
     updateStatus('Use gdoc to open the GIBBON help from the command window, or visit https://www.gibboncode.org/Documentation/');
 
-    if ~unattended
+    if interactive
         doneUI(hf)
     end
 
@@ -338,7 +344,7 @@ function setThirdpartyPaths(~,~,inputCell)
 
     t=hf.UserData.uihandles.hTextInput1.String;
     if ~isempty(t)
-        setFEBioPath(t); %Set FEBio path in config file
+        gibbonSettings.set('FEBioPath', t);
     end
 
     %Clean-up guide components
@@ -361,7 +367,7 @@ end
 function getFEBioExecPath(~,~,inputCell)
 
     hf=inputCell{1};
-    [fileName,filePath]=uigetfile('*','Select the FEBio executable file');
+    [fileName,filePath]=uigetfile('*','Select the FEBio executable file', hf.UserData.uihandles.hTextInput1.String);
     if fileName==0 %Selection was cancelled
         hf.UserData.uihandles.hTextInput1.String='';
     else %Selection was made
@@ -376,7 +382,7 @@ function setVCWOption(~,~,inputCell)
 
     s=hf.UserData.uihandles.hVCWSelect.String;
     profileNameVCW=s{hf.UserData.uihandles.hVCWSelect.Value};
-    setViewProfile(profileNameVCW);
+    gibbonSettings.set('ViewProfile', profileNameVCW);
 
     hf.UserData.uihandles.hTextStatement.String=['Set+test view control widget button mapping profile. Current setting: ',profileNameVCW];
 
