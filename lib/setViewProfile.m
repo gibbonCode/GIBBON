@@ -9,15 +9,12 @@ function setViewProfile(profileName)
 % 2023/05/25 Created by Kevin Moerman
 % ------------------------------------------------------------------------
 
-%% Parse input
-
-validSet={'default','CAD','febio','touchpad'};
-if ~ismember(profileName,validSet)    
-    error(""" Invalid profile type provided, use 'CAD','febio', or 'touchpad' """); 
+if strcmpi(profileName, 'default')
+    gibbonSettings.reset('ViewProfile');
+else
+    % Make/set view profile setting
+    gibbonSettings.set('ViewProfile', profileName);
 end
-
-%% Make view profile setting
-gibbonSettings.set('ViewProfile', profileName);
 
 end
 

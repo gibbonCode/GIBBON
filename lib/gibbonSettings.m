@@ -113,10 +113,21 @@ classdef (Abstract) gibbonSettings
             end
         end
 
-        function reset()
-        % Revert to defaults (remove settings.GIBBON group)
-            s = settings;
-            if hasGroup(s,'GIBBON'), s.removeGroup('GIBBON'); end
+        function reset(varargin)
+        % gibbonSettings.reset() - remove settings.GIBBON group, and recreate with defaults
+        % gibbonSettings.reset('opt1', ...) - reset individual option(s) to default 
+
+            if nargin > 0
+                opts = cellfun(@(s) validatestring(s, gibbonSettings.names), varargin, 'unif', 0);
+            else
+                s = settings;
+                if hasGroup(s,'GIBBON'), s.removeGroup('GIBBON'); end
+                opts = gibbonSettings.names;
+            end
+
+            for j = 1:length(opts)
+                gibbonSettings.set(opts{j}, gibbonSettings.defaults.(opts{j}));
+            end
         end
 
         function p = findFEBioPath(defaultPaths)

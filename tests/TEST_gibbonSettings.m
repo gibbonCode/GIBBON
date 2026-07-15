@@ -119,10 +119,19 @@ function testFindFEBioKeepsExisting(testCase)
     verifyEqual(testCase, p, testCase.TestData.dummyFEBio);
 end
 
-function testReset(testCase)
+function testResetSingle(testCase)
 
     gibbonSettings.set('view','touch','febio', testCase.TestData.dummyFEBio);
-    gibbonSettings.set('view','touch');
+    gibbonSettings.reset('view');
+    g = gibbonSettings.get();
+
+    verifyEqual(testCase, g.ViewProfile, gibbonSettings.defaults.ViewProfile);
+    verifyEqual(testCase, g.FEBioPath, testCase.TestData.dummyFEBio);
+end
+
+function testResetAll(testCase)
+
+    gibbonSettings.set('view','touch','febio', testCase.TestData.dummyFEBio);
 
     gibbonSettings.reset();
     g = gibbonSettings.get();
