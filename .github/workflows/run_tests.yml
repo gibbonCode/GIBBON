@@ -1,0 +1,36 @@
+name: Run Tests
+on: [push]
+
+jobs:
+  my-job:
+    name: Run MATLAB Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 1
+          submodules: recursive
+
+      - name: Set up products
+        uses: matlab-actions/setup-matlab@v3
+        with:
+          products: >
+            Optimization Toolbox
+            Symbolic Math Toolbox
+            Image Processing Toolbox
+            Curve Fitting Toolbox
+
+      - name: Install GIBBON
+        uses: matlab-actions/run-command@v3
+        with:
+          command: installGibbon
+
+      - name: Run tests
+        uses: matlab-actions/run-tests@v3
+        with:
+          source-folder: lib
+          select-by-folder: tests
+          strict: false
+          test-results-html: test-results
+          code-coverage-cobertura: code-coverage/coverage.xml
