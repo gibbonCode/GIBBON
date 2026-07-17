@@ -110,6 +110,13 @@ function installGibbon(interactive, FEBioPath, profileNameVCW)
         disp(opts);
     end
 
+    %% Check for Toolboxes
+    requirements = {'Image Processing Toolbox', 'Statistics and Machine Learning Toolbox', 'Symbolic Math Toolbox', 'Curve Fitting Toolbox', 'Parallel Computing Toolbox'};
+    fulfilled = ismember(requirements, {ver().Name});
+    if ~all(fulfilled)
+        warning('GIBBON:ToolboxCheck', 'Some required toolboxes might be missing:\n\t%s', strjoin(requirements(~fulfilled),'\n\t'));
+    end
+
     %% Unzip compressed data
     updateStatus('Unzipping compressed data');
 
