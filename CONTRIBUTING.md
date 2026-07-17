@@ -24,7 +24,13 @@ gpublish HELP_functionName
 This will "publish" the documentation in the form of HTML files in the `GIBBON/docs/html` folder. The content there will then be automatically added to, and rendered on, the website when the website is updated. 
 
 ## Testing
-For the moment the DEMO_ and HELP_ files may serves as a test suite. The `testGibbon` function can be used to run (and "publish" HTML if needed) these tests/demos automatically. 
+
+New code should define well-structured [unit tests](https://www.mathworks.com/help/matlab/matlab_prog/ways-to-write-unit-tests.html), stored in the `tests` directory and labeled `TEST_functionName.m`. These will
+be picked up by our CI pipeline and run on a remote GitHub runner, so make sure to keep your tests small and portable.
+
+If you are new to unit tests, the examples `functionTestTemplate` and `ClassTestTemplate` might be a good starting point.
+
+Unfortunately, the bulk of the code does not yet have structured tests. The `DEMO_*` and `HELP_*` files may serve as a more extensive test suite. The `testGibbon` function can be used to run (and "publish" HTML if needed) these tests/demos automatically.
 
 ## Pull requests
 - Try not to pollute your pull request with unintended changes – keep them simple and small. If possible, squash your commits.
