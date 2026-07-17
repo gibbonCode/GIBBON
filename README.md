@@ -1,3 +1,5 @@
+[![tests](https://github.com/gibbonCode/GIBBON/actions/workflows/run_tests.yml/badge.svg?event=push)](https://github.com/gibbonCode/GIBBON/actions/workflows/run_tests.yml)
+[![codecov.io](https://codecov.io/github/gibbonCode/GIBBON/coverage.svg)](https://codecov.io/github/gibbonCode/GIBBON)
 
 <img src="docs/img/logos/gibbonLogoBanner_1018x300.png" href="https://gibboncode.org" alt="GIBBON" width="100%">   
 
