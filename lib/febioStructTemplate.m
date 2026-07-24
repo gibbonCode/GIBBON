@@ -133,6 +133,8 @@ febio_spec.Output.plotfile.var{2}.ATTR.type='stress';
 febio_spec.Output.plotfile.var{3}.ATTR.type='relative volume';
 febio_spec.Output.plotfile.var{4}.ATTR.type='reaction forces';
 febio_spec.Output.plotfile.var{5}.ATTR.type='contact pressure';
+febio_spec.Output.plotfile.var{6}.ATTR.type='damage';
+
 febio_spec.Output.plotfile.compression=0;
 
 %% Fill in missing if input structure is provided

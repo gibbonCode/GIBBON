@@ -305,11 +305,7 @@ switch arrayParseMethod
             D=[];
             for q_fieldSub=1:1:numel(fieldNameSetSub) %loop over all attributes
                 attributeName=fieldNameSetSub{q_fieldSub}; %Get current attribute name
-                if iscell(attributeStruct.(attributeName))
-                    attributeNameValue=attributeStruct.(attributeName);
-                else
-                    attributeNameValue=attributeStruct.(attributeName);
-                end
+                attributeNameValue=attributeStruct.(attributeName);
                 D=[D attributeNameValue];
                 if all(isrounded(attributeNameValue))
                     t_form=repmat(['%d',', '],1,size(attributeNameValue,2));

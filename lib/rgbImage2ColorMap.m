@@ -82,7 +82,7 @@ end
 intRange=linspace(0,numBins,n)';
 
 cMap=zeros(n,3);
-for q=1:1:3;
+for q=1:1:3
     cMap(:,q)=interp1(intAll,cMap_sub(:,q),intRange,'linear');
 end
 
@@ -90,7 +90,7 @@ end
 cMap=cMap./normFactor; 
 
 %%
-if any(cMap(:)>1) || any(cMap(:))<0
+if any(cMap(:)>1) || any(cMap(:)<0)
     error('Colormapped values should be in the range [0 1]. Alter input image and/or normFactor');
 end
 

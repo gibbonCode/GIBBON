@@ -46,7 +46,7 @@ if ~isempty(SSQD_Tol)
     SSQD_ratio=0;
 end
 
-for qIter=1:nMax;   
+for qIter=1:nMax
         
     %% SIMPLE LAPLACIAN SMOOTHENING
     
@@ -58,11 +58,11 @@ for qIter=1:nMax;
         PP(:,qDim)=Xp;
     end
     
-    %Switch sign every iteration to partialy avoid shrinkage
+    %Switch sign every iteration to partially avoid shrinkage
     if iseven(qIter)
-        wFac=1;        
+        wFac =  1;        
     else
-        wFac=1;
+        wFac = -1;
     end
     
     P=P+wFac.*LambdaSmooth.*(PP-P);
