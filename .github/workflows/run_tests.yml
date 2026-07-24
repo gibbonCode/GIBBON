@@ -1,0 +1,59 @@
+name: Run Tests
+
+on:
+  push:
+    paths:
+      - lib/**
+      - tests/**
+      - installGibbon.m
+      - .github/workflows/run_tests.yml
+  pull_request:
+    paths:
+      - lib/**
+      - tests/**
+      - installGibbon.m
+      - .github/workflows/run_tests.yml
+
+jobs:
+  my-job:
+    name: Run MATLAB Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 1
+          submodules: recursive
+
+      - name: Set up products
+        uses: matlab-actions/setup-matlab@v3
+        with:
+          release: latest
+          cache: true
+          products: >
+            Optimization_Toolbox
+            Symbolic_Math_Toolbox
+            Image_Processing_Toolbox
+            Curve_Fitting_Toolbox
+
+      - name: Install GIBBON
+        uses: matlab-actions/run-command@v3
+        with:
+          command: installGibbon
+
+      - name: Run tests
+        uses: matlab-actions/run-tests@v3
+        with:
+          source-folder: lib
+          select-by-folder: tests
+          strict: false
+          test-results-html: test-results
+          code-coverage-cobertura: ./code-coverage/coverage.xml
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v4
+        with:
+          files: ./code-coverage/coverage.xml
+          flags: matlab
+          token: ${{ secrets.CODECOV_TOKEN }}
+          fail_ci_if_error: false
