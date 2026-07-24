@@ -78,7 +78,7 @@ runMode='external';% 'internal' or 'external'
 %% Creating model geometry and mesh
 % A box is created with tri-linear hexahedral (hex8) elements using the
 % |hexMeshBox| function. The function offers the boundary faces with
-% seperate labels for the top, bottom, left, right, front, and back sides.
+% separate labels for the top, bottom, left, right, front, and back sides.
 % As such these can be used to define boundary conditions on the exterior. 
 
 % Create a box with hexahedral elements
@@ -192,7 +192,7 @@ febio_spec.Material.material{1}.k=k;
 % -> Nodes
 febio_spec.Mesh.Nodes{1}.ATTR.name='nodeSet_all'; %The node set name
 febio_spec.Mesh.Nodes{1}.node.ATTR.id=(1:size(V,1))'; %The node id's
-febio_spec.Mesh.Nodes{1}.node.VAL=V; %The nodel coordinates
+febio_spec.Mesh.Nodes{1}.node.VAL=V; %The nodal coordinates
 
 % -> Elements
 partName1='Part1';
@@ -248,7 +248,7 @@ switch nodalLoadType
         febio_spec.Loads.nodal_load{3}.dof='z';
         febio_spec.Loads.nodal_load{3}.scale.ATTR.lc=1;
         febio_spec.Loads.nodal_load{3}.scale.VAL=appliedForce(3)/numel(bcPrescribeList);
-    case 'force' %Apply a force vector to a collection of nodes (destributed)
+    case 'force' %Apply a force vector to a collection of nodes (distributed)
         febio_spec.Loads.nodal_load{1}.ATTR.name='PrescribedForceX';
         febio_spec.Loads.nodal_load{1}.ATTR.type='nodal_force';
         febio_spec.Loads.nodal_load{1}.ATTR.node_set=nodeSetName2;        
@@ -293,7 +293,7 @@ febioStruct2xml(febio_spec,febioFebFileName); %Exporting to file and domNode
 % |runMonitorFEBio| function is used. The input for this function is a
 % structure defining job settings e.g. the FEBio input file name. The
 % optional output runFlag informs the user if the analysis was run
-% succesfully. 
+% successfully. 
 
 febioAnalysis.run_filename=febioFebFileName; %The input file name
 febioAnalysis.run_logname=febioLogFileName; %The name for the log file

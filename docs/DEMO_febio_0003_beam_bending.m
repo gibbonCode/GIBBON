@@ -50,9 +50,9 @@ sampleWidth=beamWidth; %Width
 sampleThickness=4*beamWidth; %Thickness 
 sampleHeight=beamWidth; %Height
 pointSpacings=2*ones(1,3); %Desired point spacing between nodes
-numElementsWidth=round(sampleWidth/pointSpacings(1)); %Number of elemens in dir 1
-numElementsThickness=round(sampleThickness/pointSpacings(2)); %Number of elemens in dir 2
-numElementsHeight=round(sampleHeight/pointSpacings(3)); %Number of elemens in dir 3
+numElementsWidth=round(sampleWidth/pointSpacings(1)); %Number of elements in dir 1
+numElementsThickness=round(sampleThickness/pointSpacings(2)); %Number of elements in dir 2
+numElementsHeight=round(sampleHeight/pointSpacings(3)); %Number of elements in dir 3
 
 %Define applied force 
 appliedPressure=1e-5; 
@@ -181,7 +181,7 @@ febio_spec.Material.material{1}.k=k;
 % -> Nodes
 febio_spec.Mesh.Nodes{1}.ATTR.name='nodeSet_all'; %The node set name
 febio_spec.Mesh.Nodes{1}.node.ATTR.id=(1:size(V,1))'; %The node id's
-febio_spec.Mesh.Nodes{1}.node.VAL=V; %The nodel coordinates
+febio_spec.Mesh.Nodes{1}.node.VAL=V; %The nodal coordinates
 
 % -> Elements
 partName1='Part1';
@@ -261,7 +261,7 @@ febioStruct2xml(febio_spec,febioFebFileName); %Exporting to file and domNode
 % |runMonitorFEBio| function is used. The input for this function is a
 % structure defining job settings e.g. the FEBio input file name. The
 % optional output runFlag informs the user if the analysis was run
-% succesfully. 
+% successfully. 
 
 febioAnalysis.run_filename=febioFebFileName; %The input file name
 febioAnalysis.run_logname=febioLogFileName; %The name for the log file
@@ -273,7 +273,7 @@ febioAnalysis.runMode=runMode;
 
 %% Import FEBio results 
 
-if runFlag==1 %i.e. a succesful run
+if runFlag==1 %i.e. a successful run
     
     %% 
     % Importing nodal displacements from a log file

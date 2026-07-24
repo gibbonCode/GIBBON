@@ -1,4 +1,4 @@
-%% DEMO_febio_0001_cube_uniaxial
+%% DEMO_febio_0005_cube_tension_compression_shear
 % Below is a demonstration for:
 % 
 % * Building geometry for a cube with hexahedral elements
@@ -11,13 +11,12 @@
 %
 % * febio_spec version 4.0
 % * febio, FEBio
-% * uniaxial loading
-% * compression, tension, compressive, tensile
+% * compression, tension, compressive, tensile, shear
 % * displacement control, displacement boundary condition
 % * hexahedral elements, hex8
 % * cube, box, rectangular
 % * static, solid
-% * neo-hookean, uncoupled
+% * hyperelastic, Ogden
 % * displacement logfile
 % * stress logfile
 
@@ -29,14 +28,14 @@ clear; close all; clc;
 fontSize=20;
 faceAlpha1=0.8;
 markerSize=40;
-markerSize2=35;
+markerSize2=20;
 lineWidth=3;
-cMap=viridis(20); %colormap 
+cMap=viridis(250); %colormap 
 
 %% Control parameters
 
 % Path names
-defaultFolder = fileparts(fileparts(mfilename('fullpath'))); 
+defaultFolder = fileparts(fileparts(mfilename('fullpath')));
 savePath=fullfile(defaultFolder,'data','temp');
 
 % Defining file names
@@ -49,6 +48,7 @@ febioLogFileName_stretch=[febioFebFileNamePart,'_stretch_out.txt']; %Log file na
 febioLogFileName_stress_prin=[febioFebFileNamePart,'_stress_prin_out.txt']; %Log file name for exporting principal stresses
 febioLogFileName_stretch_prin=[febioFebFileNamePart,'_stretch_prin_out.txt']; %Log file name for exporting principal stretches
 febioLogFileName_force=[febioFebFileNamePart,'_force_out.txt']; %Log file name for exporting force
+febioLogFileName_damage=[febioFebFileNamePart,'_damage.txt']; %Log file name for exporting damage
 
 %Specifying dimensions and number of elements
 cubeSize=10; 
@@ -61,19 +61,14 @@ numElementsThickness=round(sampleThickness/pointSpacings(2)); %Number of element
 numElementsHeight=round(sampleHeight/pointSpacings(3)); %Number of elements in dir 3
 
 %Define applied displacement 
-appliedStrain=0.5; %Linear strain (Only used to compute applied stretch)
-loadingOption='compression'; % or 'tension'
-switch loadingOption
-    case 'compression'
-        stretchLoad=1-appliedStrain; %The applied stretch for uniaxial loading
-    case 'tension'
-        stretchLoad=1+appliedStrain; %The applied stretch for uniaxial loading
-end
+stretchLoad=1.3;
 displacementMagnitude=(stretchLoad*sampleHeight)-sampleHeight; %The displacement magnitude
 
 %Material parameter set
-E_youngs1=0.1; %Material Young's modulus
-nu1=0.4; %Material Poisson's ratio
+c1=1e-3; %Shear-modulus-like parameter
+m1=8; %Material parameter setting degree of non-linearity
+k_factor=1e2; %Bulk modulus factor 
+k=c1*k_factor; %Bulk modulus
 
 % FEA control settings
 numTimeSteps=10; %Number of time steps desired
@@ -129,17 +124,9 @@ drawnow;
 % cube. These labels can be used to define boundary conditions. 
 
 %Define supported node sets
-logicFace=Cb==1; %Logic for current face set
-Fr=Fb(logicFace,:); %The current face set
-bcSupportList_X=unique(Fr(:)); %Node set part of selected face
-
-logicFace=Cb==3; %Logic for current face set
-Fr=Fb(logicFace,:); %The current face set
-bcSupportList_Y=unique(Fr(:)); %Node set part of selected face
-
 logicFace=Cb==5; %Logic for current face set
 Fr=Fb(logicFace,:); %The current face set
-bcSupportList_Z=unique(Fr(:)); %Node set part of selected face
+bcSupportList=unique(Fr(:)); %Node set part of selected face
 
 %Prescribed displacement nodes
 logicPrescribe=Cb==6; %Logic for current face set
@@ -157,12 +144,10 @@ hold on;
 
 gpatch(Fb,V,'kw','k',0.5);
 
-hl(1)=plotV(V(bcSupportList_X,:),'r.','MarkerSize',markerSize);
-hl(2)=plotV(V(bcSupportList_Y,:),'g.','MarkerSize',markerSize);
-hl(3)=plotV(V(bcSupportList_Z,:),'b.','MarkerSize',markerSize);
-hl(4)=plotV(V(bcPrescribeList,:),'k.','MarkerSize',markerSize);
+hl(1)=plotV(V(bcSupportList,:),'k.','MarkerSize',markerSize);
+hl(2)=plotV(V(bcPrescribeList,:),'r.','MarkerSize',markerSize);
 
-legend(hl,{'BC x support','BC y support','BC z support','BC z prescribe'});
+legend(hl,{'BC support','BC prescribe'});
 
 axisGeom(gca,fontSize);
 camlight headlight; 
@@ -181,24 +166,46 @@ febio_spec.ATTR.version='4.0';
 %Module section
 febio_spec.Module.ATTR.type='solid'; 
 
-%Control section
-febio_spec.Control.analysis='STATIC';
-febio_spec.Control.time_steps=numTimeSteps;
-febio_spec.Control.step_size=1/numTimeSteps;
-febio_spec.Control.solver.max_refs=max_refs;
-febio_spec.Control.solver.qn_method.max_ups=max_ups;
-febio_spec.Control.time_stepper.dtmin=dtmin;
-febio_spec.Control.time_stepper.dtmax=dtmax; 
-febio_spec.Control.time_stepper.max_retries=max_retries;
-febio_spec.Control.time_stepper.opt_iter=opt_iter;
+%Create control structure for use by all steps
+stepStruct.Control.time_steps=numTimeSteps;
+stepStruct.Control.step_size=1/numTimeSteps;
+stepStruct.Control.solver.max_refs=max_refs;
+stepStruct.Control.time_stepper.dtmin=dtmin;
+stepStruct.Control.time_stepper.dtmax=dtmax; 
+stepStruct.Control.time_stepper.max_retries=max_retries;
+stepStruct.Control.time_stepper.opt_iter=opt_iter;
+
+%Add template based default settings to proposed control section
+[stepStruct.Control]=structComplete(stepStruct.Control,febio_spec.Control,1); %Complement provided with default if missing
+
+%Remove control field (part of template) since step specific control sections are used
+febio_spec=rmfield(febio_spec,'Control'); 
+
+febio_spec.Step.step{1}.Control=stepStruct.Control;
+febio_spec.Step.step{1}.ATTR.id=1;
+febio_spec.Step.step{2}.Control=stepStruct.Control;
+febio_spec.Step.step{2}.ATTR.id=2;
 
 %Material section
 materialName1='Material1';
+
 febio_spec.Material.material{1}.ATTR.name=materialName1;
-febio_spec.Material.material{1}.ATTR.type='neo-Hookean';
+febio_spec.Material.material{1}.ATTR.type='elastic damage';
 febio_spec.Material.material{1}.ATTR.id=1;
-febio_spec.Material.material{1}.E=E_youngs1;
-febio_spec.Material.material{1}.v=nu1;
+
+febio_spec.Material.material{1}.elastic.ATTR.type='Ogden unconstrained';
+febio_spec.Material.material{1}.elastic.c1=c1;
+febio_spec.Material.material{1}.elastic.m1=m1;
+febio_spec.Material.material{1}.elastic.c2=c1;
+febio_spec.Material.material{1}.elastic.m2=-m1;
+febio_spec.Material.material{1}.elastic.cp=k;
+
+febio_spec.Material.material{1}.damage.ATTR.type='CDF log-normal';
+febio_spec.Material.material{1}.damage.mu=0.2; 
+febio_spec.Material.material{1}.damage.sigma=0.1; 
+febio_spec.Material.material{1}.damage.Dmax=0.5; 
+
+febio_spec.Material.material{1}.criterion.ATTR.type='DC max normal Lagrange strain'; 
 
 % Mesh section
 % -> Nodes
@@ -214,68 +221,66 @@ febio_spec.Mesh.Elements{1}.elem.ATTR.id=(1:1:size(E,1))'; %Element id's
 febio_spec.Mesh.Elements{1}.elem.VAL=E; %The element matrix
  
 % -> NodeSets
-nodeSetName1='bcSupportList_X';
-nodeSetName2='bcSupportList_Y';
-nodeSetName3='bcSupportList_Z';
-nodeSetName4='bcPrescribeList';
+nodeSetName1='bcSupportList';
+nodeSetName2='bcPrescribeList';
 
 febio_spec.Mesh.NodeSet{1}.ATTR.name=nodeSetName1;
-febio_spec.Mesh.NodeSet{1}.VAL=mrow(bcSupportList_X);
+febio_spec.Mesh.NodeSet{1}.VAL=mrow(bcSupportList);
 
 febio_spec.Mesh.NodeSet{2}.ATTR.name=nodeSetName2;
-febio_spec.Mesh.NodeSet{2}.VAL=mrow(bcSupportList_Y);
-
-febio_spec.Mesh.NodeSet{3}.ATTR.name=nodeSetName3;
-febio_spec.Mesh.NodeSet{3}.VAL=mrow(bcSupportList_Z);
-
-febio_spec.Mesh.NodeSet{4}.ATTR.name=nodeSetName4;
-febio_spec.Mesh.NodeSet{4}.VAL=mrow(bcPrescribeList);
-
+febio_spec.Mesh.NodeSet{2}.VAL=mrow(bcPrescribeList);
+ 
 %MeshDomains section
 febio_spec.MeshDomains.SolidDomain.ATTR.name=partName1;
 febio_spec.MeshDomains.SolidDomain.ATTR.mat=materialName1;
 
 %Boundary condition section 
-% -> Fix boundary conditions
-febio_spec.Boundary.bc{1}.ATTR.name='zero_displacement_x';
+%-> Fix boundary conditions
+febio_spec.Boundary.bc{1}.ATTR.name='FixedDisplacement01';
 febio_spec.Boundary.bc{1}.ATTR.type='zero displacement';
 febio_spec.Boundary.bc{1}.ATTR.node_set=nodeSetName1;
 febio_spec.Boundary.bc{1}.x_dof=1;
-febio_spec.Boundary.bc{1}.y_dof=0;
-febio_spec.Boundary.bc{1}.z_dof=0;
+febio_spec.Boundary.bc{1}.y_dof=1;
+febio_spec.Boundary.bc{1}.z_dof=1;
 
-febio_spec.Boundary.bc{2}.ATTR.name='zero_displacement_y';
-febio_spec.Boundary.bc{2}.ATTR.type='zero displacement';
-febio_spec.Boundary.bc{2}.ATTR.node_set=nodeSetName2;
-febio_spec.Boundary.bc{2}.x_dof=0;
-febio_spec.Boundary.bc{2}.y_dof=1;
-febio_spec.Boundary.bc{2}.z_dof=0;
+%STEP 1 Apply displacement loading 
+febio_spec.Step.step{1}.Boundary.bc{1}.ATTR.name='bcPrescribeList';
+febio_spec.Step.step{1}.Boundary.bc{1}.ATTR.type='prescribed displacement';
+febio_spec.Step.step{1}.Boundary.bc{1}.ATTR.node_set=nodeSetName2;
+febio_spec.Step.step{1}.Boundary.bc{1}.dof='z';
+febio_spec.Step.step{1}.Boundary.bc{1}.value.ATTR.lc=1;
+febio_spec.Step.step{1}.Boundary.bc{1}.value.VAL=displacementMagnitude;
+febio_spec.Step.step{1}.Boundary.bc{1}.relative=0;
 
-febio_spec.Boundary.bc{3}.ATTR.name='zero_displacement_z';
-febio_spec.Boundary.bc{3}.ATTR.type='zero displacement';
-febio_spec.Boundary.bc{3}.ATTR.node_set=nodeSetName3;
-febio_spec.Boundary.bc{3}.x_dof=0;
-febio_spec.Boundary.bc{3}.y_dof=0;
-febio_spec.Boundary.bc{3}.z_dof=1;
+%STEP 2 Unloading using target force 
 
-febio_spec.Boundary.bc{4}.ATTR.name='prescibed_displacement_z';
-febio_spec.Boundary.bc{4}.ATTR.type='prescribed displacement';
-febio_spec.Boundary.bc{4}.ATTR.node_set=nodeSetName4;
-febio_spec.Boundary.bc{4}.dof='z';
-febio_spec.Boundary.bc{4}.value.ATTR.lc=1;
-febio_spec.Boundary.bc{4}.value.VAL=displacementMagnitude;
-febio_spec.Boundary.bc{4}.relative=0;
+% <nodal_load type="nodal_target_force" node_set="set1">
+%   <force>1,0,0</force>
+%   <scale lc="1">1</scale>
+% </nodal_load>
+
+febio_spec.Step.step{2}.Loads.nodal_load{1}.ATTR.name='bcForceUnload';
+febio_spec.Step.step{2}.Loads.nodal_load{1}.ATTR.type='nodal_target_force';
+febio_spec.Step.step{2}.Loads.nodal_load{1}.ATTR.node_set=nodeSetName2;
+febio_spec.Step.step{2}.Loads.nodal_load{1}.force=[0, 0, 0];
+febio_spec.Step.step{2}.Loads.nodal_load{1}.scale.ATTR.lc=2;
+febio_spec.Step.step{2}.Loads.nodal_load{1}.scale.VAL=1;
 
 %LoadData section
 % -> load_controller
-febio_spec.LoadData.load_controller{1}.ATTR.name='LC_1';
 febio_spec.LoadData.load_controller{1}.ATTR.id=1;
+febio_spec.LoadData.load_controller{1}.ATTR.name='LC1';
 febio_spec.LoadData.load_controller{1}.ATTR.type='loadcurve';
 febio_spec.LoadData.load_controller{1}.interpolate='LINEAR';
-%febio_spec.LoadData.load_controller{1}.extend='CONSTANT';
+febio_spec.LoadData.load_controller{1}.extend='CONSTANT';
 febio_spec.LoadData.load_controller{1}.points.pt.VAL=[0 0; 1 1];
 
-febio_spec.Output.plotfile.var{end+1}.ATTR.type='right stretch';
+febio_spec.LoadData.load_controller{2}.ATTR.id=2;
+febio_spec.LoadData.load_controller{2}.ATTR.name='LC2';
+febio_spec.LoadData.load_controller{2}.ATTR.type='loadcurve';
+febio_spec.LoadData.load_controller{2}.interpolate='LINEAR';
+febio_spec.LoadData.load_controller{2}.extend='CONSTANT';
+febio_spec.LoadData.load_controller{2}.points.pt.VAL=[1 0; 2 1];
 
 %Output section 
 % -> log file
@@ -287,6 +292,7 @@ febio_spec.Output.logfile.node_data{1}.ATTR.delim=',';
 febio_spec.Output.logfile.node_data{2}.ATTR.file=febioLogFileName_force;
 febio_spec.Output.logfile.node_data{2}.ATTR.data='Rx;Ry;Rz';
 febio_spec.Output.logfile.node_data{2}.ATTR.delim=',';
+febio_spec.Output.logfile.node_data{2}.VAL=mrow(bcPrescribeList);
 
 febio_spec.Output.logfile.element_data{1}.ATTR.file=febioLogFileName_stress;
 febio_spec.Output.logfile.element_data{1}.ATTR.data='sz';
@@ -304,37 +310,42 @@ febio_spec.Output.logfile.element_data{4}.ATTR.file=febioLogFileName_stretch_pri
 febio_spec.Output.logfile.element_data{4}.ATTR.data='U1;U2;U3';
 febio_spec.Output.logfile.element_data{4}.ATTR.delim=',';
 
-% Plotfile section
+febio_spec.Output.logfile.element_data{5}.ATTR.file=febioLogFileName_damage;
+febio_spec.Output.logfile.element_data{5}.ATTR.data='D';
+febio_spec.Output.logfile.element_data{5}.ATTR.delim=',';
+
+
 febio_spec.Output.plotfile.compression=0;
+
 
 %% Quick viewing of the FEBio input file structure
 % The |febView| function can be used to view the xml structure in a MATLAB
 % figure window. 
 
-%%1
-% |febView(febio_spec); %Viewing the febio file|1
+%%
+% |febView(febio_spec); %Viewing the febio file|
 
 %% Exporting the FEBio input file
 % Exporting the febio_spec structure to an FEBio input file is done using
 % the |febioStruct2xml| function. 
 
 febioStruct2xml(febio_spec,febioFebFileName); %Exporting to file and domNode
-%system(['gedit ',febioFebFileName,' &']);
 
 %% Running the FEBio analysis
 % To run the analysis defined by the created FEBio input file the
 % |runMonitorFEBio| function is used. The input for this function is a
 % structure defining job settings e.g. the FEBio input file name. The
 % optional output runFlag informs the user if the analysis was run
-% succesfully. 
+% successfully. 
 
 febioAnalysis.run_filename=febioFebFileName; %The input file name
 febioAnalysis.run_logname=febioLogFileName; %The name for the log file
 febioAnalysis.disp_on=1; %Display information on the command window
 febioAnalysis.runMode=runMode;
-febioAnalysis.maxLogCheckTime=10; %Max log file checking time
 
 [runFlag]=runMonitorFEBio(febioAnalysis);%START FEBio NOW!!!!!!!!
+
+%% Import FEBio results 
 
 %% Import FEBio results 
 
@@ -401,6 +412,12 @@ if runFlag==1 %i.e. a succesful run
     %Access data
     E_stretch_mat=dataStruct.data;
 
+    %%
+    % Importing element damage from a log file
+    dataStruct=importFEBio_logfile(fullfile(savePath,febioLogFileName_damage),0,1);
+
+    %Access data
+    E_damage_mat=dataStruct.data;
     %% 
     % Plotting the simulated results using |anim8| to visualize and animate
     % deformations 
@@ -439,6 +456,43 @@ if runFlag==1 %i.e. a succesful run
     drawnow;
 
     %% 
+    % Plotting the simulated results using |anim8| to visualize and animate
+    % deformations 
+
+    [CV]=faceToVertexMeasure(E,V,E_damage_mat(:,:,end));
+
+    % Create basic view and store graphics handle to initiate animation
+    hf=cFigure; %Open figure  
+    gtitle([febioFebFileNamePart,': Press play to animate']);
+    title('Damage','Interpreter','Latex')
+    hp=gpatch(Fb,V_DEF(:,:,end),CV,'k',1,2); %Add graphics object to animate
+    hp.Marker='.';
+    hp.MarkerSize=markerSize2;
+    hp.FaceColor='interp';
+    gpatch(Fb,V,0.5*ones(1,3),'none',0.25); %A static graphics object
+
+    axisGeom(gca,fontSize); 
+    colormap(cMap); colorbar;
+    caxis([0 max(E_damage_mat(:))]);    
+    axis(axisLim(V_DEF)); %Set axis limits statically    
+    view(140,30);
+    camlight headlight;        
+
+    % Set up animation features
+    animStruct.Time=timeVec; %The time vector    
+    for qt=1:1:size(N_disp_mat,3) %Loop over time increments        
+
+        [CV]=faceToVertexMeasure(E,V,E_damage_mat(:,:,qt));
+
+        %Set entries in animation structure
+        animStruct.Handles{qt}=[hp hp]; %Handles of objects to animate
+        animStruct.Props{qt}={'Vertices','CData'}; %Properties of objects to animate
+        animStruct.Set{qt}={V_DEF(:,:,qt),CV}; %Property values for to set in order to animate
+    end        
+    anim8(hf,animStruct); %Initiate animation feature    
+    drawnow;
+
+    %% 
     % Visualize stretch-stress curve
     
     stretch_sim=squeeze(mean(E_stretch_mat,1)); % Stretch U_z
@@ -450,7 +504,8 @@ if runFlag==1 %i.e. a succesful run
     ylabel('$\sigma_{zz}$ [MPa]','FontSize',fontSize,'Interpreter','Latex'); 
     
     plot(stretch_sim(:),stress_cauchy_sim(:),'r-','lineWidth',lineWidth);
-    
+    displacementApplied=timeVec.*displacementMagnitude;
+
     view(2); axis tight;  grid on; axis square; box on; 
     set(gca,'FontSize',fontSize);
     drawnow;
@@ -486,20 +541,19 @@ if runFlag==1 %i.e. a succesful run
 
     %Access data    
     timeVec=dataStruct.time;
-    f_sum_x=squeeze(sum(dataStruct.data(bcPrescribeList,1,:),1));
-    f_sum_y=squeeze(sum(dataStruct.data(bcPrescribeList,2,:),1));
-    f_sum_z=squeeze(sum(dataStruct.data(bcPrescribeList,3,:),1));
+    f_sum_x=squeeze(sum(dataStruct.data(:,1,:),1));
+    f_sum_y=squeeze(sum(dataStruct.data(:,2,:),1));
+    f_sum_z=squeeze(sum(dataStruct.data(:,3,:),1));
+    f_mag=sqrt(f_sum_x.^2 + f_sum_y.^2 + f_sum_z.^2); 
 
     %%
     % Visualize force data
 
-    displacementApplied=timeVec.*displacementMagnitude;
-
     cFigure; hold on;
-    title('Force-displacement curve','FontSize',fontSize);
-    xlabel('$u$ [mm]','Interpreter','Latex');
+    title('Time-Force curve','FontSize',fontSize);
+    xlabel('$t$ [s]','Interpreter','Latex');
     ylabel('$F_z$ [N]','Interpreter','Latex');
-    hp=plot(displacementApplied(:),f_sum_z(:),'b-','LineWidth',3);
+    hp=plot(timeVec(:),f_sum_z(:),'b-','LineWidth',3);
     grid on; box on; axis square; axis tight;
     set(gca,'FontSize',fontSize);
     drawnow;         

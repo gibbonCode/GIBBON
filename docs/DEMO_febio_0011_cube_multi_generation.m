@@ -51,9 +51,9 @@ sampleWidth=cubeSize; %Width
 sampleThickness=cubeSize; %Thickness 
 sampleHeight=cubeSize; %Height
 pointSpacings=1*ones(1,3); %Desired point spacing between nodes
-numElementsWidth=round(sampleWidth/pointSpacings(1)); %Number of elemens in dir 1
+numElementsWidth=round(sampleWidth/pointSpacings(1)); %Number of elements in dir 1
 numElementsThickness=round(sampleThickness/pointSpacings(2)); %Number of elemens in dir 2
-numElementsHeight=round(sampleHeight/pointSpacings(3)); %Number of elemens in dir 3
+numElementsHeight=round(sampleHeight/pointSpacings(3)); %Number of elements in dir 3
 
 %Define applied displacement 
 appliedStrain=0.3; %Linear strain (Only used to compute applied stretch)
@@ -88,7 +88,7 @@ runMode='external';% 'internal' or 'external'
 %% Creating model geometry and mesh
 % A box is created with tri-linear hexahedral (hex8) elements using the
 % |hexMeshBox| function. The function offers the boundary faces with
-% seperate labels for the top, bottom, left, right, front, and back sides.
+% separate labels for the top, bottom, left, right, front, and back sides.
 % As such these can be used to define boundary conditions on the exterior. 
 
 % Create a box with hexahedral elements
@@ -112,7 +112,7 @@ logicMaterial_1=VE(:,1)<0;
 
 elementMaterialID=logicMaterial_1+1; 
 
-%Reoder E to cope with FEBio bug in relation to element ordering and
+%Reorder E to cope with FEBio bug in relation to element ordering and
 %multiple material sets
 E=[E(elementMaterialID==1,:); E(elementMaterialID==2,:);];
 elementMaterialID=[elementMaterialID(elementMaterialID==1,:); elementMaterialID(elementMaterialID==2,:);];
@@ -365,7 +365,7 @@ febioStruct2xml(febio_spec,febioFebFileName); %Exporting to file and domNode
 % |runMonitorFEBio| function is used. The input for this function is a
 % structure defining job settings e.g. the FEBio input file name. The
 % optional output runFlag informs the user if the analysis was run
-% succesfully. 
+% successfully. 
 
 febioAnalysis.run_filename=febioFebFileName; %The input file name
 febioAnalysis.run_logname=febioLogFileName; %The name for the log file

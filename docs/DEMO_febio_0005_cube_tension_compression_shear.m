@@ -50,9 +50,9 @@ sampleWidth=cubeSize; %Width
 sampleThickness=cubeSize; %Thickness 
 sampleHeight=cubeSize; %Height
 pointSpacings=2*ones(1,3); %Desired point spacing between nodes
-numElementsWidth=round(sampleWidth/pointSpacings(1)); %Number of elemens in dir 1
-numElementsThickness=round(sampleThickness/pointSpacings(2)); %Number of elemens in dir 2
-numElementsHeight=round(sampleHeight/pointSpacings(3)); %Number of elemens in dir 3
+numElementsWidth=round(sampleWidth/pointSpacings(1)); %Number of elements in dir 1
+numElementsThickness=round(sampleThickness/pointSpacings(2)); %Number of elements in dir 2
+numElementsHeight=round(sampleHeight/pointSpacings(3)); %Number of elements in dir 3
 
 %Define applied displacement 
 stretchLoad=1.3;
@@ -78,7 +78,7 @@ runMode='external';% 'internal' or 'external'
 %% Creating model geometry and mesh
 % A box is created with tri-linear hexahedral (hex8) elements using the
 % |hexMeshBox| function. The function offers the boundary faces with
-% seperate labels for the top, bottom, left, right, front, and back sides.
+% separate labels for the top, bottom, left, right, front, and back sides.
 % As such these can be used to define boundary conditions on the exterior. 
 
 % Create a box with hexahedral elements
@@ -201,7 +201,7 @@ febio_spec.Material.material{1}.k=k;
 % -> Nodes
 febio_spec.Mesh.Nodes{1}.ATTR.name='Object1'; %The node set name
 febio_spec.Mesh.Nodes{1}.node.ATTR.id=(1:size(V,1))'; %The node id's
-febio_spec.Mesh.Nodes{1}.node.VAL=V; %The nodel coordinates
+febio_spec.Mesh.Nodes{1}.node.VAL=V; %The nodal coordinates
 
 % -> Elements
 partName1='Part1';
