@@ -1,21 +1,17 @@
-function [varargout]=textView(varargin)
+function [varargout]=textView(T, optionStruct, addOpts)
 
 %%
-
-defaultOptionStruct.BackgroundColor=[44 48 55]/255;
-defaultOptionStruct.ForegroundColor=[168 177 190]/255;
-defaultOptionStruct.HorizontalAlignment='Left';
-defaultOptionStruct.FontName='Monospaced';
-defaultOptionStruct.FontWeight='Bold';
-defaultOptionStruct.FontSize=12;
-
-switch nargin
-    case 1
-        T=varargin{1};
-        optionStruct=[];
-    case 2
-        T=varargin{1};
-        optionStruct=varargin{2};
+arguments
+    T
+    optionStruct (1,1) struct = struct()
+    addOpts.BackgroundColor (1,3) double = [44 48 55]/255;
+    addOpts.FontColor (1,3) double = [168 177 190]/255;
+    addOpts.HorizontalAlignment char = 'Left';
+    addOpts.FontName char = 'Monospaced';
+    addOpts.FontWeight char = 'Bold';
+    addOpts.FontSize (1,1) double = 12;
+    addOpts.WordWrap char = 'off';
+    addOpts.Editable char = 'off';
 end
 
 fileName='';
@@ -26,11 +22,15 @@ if ~iscell(T)
     end
 end
 
-%Fix option structure, complete and remove empty values
-[optionStruct]=structComplete(optionStruct,defaultOptionStruct,1);
+% Accept ForegroundColor and option structure, for backwards compatibility
+if isfield(optionStruct,'ForegroundColor')
+    optionStruct = renameStructField(optionStruct,'ForegroundColor', 'FontColor');
+end
+optionStruct = structComplete(optionStruct, addOpts, 1);
 
 %%
 
+% Add line numbers
 t=(1:1:numel(T));
 n=numel(sprintf('%d',max(t)));
 t=sprintf(['%-',num2str(n),'.0d    \n'],t); 
@@ -38,50 +38,28 @@ t=t(1:end-1);
 t=strsplit(t,'\n')';
 T=strcat(t,T);
 
-%Open figure
+% Open figure
 figStruct.Name=fileName;
 figStruct.Color=optionStruct.BackgroundColor;
 figStruct.MenuBar='none';
 figStruct.vcw=0;
 figStruct.efw=0;
-
 hf = cFigure(figStruct);
 
-hPan = uipanel(hf, 'Title',fileName, ...
-    'Units','pixels','Position',[10 10 hf.Position(3)-20 hf.Position(4)-20],...
-    'BorderType','none','BackgroundColor',defaultOptionStruct.BackgroundColor,...
-    'ForegroundColor',defaultOptionStruct.ForegroundColor);
-hPan.Units='Normalized';
-hEdit = uicontrol(hPan, 'Style','edit', 'FontSize',12, ...
-    'Min',0, 'Max',2, 'HorizontalAlignment','left', ...
-    'Units','normalized', 'Position',[0 0 1 1], ...    
-    'String',T);
+hGrid = uigridlayout(hf, [1 1]);
+hGrid.Padding = [0 0 0 0];
+hGrid.RowSpacing = 0;
+hGrid.ColumnSpacing = 0;
 
-optionSet=fieldnames(optionStruct); 
-for q=1:1:numel(optionSet)
-   hEdit.(optionSet{q})=optionStruct.(optionSet{q}); 
-end
-
-% enable horizontal scrolling
-try
-jEdit = findjobj(hEdit);
-jEditbox = jEdit.getViewport().getComponent(0);
-jEditbox.setWrapping(false);                % turn off word-wrapping
-jEditbox.setEditable(false);                % non-editable
-set(jEdit,'HorizontalScrollBarPolicy',30);  % HORIZONTAL_SCROLLBAR_AS_NEEDED
-
-% maintain horizontal scrollbar policy which reverts back on component resize
-hjEdit = handle(jEdit,'CallbackProperties');
-set(hjEdit, 'ComponentResizedCallback',...
-    'set(gcbo,''HorizontalScrollBarPolicy'',30)')
-catch
-end
-drawnow; 
+optArgs = [fieldnames(optionStruct), struct2cell(optionStruct)]';
+uitextarea(hGrid, 'Value', T, optArgs{:});
+drawnow;
 
 %%
 if nargout>0
     varargout{1}=hf;
 end
+
 %% 
 % _*GIBBON footer text*_ 
 % 
