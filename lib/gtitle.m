@@ -67,15 +67,16 @@ hText = uicontrol(hf,'Style','text','String',titleString,'BackgroundColor',backG
     'FontName',optionStruct.FontName);
 
 % Attempt to turn of background color
-try %JavaFrame approach
+ws = warning();
+try % JavaFrame approach
     warning 'off'
     j_hText = findjobj(hText);
     j_hText.setOpaque(false);
     j_hText.repaint();
-    warning 'on'
 catch
     % Not possible to make background transparent yet without JavaFrame
 end
+warning(ws);
 
 hText.Units = 'Points';
 
