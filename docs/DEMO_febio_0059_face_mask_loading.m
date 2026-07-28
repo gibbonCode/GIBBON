@@ -536,7 +536,7 @@ end
 
 [Fr1,Vr1]=roundMesh(indStart_Vm,Vm,Nm,nRim,maskRimFilletRadius);
 [Fr2,Vr2]=roundMesh(indEnd_Vm,Vm,Nm,nRim,maskRimFilletRadius);
-indEnd_Vr1=size(Vr1)-numPointsRimCurve+1:1:size(Vr1);
+indEnd_Vr1=size(Vr1,1) - numPointsRimCurve + 1:size(Vr1,1);
 indEnd_Vr2=fliplr(indEnd_Vr1);
 [Fr1,Vr1]=quad2tri(Fr1,Vr1,'a');
 [Fr2,Vr2]=quad2tri(Fr2,Vr2,'a');
