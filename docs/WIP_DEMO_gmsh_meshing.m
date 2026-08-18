@@ -22,8 +22,7 @@ geo_files = {'\rigid_dome.geo','\square_membrane.geo'};
 mesh_path = savePath;
 %list of gmsh generated mesh files
 mesh_files = {'\rigid_dome.msh','\square_membrane.msh'};
-%path to an installation of gmsh
-gmsh_path = fullfile(defaultFolder,'lib_ext','gmsh','win64');
+
 
 %%
 
@@ -49,7 +48,7 @@ end
 
 %% Load Meshes
 for i = 1:size(geo_files,2)
-    runGmsh([savePath,geo_files{i}],gmsh_path)
+    runGmsh([savePath,geo_files{i}])
 end
 
 

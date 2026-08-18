@@ -1,12 +1,25 @@
+function runGmsh(geo_name, gmsh_path)
 
-function runGmsh(geo_name,gmsh_path)
-    if isempty(gmsh_path)
-        gmsh_path='C:\Users\icberg\OneDrive - UAB - The University of Alabama at Birmingham\Documents\FEM Model Heart Chip';
+    if nargin < 2 || isempty(gmsh_path)
+
+        % as downloaded when installing GIBBON with mpminstall
+        gmsh_path = fullfile(gibbonSettings.gibbonPath, '..', 'Additional Software', 'Gmsh');
+
+        if isunix
+            gmsh_path = fullfile(gmsh_path,'**/bin/gmsh');
+        else
+            gmsh_path = fullfile(gmsh_path, '**', 'gmsh.exe');
+        end
+        d = dir(gmsh_path);
+        if isempty(d)
+            error('GMSH executable not found');
+        end
+        gmsh_path = fullfile(d.folder, d.name);
     end
-    
-    oldFolder = cd(gmsh_path);
-    system(['gmsh.exe ' geo_name ' -0']);
-    cd(oldFolder)
+
+    cmd = sprintf('"%s" "%s" -0', gmsh_path, geo_name);
+    status = system(cmd);
+    assert(status == 0, 'GMSH execution failed, used command:\n%s', cmd);
 end    
 %% 
 % _*GIBBON footer text*_ 
