@@ -15,8 +15,16 @@ function setupOnce(testCase)
     % Record warnings state before test
     testCase.TestData.warnings = warning;
 
+    % Set up a dummy file .../febio/febio
+    % (matching folder name for testFindExecResolvesMatchingFolders)
+    tmp = tempname;
+    mkdir(tmp);
+    mkdir(fullfile(tmp,'febio'));
+    dummyExec = fullfile(tmp,'febio','febio');
+
     % Create a dummy FEBio executable 
-    testCase.TestData.dummyFEBio = tempname;
+    testCase.TestData.tmpDir = tmp;
+    testCase.TestData.dummyFEBio = dummyExec;
     fclose(fopen(testCase.TestData.dummyFEBio,'w'));
 end
 
@@ -45,8 +53,8 @@ function teardownOnce(testCase)
     % Restore warnings
     warning(testCase.TestData.warnings);
 
-    if isfile(testCase.TestData.dummyFEBio)
-        delete(testCase.TestData.dummyFEBio);
+    if isfolder(testCase.TestData.tmpDir)
+        rmdir(testCase.TestData.tmpDir,'s');
     end
 end
 
@@ -103,6 +111,31 @@ function testGetSet(testCase)
 
     h = gibbonSettings.get();
     verifyEqual(testCase, g, h)
+end
+
+function testFindExecFindsMatlab(testCase)
+
+    p = gibbonSettings.findExec('matlab');
+    testCase.verifyTrue(isfile(p));
+end
+
+function testFindExecFailActions(testCase)
+    f = @(action) gibbonSettings.findExec('./definitely_not_a_file', fail=action);
+    testCase.verifyError(@() f('error'), 'gibbon:Settings:findExec')
+    testCase.verifyWarning(@() f('warning'), 'gibbon:Settings:findExec')
+    msg = evalc("f('info');");
+    testCase.verifyNotEmpty(msg);
+    msg = evalc("f('quiet');");
+    testCase.verifyEmpty(msg);
+end
+
+function testFindExecResolvesMatchingFolders(testCase)
+
+    wd = cd(testCase.TestData.tmpDir);
+    goback = onCleanup(@() cd(wd));
+
+    p = gibbonSettings.findExec('**/febio');
+    testCase.verifyEqual(p, testCase.TestData.dummyFEBio);
 end
 
 function testFindFEBioPicksFirstValid(testCase)

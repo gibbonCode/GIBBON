@@ -21,6 +21,7 @@ classdef (Abstract) gibbonSettings
 
     properties
         FEBioPath (1,:) char {mustBeFileOrEmpty, warnIfFEBioVersion2} = ''
+        GmshPath (1,:) char {mustBeFileOrEmpty} = ''
         ViewProfile (1,:) char = 'CAD'
         % FutureSetting (size) class {validators} = defaultValue
     end
@@ -130,31 +131,54 @@ classdef (Abstract) gibbonSettings
             end
         end
 
-        function p = findFEBioPath(defaultPaths)
-        % Try to find FEBio executable on system path
-        
-            if nargin == 0
-                defaultPaths = {'febio4','febio3'};
-            else
-                defaultPaths = cellstr(defaultPaths);
+        function p = findExec(defaultPaths, opt)
+        % Try to find an executable on the system path
+        %
+        % Syntax:
+        %   P = gibbonSettings.findExec(PATTERNS) - patterns will be tested with `doc` first,
+        %       then with the system's `!which` or `!where` (depending on OS).
+        %       The first existing file is returned.
+        %   P = gibbonSettings.findExec(.., setting=NAME) - shorthand to prepend PATTERNS
+        %       with `gibbonSettings.get(NAME)` (if set).
+        %   P = gibbonSettings.findExec(.., fail=ACTION) - what to do if no match is found. 
+        %       Default is 'warning'; other options are 'error', 'info', and 'quiet'.
+        %
+        % Examples:
+        %   P = gibbonSettings.findExec({'./path/to/**/*.exe', 'alternative/**/*.exe')
+        %   P = gibbonSettings.findExec('git')
+        %   P = gibbonSettings.findExec('febio4', setting='FEBioPath')
+        %   P = gibbonSettings.findExec('cowsay', fail='info')
+
+            arguments
+                defaultPaths (1,:) string
+                opt.setting (1,:) char
+                opt.fail (1,1) string {mustBeMember(opt.fail, {'error','warning','info','quiet'})} = 'warning'
             end
 
-            current = gibbonSettings.get('FEBioPath');
-            if ~isempty(current)
-                defaultPaths = [{current}, defaultPaths];
+            defaultPaths = cellstr(defaultPaths);
+
+            if isfield(opt,'setting') && ~isempty(opt.setting)
+                current = gibbonSettings.get(opt.setting);
+                if ~isempty(current)
+                    defaultPaths = [{current}, defaultPaths];
+                end
             end
 
-            if ispc, checkCmd = 'where'; else, checkCmd = 'which'; end
-
+            % Resolve explicit paths/patterns first...
             for j = 1:numel(defaultPaths)
 
-                if isfile(defaultPaths{j})
-                    d = dir(defaultPaths{j});
-                    p = fullfile(d.folder, d.name);
+                d = dir(defaultPaths{j});
+                d([d.isdir]) = [];
+                if ~isempty(d)
+                    p = fullfile(d(1).folder, d(1).name);
                     return;
                 end
+            end
 
-                [status, stdout] = system([checkCmd ' ' defaultPaths{j}]);
+            % If that fails, see if the system knows it ...
+            if ispc, checkCmd = 'where'; else, checkCmd = 'which'; end
+            for j = 1:numel(defaultPaths)
+                [status, stdout] = system(sprintf('%s "%s"', checkCmd, defaultPaths{j}));
                 if status ~= 0
                     continue
                 end
@@ -166,8 +190,34 @@ classdef (Abstract) gibbonSettings
                 return;
             end
 
-            warning('gibbon:Settings:FEBioPath','Failed to find system FEBio')
+            % ... otherwise, report failure
+            switch opt.fail
+                case 'error', report = @error;
+                case 'warning', report = @warning;
+                case 'info', report = @(id, msg) fprintf([msg,'\n']);
+                case 'quiet', report = @(varargin) [];
+            end
+
+            msg = sprintf('Failed to find executable matching: %s', strjoin(defaultPaths, ', '));
+            if isfield(opt,'setting')
+                msg = sprintf([ ...
+                    '%s.\n' ...
+                    'You can override the search path using:\n', ...
+                    '  gibbonSettings.set(''%s'', PATH)' ...
+                    ], msg, opt.setting);
+            end
+
+            report('gibbon:Settings:findExec', msg);
             p = '';
+        end
+
+        function p = findFEBioPath(defaultPaths)
+        % Try to find FEBio executable on system path
+        
+            if nargin == 0
+                defaultPaths = {'febio4','febio3'};
+            end
+            p = gibbonSettings.findExec(defaultPaths, setting='FEBioPath');
         end
     end
 end

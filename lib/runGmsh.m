@@ -2,20 +2,21 @@ function runGmsh(geo_name, gmsh_path)
 
     if nargin < 2 || isempty(gmsh_path)
 
-        % as downloaded when installing GIBBON with mpminstall
-        gmsh_path = fullfile(gibbonSettings.gibbonPath, '..', 'Additional Software', 'Gmsh');
-
         if isunix
-            gmsh_path = fullfile(gmsh_path,'**/bin/gmsh');
+            execName = 'gmsh';
         else
-            gmsh_path = fullfile(gmsh_path, '**', 'gmsh.exe');
+            execName = 'gmsh.exe';
         end
-        d = dir(gmsh_path);
-        if isempty(d)
-            error('GMSH executable not found');
-        end
-        gmsh_path = fullfile(d.folder, d.name);
+
+        % Search in Additional Software (as installed by mpminstall),
+        % and check the bare name, in case user has added it to path
+        % gibbonSettings.set('GmshPath', PATH) will override both
+        gmsh_path = {
+            fullfile(gibbonSettings.gibbonPath, '..', 'Additional Software', 'Gmsh','**', execName);
+            execName
+        };
     end
+    gmsh_path = gibbonSettings.findExec(gmsh_path, setting='GmshPath', fail='error');
 
     cmd = sprintf('"%s" "%s" -0', gmsh_path, geo_name);
     status = system(cmd);
