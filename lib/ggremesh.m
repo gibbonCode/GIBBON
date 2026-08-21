@@ -79,29 +79,26 @@ optionStruct=rmfield(optionStruct,'disp_on');
 
 %%
 
-%Setting path names
-pathNameLib=fullfile(fileparts(fileparts(mfilename('fullpath'))),'lib_ext','geogram');
-pathNameTempFiles=fullfile(fileparts(fileparts(mfilename('fullpath'))),'data','temp');
-
 %Create temporary file name
+pathNameTempFiles=fullfile(gibbonSettings.gibbonPath,'data','temp');
 inputFileName=fullfile(pathNameTempFiles,'temp.obj');
 outputFileName=fullfile(pathNameTempFiles,'temp_out.obj');
 
-%Create runName for binary
-compString=computer; 
-switch compString
-    case 'PCWIN64' %Windows 64-bit
-        pathNameTetGenFile=fullfile(pathNameLib,'win64','bin');
-        runName=fullfile(pathNameTetGenFile,'vorpalite.exe');
-    case 'GLNXA64' %Linux 64-bit       
-        pathNameTetGenFile=fullfile(pathNameLib,'lin64','bin');
-        runName=fullfile(pathNameTetGenFile,'vorpalite');
-    case 'MACI64'  %MAC 64-bit      
-        pathNameTetGenFile=fullfile(pathNameLib,'mac64','bin');
-        runName=fullfile(pathNameTetGenFile,'vorpalite');
-    otherwise
-        error('Your platform does not seem to be supported');
+% Find geogram/vorpalite binary
+if isunix
+    execName = 'vorpalite';
+else
+    execName = 'vorpalite.exe';
 end
+
+% Search in Additional Software (as installed by mpminstall),
+% and check the bare name, in case user has added it to path
+% gibbonSettings.set('vorpalitePath', PATH) will override both
+searchPaths = {
+    fullfile(gibbonSettings.gibbonPath, '..', 'Additional Software', 'geogram','**', execName);
+    execName
+};
+runName = gibbonSettings.findExec(searchPaths, setting='vorpalitePath', fail='error');
 
 %% 
 

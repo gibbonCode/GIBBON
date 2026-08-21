@@ -22,6 +22,7 @@ classdef (Abstract) gibbonSettings
     properties
         FEBioPath (1,:) char {mustBeFileOrEmpty, warnIfFEBioVersion2} = ''
         GmshPath (1,:) char {mustBeFileOrEmpty} = ''
+        vorpalitePath (1,:) char {mustBeFileOrEmpty} = ''
         ViewProfile (1,:) char = 'CAD'
         % FutureSetting (size) class {validators} = defaultValue
     end
